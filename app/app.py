@@ -1,12 +1,13 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify
 import carnet
-from api import ocr
+from routes.auth import routes_auth
 
 app = Flask(__name__)
 
 @app.route('/ocr')
 def getOcr():
-    return send_from_directory('app/api', ocr.py)
+   print('hola')
+   return None
 
 @app.route('/carnet')
 def getCarnetCheck():
@@ -17,4 +18,6 @@ def index():
     return "<h1>CHECKID -- Solem<h1>"
 
 if __name__ == '__main__': 
+    #load_dotenv()
+    app.register_blueprint(routes_auth, url_prefix='/auth')
     app.run(debug=True,port=5000)
