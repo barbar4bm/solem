@@ -1,7 +1,5 @@
 from flask import Blueprint, request, jsonify
 from function_jwt import write_token, validar_token
-from re import split
-
 
 routes_auth = Blueprint("test", __name__)
 
@@ -9,7 +7,6 @@ routes_auth = Blueprint("test", __name__)
 def login():
     data = request.get_json()
     if data['username'] == "Barbara":
-        print("entre al fi")
         return write_token(data)
     else:
         response = jsonify({"message": "User not Found"})
