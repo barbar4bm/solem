@@ -8,7 +8,7 @@ import numpy as np
 import pytesseract
 from google.cloud import vision
 from google.cloud.vision_v1 import types
-
+import argparse
 import os
 
 #cedula derecha
@@ -65,3 +65,5 @@ texts = response.text_annotations
 # Imprime el texto detectado
 for text in texts:
     print('\n"{}"'.format(text.description))
+
+#Probar Tesseract 
