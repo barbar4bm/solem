@@ -36,12 +36,12 @@ ret,rut_bin = cv2.threshold(rut_eq,127,255,cv2.THRESH_BINARY)
 ret2,rut_otsu = cv2.threshold(rut_eq, 127,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)   
 
 cv2.rectangle(rut_otsu, (30, 90), (175, 275), (0,0,255), 4) #foto grande
-cv2.rectangle(rut_otsu , (130, 15), (180, 45), (0,0,255), 4) #bandera chile
-cv2.rectangle(rut_otsu, (305, 170), (430, 210), (0,0,255), 4) #documento
+cv2.rectangle(rut_otsu, (440, 140), (510, 200), (0,0,255), 4) #foto pequeña
 
-
-plt.imshow(rut_otsu, cmap='gray')
-
+#Comparar
+foto_grande = rut_otsu[90:275, 30:175]
+foto_pequeña = rut_otsu[140:200, 440:510]
+plt.imshow(foto_pequeña,cmap='gray')
 show()
 
 
