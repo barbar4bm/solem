@@ -41,7 +41,7 @@ cv2.rectangle(rut_otsu, (440, 140), (510, 200), (0,0,255), 4) #foto pequeña
 #Comparar
 foto_grande = rut_otsu[90:275, 30:175]
 foto_pequeña = rut_otsu[140:200, 440:510]
-plt.imshow(foto_pequeña,cmap='gray')
+plt.imshow(foto_grande,cmap='gray')
 show()
 
 
