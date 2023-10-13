@@ -20,7 +20,8 @@ def OCR(imagen):
     texto = pytesseract.image_to_string(imagen)
     return texto
 
-image= cv2.imread('app/cedula.jpg')
+image= cv2.imread('app/image/a7.jpg')
+
 title('Cedula de Indentidad')
 
 #escala gray
@@ -40,16 +41,18 @@ ret,rut_bin = cv2.threshold(rut_eq,127,255,cv2.THRESH_BINARY)
 # Binarización otsu
 ret2,rut_otsu = cv2.threshold(rut_eq, 127,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)   
 
-cv2.rectangle(rut_otsu, (30, 90), (175, 275), (0,0,255), 4) #foto grande
-cv2.rectangle(rut_otsu, (440, 140), (510, 200), (0,0,255), 4) #foto pequeña
-cv2.rectangle(rut_otsu, (312, 170), (425, 200), (0,0,255), 4)
 
-#Comparar
-foto_grande = rut_otsu[90:275, 30:175]
-foto_pequeña = rut_otsu[140:200, 440:510]
-doc = rut_bin[170:200, 312:423]
-plt.imshow(doc,cmap='gray')
+
+doc_texto = rut_bin[275:310, 487:663] #numero documento check
+fechaV_texto = rut_bin[335:367 , 477:667] #fecha vencimiento check
+nombre_texto = rut_bin[171:211 , 291:826] #nombre check
+apellido_texto = rut_bin[89:152 , 292:658] #apellido check
+rut_chico=rut_eq[287:310,690:809]
+
+
+plt.imshow(rut_chico,cmap='gray')
 show()
 
 #Probar Tesseract 
-print(OCR(doc))
+print("numero de documento: " , OCR(rut_chico))
+#print("fecha de vencimiento: " , OCR(fechaV_texto))
