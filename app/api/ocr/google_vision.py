@@ -10,6 +10,7 @@ from google.cloud import vision
 from google.cloud.vision_v1 import types
 import argparse
 import os
+import
 
 #image = array(Image.open('app/cedula.jpg'))
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'

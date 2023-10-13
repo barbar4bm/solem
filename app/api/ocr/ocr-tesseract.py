@@ -6,7 +6,10 @@ import cv2
 from matplotlib import pyplot as plt
 from pytesseract import Output
 import re
+import time
+import json
 
+inicio=time.time()
 
 #paso 1: Pre procesamiento de imaágenes (acceder a la imagen)
 path_Example = ’delantera.jpg’
@@ -69,40 +72,56 @@ plt.imshow(img)
 plt.show()
 
 #paso 10:  extracción de caracteres
+# Modificamos la función main_process para que devuelva un diccionario
 def main_process(path):
-    img_color=cv2.imread(path) 
-    img_gris=cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY) 
-    thresh = cv2.threshold(img_gris, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1] 
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1,2)) 
-    opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel,iterations=1) 
+    img_color = cv2.imread(path)
+    img_gris = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY)
+    thresh = cv2.threshold(img_gris, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 2))
+    opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=1)
     invert = 255 - opening
-    text=ocr(invert)
-    frontal=re.findall('\w{2}-\w{2}-\w{4}', text)
+    text = ocr(invert)
+    frontal = re.findall(r'\d{2}-\d{2}-\d{4}', text)
 
-    if len(frontal)>0: 
-        try: 
-            output={
+    if len(frontal) > 0:
+        try:
+            output = {
                 'Fecha de nacimiento': frontal[0],
-                'Fecha expedicion': frontal[1]}
-        except:  #case both date were not identified 
-            output={
-                'Fecha de nacimiento': 'DD-MMM-YYYY',
-                'Fecha expedicion': 'DD-MMM-YYYY'         
+                'Fecha expedición': frontal[1]
             }
-    else: 
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (4,4)) 
-        opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel,iterations=1) 
+        except:  # Caso en el que ambas fechas no se identifican
+            output = {
+                'Fecha de nacimiento': 'DD-MM-YYYY',
+                'Fecha expedición': 'DD-MM-YYYY'
+            }
+    else:
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (4, 4))
+        opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=1)
         invert = 255 - opening
-        text=ocr(invert)
-        number=re.findall('([0-9])',text)
-        number_out=''.join(number)
-        number_lines=text.splitlines()
-        nombres=number_lines[8]
-        apellidos=number_lines[6]
-        output={
-        'CC': number_out,
-        'Nombres': nombres,
-        'Apellidos': apellidos 
+        text = ocr(invert)
+        number = re.findall(r'([0-9])', text)
+        number_out = ''.join(number)
+        number_lines = text.splitlines()
+        nombres = number_lines[8]
+        apellidos = number_lines[6]
+        output = {
+            'CC': number_out,
+            'Nombres': nombres,
+            'Apellidos': apellidos
         }
 
     return output
+
+# Llamamos a main_process y guardamos el resultado en un archivo JSON
+path_Example = 'delantera.jpg'
+result = main_process(path_Example)
+
+fin=time.time()
+tiempo_final=fin-inicio
+print(tiempo_final)
+
+# Guardamos el resultado como un archivo JSON
+with open('resultado.json', 'w') as json_file:
+    json.dump(result, json_file, indent=4)
+
+
