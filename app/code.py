@@ -14,7 +14,12 @@ import os
 #cedula derecha
 
 #image = array(Image.open('app/cedula.jpg'))
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
+pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+
+def OCR(imagen):
+    texto = pytesseract.image_to_string(imagen)
+    return texto
+
 image= cv2.imread('app/cedula.jpg')
 title('Cedula de Indentidad')
 
@@ -37,33 +42,14 @@ ret2,rut_otsu = cv2.threshold(rut_eq, 127,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
 cv2.rectangle(rut_otsu, (30, 90), (175, 275), (0,0,255), 4) #foto grande
 cv2.rectangle(rut_otsu, (440, 140), (510, 200), (0,0,255), 4) #foto pequeña
+cv2.rectangle(rut_otsu, (312, 170), (425, 200), (0,0,255), 4)
 
 #Comparar
 foto_grande = rut_otsu[90:275, 30:175]
 foto_pequeña = rut_otsu[140:200, 440:510]
-plt.imshow(foto_grande,cmap='gray')
+doc = rut_bin[170:200, 312:423]
+plt.imshow(doc,cmap='gray')
 show()
 
-
-#aplicar tesseract para obtener informacion 
-# Establece la variable de entorno con la ruta de tu archivo .json (mala practica)
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "app/ocrtry-401614-37f6a7cca750.json"
-
-# Inicializa el cliente de Vision
-client = vision.ImageAnnotatorClient()
-
-# Abre la imagen desde un archivo
-with open('app/cedula.jpg', 'rb') as image_file:
-    content = image_file.read()
-
-image = vision.Image(content=content)
-
-# Usa el OCR de Google Vision
-response = client.text_detection(image=image)
-texts = response.text_annotations
-
-# Imprime el texto detectado
-for text in texts:
-    print('\n"{}"'.format(text.description))
-
 #Probar Tesseract 
+print(OCR(doc))
