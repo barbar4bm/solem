@@ -35,7 +35,7 @@ def rut_comparacion(foto1, foto2):
     else:
         return False
 
-image= cv2.imread('app/image/a1.jpg')
+image= cv2.imread('app/image/a4.jpg')
 
 title('Cedula de Indentidad')
 
@@ -51,25 +51,27 @@ clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
 rut_eq = clahe.apply(gray)
 
  # Binarización
-ret,rut_bin = cv2.threshold(rut_eq,120,255,cv2.THRESH_BINARY)
+ret,rut_bin = cv2.threshold(rut_eq,100,255,cv2.THRESH_BINARY)
 
 # Binarización otsu
-ret2,rut_otsu = cv2.threshold(rut_eq, 127,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)   
+ret2,rut_otsu = cv2.threshold(rut_eq, 127,255,cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
 
-
-doc_texto = rut_bin[275:310, 487:663] #numero documento check
-fechaV_texto = rut_bin[335:367 , 477:667] #fecha vencimiento check
+#recorte de imagenes a obtener lectura 
 nombre_texto = rut_bin[171:211 , 291:826] #nombre check
 apellido_texto = rut_bin[89:152 , 292:658] #apellido check
-rut_chico=rut_eq[282:310,690:808] #rut en foto pequeña check
 rut_grande= rut_bin[460:496 , 98:273] #rut grande check
 nacionalidad= rut_bin[220:265, 291:425] #nacionalidad check
-#aplicar que las imagenes se vean mejor investigar
+sexo= rut_otsu[222:260, 470:540] #no detecta genero
+fecha_nacimiento = rut_bin[276:311 , 250:480]#fecha nacimiento check
+doc_texto = rut_bin[275:310, 487:663] #numero documento check
+fecha_emision= rut_bin[330:369 , 292:463] #fecha emision check
+fechaV_texto = rut_bin[335:367 , 477:667] #fecha vencimiento check
+#rut_chico=rut_bin[282:308,686:808] #rut en foto pequeña 
 
-plt.imshow(rut_chico,cmap='gray')
+#aplicar que las imagenes se vean mejor 
+
+plt.imshow(rut_eq,cmap='gray')
 show()
 
-#Probar Tesseract 
-print("numero de documento: " , OCR(rut_grande))
-print("numero de documento: " , OCR(rut_chico))
-
+print("numero de documento: " , OCR(rut_eq))
+#print("numero de documento: " , OCR(rut_chico))
