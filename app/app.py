@@ -1,6 +1,7 @@
 from flask import Flask
 from routes import identity_card
 
+
 app = Flask(__name__)
 
 @app.route('/')
