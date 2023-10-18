@@ -69,6 +69,7 @@ def calcHomografia(good,MIN_MATCH_COUNT,img_ref,kp_obj,kp_ref,imgEq):
         print( "Not enough matches are found - {}/{}".format(len(good), MIN_MATCH_COUNT) )
         matchesMask = None
         return None
+    
 def obtenerRecorteImagen(imagenbaseEq,imgEq,M):
   # Definimos las dimensiones del rectángulo base (el original de la imagen de referencia)
   h,w = imagenbaseEq.shape
@@ -86,10 +87,13 @@ def b64_openCV(imgenb64):
   return img 
 
 def openCV_b64(imagenOpenCV):
-  _, im_arr = cv2.imencode('.jpg', imagenOpenCV)
-  im_bytes = im_arr.tobytes()
-  im_b64 = b64.b64encode(im_bytes)   
-  return im_b64
+    # Codificar la imagen en formato JPEG
+    _, buffer = cv2.imencode('.jpg', imagenOpenCV)
+    
+    # Convertir la imagen codificada en un string base64
+    imagen_base64 = b64.b64encode(buffer).decode('utf-8')
+
+    return imagen_base64
 
 def leerQR(imagen):
     
