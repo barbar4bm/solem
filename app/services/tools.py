@@ -2,6 +2,8 @@ import cv2 as cv2
 from matplotlib import pyplot as plt
 import numpy as np
 import base64 as b64
+from pyzbar.pyzbar import decode
+
 def puntos_descriptores(image):
   sift = cv2.xfeatures2d.SIFT_create(0, 3, 0.04, 0, 2)
   puntos,descriptores=sift.detectAndCompute(image,None)
@@ -95,14 +97,17 @@ def openCV_b64(imagenOpenCV):
 
     return imagen_base64
 
+
 def leerQR(imagen):
+    # Usa pyzbar para decodificar el código QR
+    codigos_qr = decode(imagen)
     
-    try:
-        detect = cv2.QRCodeDetector()
-        value, points, straight_qrcode = detect.detectAndDecode(imagen)
-        return value
-    except:
-        return None
+    # Si encontramos algún código QR, devolvemos su contenido
+    for qr in codigos_qr:
+        return qr.data.decode('utf-8')
+    
+    # Si no se encuentra ningún código QR, devolvemos None
+    return None
     
 
 def leer_base64_desde_archivo(ruta_archivo):
