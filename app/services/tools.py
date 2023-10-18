@@ -103,3 +103,9 @@ def leerQR(imagen):
         return value
     except:
         return None
+    
+
+def leer_base64_desde_archivo(ruta_archivo):
+    with open(ruta_archivo, 'r') as archivo:
+        contenido = archivo.read()
+    return contenido
