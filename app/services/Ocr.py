@@ -1,20 +1,29 @@
 import cv2 as cv2
 import pytesseract
 
-def obtenerTexto(imagenes, nombres):
-    # Verificar si las longitudes de las listas son iguales
-    if len(imagenes) != len(nombres):
-        raise ValueError("La lista de imágenes y la lista de nombres deben tener la misma longitud.")
+def obtenerTexto(imagenes, nombres=None):
+    # Si "imagenes" es solo una imagen (verificando si es un ndarray de numpy y no una lista)
+    if isinstance(imagenes, np.ndarray):
+        return pytesseract.image_to_string(imagenes, lang="spa").strip()
     
-    # Diccionario para almacenar los resultados
-    resultado = {}
+    # Si "imagenes" es una lista de imágenes
+    elif isinstance(imagenes, list) and all([isinstance(img, np.ndarray) for img in imagenes]):
+        # Verificar si las longitudes de las listas son iguales
+        if len(imagenes) != len(nombres):
+            raise ValueError("La lista de imágenes y la lista de nombres deben tener la misma longitud.")
+        
+        # Diccionario para almacenar los resultados
+        resultado = {}
 
-    # Recorre las imágenes y extrae el texto
-    for i, imagen in enumerate(imagenes):
-        texto = pytesseract.image_to_string(imagen, lang="spa").strip()
-        resultado[nombres[i]] = texto
+        # Recorre las imágenes y extrae el texto
+        for i, imagen in enumerate(imagenes):
+            texto = pytesseract.image_to_string(imagen, lang="spa").strip()
+            resultado[nombres[i]] = texto
 
-    return resultado
+        return resultado
+    
+    else:
+        raise TypeError("El argumento 'imagenes' debe ser un ndarray o una lista de ndarrays.")
 
 def assign_values_from_dict(obj, attributes_dict):
     # Comprobación inicial: asegurarse de que la cantidad de atributos del objeto y
