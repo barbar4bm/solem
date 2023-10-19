@@ -114,3 +114,17 @@ def leer_base64_desde_archivo(ruta_archivo):
     with open(ruta_archivo, 'r') as archivo:
         contenido = archivo.read()
     return contenido
+
+def guardar_base64_en_archivo(img, nombre_archivo):
+    """Guarda la representación base64 de una imagen de OpenCV en un archivo. 
+    Si hay un error, se devuelve False. Si tiene éxito, devuelve True."""
+    try:
+        img_base64 = openCV_b64(img)
+        
+        with open(nombre_archivo, 'w') as f:
+            f.write(img_base64)
+        
+        return True
+    except Exception as e:
+        print(f"Ocurrió un error al guardar la imagen en base64: {e}")
+        return False
