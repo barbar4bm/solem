@@ -11,7 +11,7 @@ def obtenerTexto(imagenes, nombres):
 
     # Recorre las imágenes y extrae el texto
     for i, imagen in enumerate(imagenes):
-        texto = pytesseract.image_to_string(imagen, lang="spa")
+        texto = pytesseract.image_to_string(imagen, lang="spa").strip()
         resultado[nombres[i]] = texto
 
     return resultado
