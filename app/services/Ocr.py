@@ -1,5 +1,6 @@
 import cv2 as cv2
 import pytesseract
+import numpy as np
 
 def obtenerTexto(imagenes, nombres=None):
     # Si "imagenes" es solo una imagen (verificando si es un ndarray de numpy y no una lista)
