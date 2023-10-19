@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import base64 as b64
 from pyzbar.pyzbar import decode
+import os
 
 def puntos_descriptores(image):
   sift = cv2.xfeatures2d.SIFT_create(0, 3, 0.04, 0, 2)
@@ -128,3 +129,23 @@ def guardar_base64_en_archivo(img, nombre_archivo):
     except Exception as e:
         print(f"Ocurrió un error al guardar la imagen en base64: {e}")
         return False
+    
+def cargar_imagenes(nombres, formato, ruta):
+    """
+    Carga una lista de imágenes a partir de sus nombres, formato y ruta.
+    
+    Parámetros:
+    - nombres (list): Lista de nombres de archivos sin extensión.
+    - formato (str): Formato de los archivos, ej: '.png', '.jpg'.
+    - ruta (str): Ruta del directorio donde se encuentran las imágenes.
+
+    Retorna:
+    - list: Lista de imágenes cargadas.
+    """
+    # Crear lista completa de rutas a las imágenes
+    rutas_completas = [os.path.join(ruta, nombre + formato) for nombre in nombres]
+
+    # Leer las imágenes y almacenarlas en la lista
+    imagenes = [cv2.imread(ruta_completa) for ruta_completa in rutas_completas]
+
+    return imagenes
