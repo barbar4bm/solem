@@ -1,18 +1,18 @@
 class Cedula:
     def __init__(self, 
-                 RUN, 
-                 apellidos, 
-                 nombres, 
-                 nacionalidad, 
-                 sexo, 
-                 fecha_nacimiento, 
-                 fecha_emision, 
-                 fecha_vencimiento, 
-                 numero_documento,
-                 ciudad,
-                 profesion,
-                 mrz,  # Esto será un diccionario
-                 qr):
+                 RUN="", 
+                 apellidos="", 
+                 nombres="", 
+                 nacionalidad="", 
+                 sexo="", 
+                 fecha_nacimiento="", 
+                 fecha_emision="", 
+                 fecha_vencimiento="", 
+                 numero_documento="",
+                 ciudad="",
+                 profesion="",
+                 mrz=None,  # Esto será un diccionario
+                 qr=""):
         self.RUN = RUN
         self.apellidos = apellidos
         self.nombres = nombres
@@ -25,12 +25,18 @@ class Cedula:
         self.ciudad = ciudad
         self.profesion = profesion
 
-        # diccionario mrz
-        self.mrz = {
-            "clave1": mrz.get("clave1", "valor_por_defecto_1"),
-            "clave2": mrz.get("clave2", "valor_por_defecto_2"),
-            # ... se agregan segun estructura de mrz...
-        }
+        if mrz is None:
+            self.mrz = {
+                "clave1": "valor_por_defecto_1",
+                "clave2": "valor_por_defecto_2",
+                # ... se agregan segun estructura de mrz...
+            }
+        else:
+            self.mrz = {
+                "clave1": mrz.get("clave1", "valor_por_defecto_1"),
+                "clave2": mrz.get("clave2", "valor_por_defecto_2"),
+                # ... se agregan segun estructura de mrz...
+            }
 
         self.qr = qr
 
