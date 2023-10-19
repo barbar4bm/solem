@@ -11,7 +11,8 @@ class Cedula:
                  numero_documento,
                  ciudad,
                  profesion,
-                 mrz):
+                 mrz,
+                 qr):
         self.RUN = RUN
         self.apellidos = apellidos
         self.nombres = nombres
@@ -24,6 +25,7 @@ class Cedula:
         self.ciudad = ciudad
         self.profesion = profesion
         self.mrz = mrz
+        self.qr = qr
 
     def __str__(self):
         return (f"RUN: {self.RUN}\n"
@@ -37,4 +39,5 @@ class Cedula:
                 f"Numero de Documento: {self.numero_documento}\n"
                 f"Ciudad: {self.ciudad}\n"
                 f"Profesión: {self.profesion}\n"
-                f"MRZ: {self.mrz}\n")
+                f"MRZ: {self.mrz}\n"
+                f"QR: {self.qr}\n" )
