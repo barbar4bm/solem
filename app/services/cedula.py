@@ -11,7 +11,7 @@ class Cedula:
                  numero_documento,
                  ciudad,
                  profesion,
-                 mrz,
+                 mrz,  # Esto será un diccionario
                  qr):
         self.RUN = RUN
         self.apellidos = apellidos
@@ -24,7 +24,14 @@ class Cedula:
         self.numero_documento = numero_documento
         self.ciudad = ciudad
         self.profesion = profesion
-        self.mrz = mrz
+
+        # diccionario mrz
+        self.mrz = {
+            "clave1": mrz.get("clave1", "valor_por_defecto_1"),
+            "clave2": mrz.get("clave2", "valor_por_defecto_2"),
+            # ... se agregan segun estructura de mrz...
+        }
+
         self.qr = qr
 
     def __str__(self):
@@ -40,4 +47,4 @@ class Cedula:
                 f"Ciudad: {self.ciudad}\n"
                 f"Profesión: {self.profesion}\n"
                 f"MRZ: {self.mrz}\n"
-                f"QR: {self.qr}\n" )
+                f"QR: {self.qr}\n")
