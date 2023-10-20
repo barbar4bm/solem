@@ -149,3 +149,9 @@ def cargar_imagenes(nombres, formato, ruta):
     imagenes = [cv2.imread(ruta_completa) for ruta_completa in rutas_completas]
 
     return imagenes
+
+def numpy_to_png(imagen_np):
+    """Convierte una matriz numpy a bytes de imagen PNG."""
+    retval, buffer_png = cv2.imencode('.png', imagen_np)
+    png_bytes = buffer_png.tobytes()
+    return png_bytes
