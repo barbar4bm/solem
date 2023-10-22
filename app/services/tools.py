@@ -2,7 +2,6 @@ import cv2 as cv2
 from matplotlib import pyplot as plt
 import numpy as np
 import base64 as b64
-from pyzbar.pyzbar import decode
 import os
 
 def puntos_descriptores(image):
@@ -98,17 +97,25 @@ def openCV_b64(imagenOpenCV):
 
     return imagen_base64
 
+def imagen_a_matriz(imagen_file):
+    # Leer la imagen desde el objeto de archivo
+    imagen_bytes = np.asarray(bytearray(imagen_file.read()), dtype=np.uint8)
+    imagen = cv2.imdecode(imagen_bytes, cv2.IMREAD_COLOR)
+    return imagen
+   
 
-def leerQR(imagen):
-    # Usa pyzbar para decodificar el código QR
-    codigos_qr = decode(imagen)
+def leerQR(image):
+
+    # Inicializar el detector de códigos QR con OpenCV
+    qr_code_detector = cv2.QRCodeDetector()
+
+    # Si no es un arreglo de numpy, lanzar una excepción
+    if not isinstance(image, np.ndarray):
+        raise ValueError("El argumento 'image' debe ser un arreglo de numpy (imagen de OpenCV).")
     
-    # Si encontramos algún código QR, devolvemos su contenido
-    for qr in codigos_qr:
-        return qr.data.decode('utf-8')
-    
-    # Si no se encuentra ningún código QR, devolvemos None
-    return None
+    # Detectar y decodificar el código QR
+    value, pts, qr_code = qr_code_detector.detectAndDecode(image)
+    return value
     
 
 def leer_base64_desde_archivo(ruta_archivo):

@@ -1,4 +1,4 @@
-#!/Users/barbara/Documents/GitHub/solem/venv/bin/python3
+#!/Users/nicolas/gitHub/solem/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys
