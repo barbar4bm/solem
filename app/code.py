@@ -10,6 +10,7 @@ from google.cloud import vision
 from google.cloud.vision_v1 import types
 import argparse
 import os
+import re
 
 #cedula derecha
 
@@ -17,26 +18,12 @@ import os
 pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def OCR(imagen):
-    texto = pytesseract.image_to_string(imagen,lang='spa')
+    texto = pytesseract.image_to_string(imagen)
     return str(texto)
 
-def rut_comparacion(foto1, foto2):
-    # Calcula el histograma de las imágenes
-    hist1 = cv2.calcHist([foto1], [0], None, [256], [0, 256])
-    hist2 = cv2.calcHist([foto2], [0], None, [256], [0, 256])
-    
-    # Calcula la correlación entre los histogramas
-    correlacion = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
-    
-    # Si la correlación es mayor que un umbral, las imágenes son consideradas iguales
-    umbral = 0.95  # Puedes ajustar este umbral según tus necesidades
-    if correlacion > umbral:
-        return True
-    else:
-        return False
 
-image= cv2.imread('app/image/a1.jpg')
-
+image= cv2.imread('app/image/a2.jpg')
+image2= cv2.imread('app/image/24.2.jpg')#necesito otra imagen 
 
 title('Cedula de Indentidad')
 #escala gray
@@ -45,18 +32,31 @@ title('Cedula de Indentidad')
 img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 # Cambio de espacio de color BGR a GRAY
 gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-
 # Ecualización
 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
 rut_eq = clahe.apply(gray)
-
 equ = cv2.equalizeHist(rut_eq)
-
  # Binarización
 ret,rut_bin = cv2.threshold(rut_eq,100,255,cv2.THRESH_BINARY)
-
 # Binarización otsu
 ret2,rut_otsu = cv2.threshold(rut_eq,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
+
+
+#foto 2
+# Cambio de espacio de color de BGR a RGB
+img_rgb2 = cv2.cvtColor(image2, cv2.COLOR_BGR2RGB)
+# Cambio de espacio de color BGR a GRAY
+gray2 = cv2.cvtColor(img_rgb2, cv2.COLOR_BGR2GRAY)
+# Ecualización
+clahe2 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+rut_eq2 = clahe2.apply(gray2)
+equ2 = cv2.equalizeHist(rut_eq2)
+ # Binarización
+ret,rut_bin2 = cv2.threshold(rut_eq2,100,255,cv2.THRESH_BINARY)
+# Binarización otsu
+ret2,rut_otsu2 = cv2.threshold(rut_eq2,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
+
+
 
 
 #recorte de imagenes a obtener lectura 
@@ -72,16 +72,18 @@ fechaV_texto = rut_bin[335:367 , 477:667] #fecha vencimiento check
 #rut_chico=rut_otsu[282:308,686:808] #rut en foto pequeña falta mejorar su visibilidad
 
 #lectura trasera
-nacio_en= rut_bin[211:247 , 182:600] #check pero con detalles
-profesion = rut_bin[242:274,182:403]
-mrz = rut_otsu[354:492, 42:800]
+nacio_en= rut_bin2[211:247 , 182:600] #check pero con detalles
+profesion = rut_bin2[242:274,182:403]
+mrz = rut_otsu2[354:492, 42:800]
+nombre_mrz= rut_otsu2[440:482, 418:800]
 
-gray2 = cv2.medianBlur(mrz, 5)
-dst2 = cv2.adaptiveThreshold(gray2, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+gray3 = cv2.medianBlur(mrz, 5)
+dst2 = cv2.adaptiveThreshold(gray3, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
 
 
-plt.imshow(nombre_texto,cmap='gray')
+plt.imshow(nombre_mrz,cmap='gray')
+
 show()
 
 #edges = cv2.Canny(mrz, 100, 200)
@@ -96,12 +98,38 @@ show()
 #sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=5)
 #sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=5)
 #img = cv2.GaussianBlur(image, (3, 3), sigmaX=0, sigmaY=0)
-data_nombre= OCR(nombre_texto).split(' ') #hacer esto a cada uno de los campos
 
-print("numero de documento: " , len(data_nombre))
-print("numero de documento: " , OCR(nacionalidad))
-print("numero de documento: " , OCR(fecha_nacimiento))
-#print("numero de documento: " , OCR(rut_chico))
 
-for i in range(len(data_nombre)):
-    print(data_nombre[i]) 
+#data String Frontal
+data_nombre= OCR(nombre_texto).replace(' ', '').split(' ') #hacer esto a cada uno de los campos
+data_apellido= OCR(apellido_texto).strip().split(' ')
+data_fecha_nacimiento= OCR(fecha_nacimiento).replace('<', '').replace('>', '').split(' ') #buscar una forma de quitar todos los caracteres
+data_rut_grande= OCR(rut_grande).replace('.', '').replace('-', '').split(' ')
+data_nacionalidad= OCR(nacionalidad).split(' ')
+data_fecha_emision= OCR(fecha_emision).split(' ')
+data_fechaV_texto= OCR(fechaV_texto).split(' ')
+
+porcentaje_de_aprobar= 0.9  #si la comparación de datos supera este umbral es porque es el nombre
+
+#data String Back
+data_nombre_back=OCR(nombre_mrz).replace("\ ", '').replace('<', '').split()
+
+#funcion para comparar nombres
+calcular = 0
+for i in range(len(data_nombre_back[0])):
+    datos1=data_nombre[0]
+    datos2=data_nombre_back[0]
+    contar=0
+    if(datos1[i]==datos2[i]):
+        contar=contar+1
+    calcular = contar/len(data_nombre)
+    
+
+if (calcular >=porcentaje_de_aprobar):
+    print("El nombre se asemeja")
+   
+else:
+    print("El nombre NO se asemeja")
+
+    
+    
