@@ -22,12 +22,12 @@ def OCR(imagen):
     return str(texto)
 
 
-image= cv2.imread('app/image/a2.jpg')
-image2= cv2.imread('app/image/24.2.jpg')#necesito otra imagen 
+image= cv2.imread('app/image/a2.jpg')#imagen frontal
+image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
 
 title('Cedula de Indentidad')
-#escala gray
 
+#escala gray imagen frontal
 # Cambio de espacio de color de BGR a RGB
 img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 # Cambio de espacio de color BGR a GRAY
@@ -42,7 +42,7 @@ ret,rut_bin = cv2.threshold(rut_eq,100,255,cv2.THRESH_BINARY)
 ret2,rut_otsu = cv2.threshold(rut_eq,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
 
 
-#foto 2
+#foto back
 # Cambio de espacio de color de BGR a RGB
 img_rgb2 = cv2.cvtColor(image2, cv2.COLOR_BGR2RGB)
 # Cambio de espacio de color BGR a GRAY
@@ -76,13 +76,17 @@ nacio_en= rut_bin2[211:247 , 182:600] #check pero con detalles
 profesion = rut_bin2[242:274,182:403]
 mrz = rut_otsu2[354:492, 42:800]
 nombre_mrz= rut_otsu2[440:482, 418:800]
+apellido_mrz=rut_otsu2[440:482, 418:800]
+rut_mrz = rut_otsu2[44:84,453:705]
+documento_mrz=rut_otsu2[88:127,4:330]
 
-gray3 = cv2.medianBlur(mrz, 5)
-dst2 = cv2.adaptiveThreshold(gray3, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+#para mejor vision del mrz
+#gray3 = cv2.medianBlur(mrz, 5)
+#dst2 = cv2.adaptiveThreshold(gray3, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
 
 
-plt.imshow(nombre_mrz,cmap='gray')
+plt.imshow(mrz,cmap='gray')
 
 show()
 
@@ -109,12 +113,16 @@ data_nacionalidad= OCR(nacionalidad).split(' ')
 data_fecha_emision= OCR(fecha_emision).split(' ')
 data_fechaV_texto= OCR(fechaV_texto).split(' ')
 
-porcentaje_de_aprobar= 0.9  #si la comparación de datos supera este umbral es porque es el nombre
 
 #data String Back
-data_nombre_back=OCR(nombre_mrz).replace("\ ", '').replace('<', '').split()
+data_nombre_back=OCR(nombre_mrz).replace(" ", '').replace('<', '').split()
+data_apellido_back=OCR(apellido_mrz).replace(" ", '').replace('<', '').split()
+data_rut_mrz=OCR(rut_mrz).replace(" ", '').replace('<', '').split()
 
-#funcion para comparar nombres
+
+porcentaje_de_aprobar= 0.9  #si la comparación de datos supera este umbral es porque es el nombre
+
+#para comparar nombres
 calcular = 0
 for i in range(len(data_nombre_back[0])):
     datos1=data_nombre[0]
