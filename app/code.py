@@ -17,8 +17,8 @@ import os
 pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def OCR(imagen):
-    texto = pytesseract.image_to_string(imagen)
-    return texto
+    texto = pytesseract.image_to_string(imagen,lang='spa')
+    return str(texto)
 
 def rut_comparacion(foto1, foto2):
     # Calcula el histograma de las imágenes
@@ -35,19 +35,8 @@ def rut_comparacion(foto1, foto2):
     else:
         return False
 
-image= cv2.imread('app/image/a8.jpg')
+image= cv2.imread('app/image/a1.jpg')
 
-#edges = cv2.Canny(image, 100, 200)
-#img_float = np.float32(image)/255.0
-#img_log = cv2.log(img_float)
-#gamma = 0.2
-#c = 1
-#img_filtered = np.exp(c * img_log) ** gamma
-#img_filtered = np.uint8(img_filtered * 255)
-
-#sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=5)
-#sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=5)
-#img = cv2.GaussianBlur(image, (3, 3), sigmaX=0, sigmaY=0)
 
 title('Cedula de Indentidad')
 #escala gray
@@ -71,8 +60,8 @@ ret2,rut_otsu = cv2.threshold(rut_eq,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTS
 
 
 #recorte de imagenes a obtener lectura 
-nombre_texto = rut_bin[171:211 , 291:810] #nombre check
-apellido_texto = rut_bin[85:152 , 292:520] #apellido check
+nombre_texto = rut_bin[171:211 , 291:806] #nombre check
+apellido_texto = rut_bin[88:152 , 292:520] #apellido check
 rut_grande = rut_bin[460:496 , 98:273] #rut grande check
 nacionalidad = rut_bin[220:265, 291:425] #nacionalidad check
 #sexo = rut_otsu[222:263, 450:600] #no detecta genero
@@ -92,13 +81,27 @@ dst2 = cv2.adaptiveThreshold(gray2, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THR
 
 
 
-plt.imshow(apellido_texto,cmap='gray')
+plt.imshow(nombre_texto,cmap='gray')
 show()
 
+#edges = cv2.Canny(mrz, 100, 200)
 
-print("numero de documento: " , OCR(apellido_texto))
+#img_float = np.float32(mrz)/255.0
+#img_log = cv2.log(img_float)
+#gamma = 0.2
+#c = 1
+#img_filtered = np.exp(c * img_log) ** gamma
+#img_filtered = np.uint8(img_filtered * 255)
+
+#sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=5)
+#sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=5)
+#img = cv2.GaussianBlur(image, (3, 3), sigmaX=0, sigmaY=0)
+data_nombre= OCR(nombre_texto).split(' ') #hacer esto a cada uno de los campos
+
+print("numero de documento: " , len(data_nombre))
 print("numero de documento: " , OCR(nacionalidad))
 print("numero de documento: " , OCR(fecha_nacimiento))
-
 #print("numero de documento: " , OCR(rut_chico))
 
+for i in range(len(data_nombre)):
+    print(data_nombre[i]) 
