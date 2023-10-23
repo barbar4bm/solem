@@ -73,12 +73,12 @@ fechaV_texto = rut_bin[335:367 , 477:667] #fecha vencimiento check
 
 #lectura trasera
 nacio_en= rut_bin2[211:247 , 182:600] #check pero con detalles
-profesion = rut_bin2[242:274,182:403]
-mrz = rut_otsu2[354:492, 42:800]
-nombre_mrz= rut_otsu2[440:482, 418:800]
-apellido_mrz=rut_otsu2[440:478, 44:375]
-rut_mrz = rut_otsu2[395:440,495:747]
-documento_mrz=rut_bin2[354:398,170:400]
+profesion = rut_bin2[242:274,182:403] #check
+mrz = rut_otsu2[354:492, 42:800] #check
+nombre_mrz= rut_otsu2[440:482, 418:800] #check
+apellido_mrz=rut_otsu2[440:478, 44:375] #check
+rut_mrz = rut_otsu2[395:440,495:747] #check
+documento_mrz=rut_bin2[354:398,170:400] #check
 
 #para mejor vision del mrz
 #gray3 = cv2.medianBlur(mrz, 5)
@@ -105,7 +105,8 @@ documento_mrz=rut_bin2[354:398,170:400]
 
 
 #data String Frontal
-data_nombre= OCR(nombre_texto).replace(' ', '').split(' ') #hacer esto a cada uno de los campos
+#hacer esto a cada uno de los campos reemplaza y quita los espacios
+data_nombre= OCR(nombre_texto).replace(' ', '').split(' ') 
 data_apellido= OCR(apellido_texto).replace('\n', '').strip().split(' ')
 data_fecha_nacimiento= OCR(fecha_nacimiento).replace('<', '').replace('>', '').split(' ') #buscar una forma de quitar todos los caracteres
 data_rut_grande= OCR(rut_grande).replace('\n', '').replace('.', '').replace('-', '').split(' ')
