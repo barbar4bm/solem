@@ -76,9 +76,9 @@ nacio_en= rut_bin2[211:247 , 182:600] #check pero con detalles
 profesion = rut_bin2[242:274,182:403]
 mrz = rut_otsu2[354:492, 42:800]
 nombre_mrz= rut_otsu2[440:482, 418:800]
-apellido_mrz=rut_otsu2[440:482, 418:800]
-rut_mrz = rut_otsu2[44:84,453:705]
-documento_mrz=rut_otsu2[88:127,4:330]
+apellido_mrz=rut_otsu2[440:478, 44:375]
+rut_mrz = rut_otsu2[395:440,495:747]
+documento_mrz=rut_bin2[354:398,170:400]
 
 #para mejor vision del mrz
 #gray3 = cv2.medianBlur(mrz, 5)
@@ -86,9 +86,9 @@ documento_mrz=rut_otsu2[88:127,4:330]
 
 
 
-plt.imshow(mrz,cmap='gray')
+#plt.imshow(rut_mrz,cmap='gray')
 
-show()
+#show()
 
 #edges = cv2.Canny(mrz, 100, 200)
 
@@ -106,38 +106,83 @@ show()
 
 #data String Frontal
 data_nombre= OCR(nombre_texto).replace(' ', '').split(' ') #hacer esto a cada uno de los campos
-data_apellido= OCR(apellido_texto).strip().split(' ')
+data_apellido= OCR(apellido_texto).replace('\n', '').strip().split(' ')
 data_fecha_nacimiento= OCR(fecha_nacimiento).replace('<', '').replace('>', '').split(' ') #buscar una forma de quitar todos los caracteres
-data_rut_grande= OCR(rut_grande).replace('.', '').replace('-', '').split(' ')
+data_rut_grande= OCR(rut_grande).replace('\n', '').replace('.', '').replace('-', '').split(' ')
 data_nacionalidad= OCR(nacionalidad).split(' ')
 data_fecha_emision= OCR(fecha_emision).split(' ')
 data_fechaV_texto= OCR(fechaV_texto).split(' ')
-
+data_documento=OCR(doc_texto).replace('.', '').replace('\n', '').split(' ')
 
 #data String Back
 data_nombre_back=OCR(nombre_mrz).replace(" ", '').replace('<', '').split()
 data_apellido_back=OCR(apellido_mrz).replace(" ", '').replace('<', '').split()
-data_rut_mrz=OCR(rut_mrz).replace(" ", '').replace('<', '').split()
+data_rut_mrz = OCR(rut_mrz).replace('<', '').split()
+data_documento_mrz=OCR(documento_mrz).replace(" ", '').replace('<', '').split()
 
+porcentaje_de_aprobar= 0.8  #si la comparación de datos supera este umbral es porque es el nombre
 
-porcentaje_de_aprobar= 0.9  #si la comparación de datos supera este umbral es porque es el nombre
-
-#para comparar nombres
+#crear una sola funcion de calcular luego
+##calcular el porcentaje de parecerse el nombre
 calcular = 0
+contar = 0
 for i in range(len(data_nombre_back[0])):
     datos1=data_nombre[0]
     datos2=data_nombre_back[0]
-    contar=0
     if(datos1[i]==datos2[i]):
-        contar=contar+1
-    calcular = contar/len(data_nombre)
-    
+        contar = contar + 1   
+    calcular = contar/len(data_nombre[0])
 
 if (calcular >=porcentaje_de_aprobar):
     print("El nombre se asemeja")
-   
+
 else:
     print("El nombre NO se asemeja")
 
-    
-    
+#calcular el porcentaje de parecerse el apellido
+calcular2 = 0
+contar2 = 0
+for j in range(len(data_apellido_back[0])):
+    datos3=data_apellido[0]
+    datos4=data_apellido_back[0]
+    if(datos3[j] == (datos4[j])):
+        contar2 = contar2+1
+    calcular2 = contar2/len(data_apellido[0])
+
+if (calcular2 >=porcentaje_de_aprobar):
+    print("El apellido se asemeja")  
+else:
+    print("El apellido NO se asemeja")
+
+
+#calcular el porcentaje de parecerse el documento
+calcular3 = 0
+contar3 = 0
+for j in range(len(data_documento_mrz[0])):
+    datos5=data_documento[0]
+    datos6=data_documento_mrz[0]
+    if(datos3[j] == (datos4[j])):
+        contar3 = contar3+1
+    calcular3 = contar3/len(data_documento[0])
+
+if (calcular3 >=porcentaje_de_aprobar):
+    print("El documento es el mismo")  
+else:
+    print("El apellido NO se asemeja")
+
+
+#calcular el porcentaje de parecerse el rut
+calcular4 = 0
+contar4 = 0
+for j in range(len(data_rut_mrz[0])):
+    datos7=data_rut_grande[0]
+    datos8=data_rut_mrz[0]
+    if(datos7[j] == (datos8[j])):
+        contar4 = contar4+1
+    calcular4 = contar4/len(data_documento[0])
+
+if (calcular4 >=porcentaje_de_aprobar):
+    print("El RUT es el mismo")  
+else:
+    print("El RUT NO se asemeja")
+
