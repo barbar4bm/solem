@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subir JSON</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    pre {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    /* Estilos para el área de drag & drop */
+    .dropzone {
+      border: 2px dashed #cccccc;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .dropzone:hover {
+      background-color: #f9f9f9;
+    }
+
+    .dropzone.dragover {
+      background-color: #e9ecef;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Subir JSON Con Estructura</h1>
+
+  <p>Estructura del JSON:</p>
+  <pre>
+{
+    "anverso": "codigo_base_64_de_imagen...anverso",
+    "reverso": "codigo_base_64_de_imagen...reverso"
+}
+</pre>
+
+  <section>
+    <h2>Subir archivo JSON:</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+      <div class="dropzone" id="dropZone">Seleccionar/Arrastrar y Soltar.</div>
+      <input type="file" name="archivo_json" accept=".json" id="fileInput" style="display: none;">
+      <br><br>
+      <button type="submit">Enviar al servidor</button>
+    </form>
+  </section>
+
+  <script>
+    // Referencias a elementos del DOM
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    // Eventos de arrastre y soltado para el área de dropzone
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      fileInput.files = files; // Asigna los archivos arrastrados al input
+    });
+
+    // Evento de clic para abrir el selector de archivos
+    dropZone.addEventListener('click', () => {
+      fileInput.click();
+    });
+  </script>
+
+</body>
+
+</html>

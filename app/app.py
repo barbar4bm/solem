@@ -1,8 +1,9 @@
 from flask import Flask, request,Response, jsonify,render_template
-from routes import identity_card
+from routes import pruebas
 from services import tools as tool
 
 app = Flask(__name__)
+app.register_blueprint(pruebas.pruebas) 
 
 @app.route('/')
 def index():
