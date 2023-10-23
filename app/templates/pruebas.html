@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subir JSON</title>
+  <title>Subir JSON y OCR</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,22 +19,11 @@
       border-radius: 5px;
     }
 
-    /* Estilos para el área de drag & drop */
-    .dropzone {
-      border: 2px dashed #cccccc;
-      border-radius: 5px;
+    .upload-container {
+      border: 2px dashed #ccc;
       padding: 20px;
       text-align: center;
       cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .dropzone:hover {
-      background-color: #f9f9f9;
-    }
-
-    .dropzone.dragover {
-      background-color: #e9ecef;
     }
   </style>
 </head>
@@ -53,41 +42,117 @@
 
   <section>
     <h2>Subir archivo JSON:</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
-      <div class="dropzone" id="dropZone">Seleccionar/Arrastrar y Soltar.</div>
-      <input type="file" name="archivo_json" accept=".json" id="fileInput" style="display: none;">
-      <br><br>
-      <button type="submit">Enviar al servidor</button>
-    </form>
+
+    <div class="upload-container">
+      Arrastra y suelta un archivo JSON aquí o haz clic para seleccionarlo
+      <input type="file" id="jsonFile" style="display: none;" accept=".json">
+    </div>
+
+    <br><br>
+    <button id="submitJson">Enviar al servidor</button>
+
+    <script>
+      document.querySelector(".upload-container").addEventListener("click", function () {
+        document.getElementById("jsonFile").click();
+      });
+
+      document.getElementById("submitJson").addEventListener("click", async function () {
+        const file = document.getElementById("jsonFile").files[0];
+        if (file) {
+          const formData = new FormData();
+          formData.append('archivo_json', file);
+
+          try {
+            const response = await fetch('/ocr', {
+              method: 'POST',
+              body: formData
+            });
+
+            if (!response.ok) {
+              alert('Error al enviar el archivo JSON. Intenta nuevamente.');
+              return;
+            }
+
+            alert('¡Archivo JSON enviado con éxito!');
+          } catch (error) {
+            alert('Error al enviar el archivo JSON.');
+          }
+
+        } else {
+          alert("Por favor, sube un archivo JSON primero.");
+        }
+      });
+    </script>
   </section>
 
-  <script>
-    // Referencias a elementos del DOM
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
+  <section>
+    <h2>Pruebas OCR</h2>
 
-    // Eventos de arrastre y soltado para el área de dropzone
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
+    <!-- Sección para subir imagen -->
+    <div class="upload-container">
+      Arrastra y suelta una imagen aquí o haz clic para seleccionarla
+      <input type="file" id="ocrImage" style="display: none;" accept="image/*">
+    </div>
+    <br>
 
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('dragover');
-    });
+    <!-- Visualizar la imagen subida -->
+    <img id="uploadedImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen subida">
 
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      const files = e.dataTransfer.files;
-      fileInput.files = files; // Asigna los archivos arrastrados al input
-    });
+    <!-- Botón para iniciar OCR -->
+    <button id="startOcr">Capturar texto con OCR</button>
 
-    // Evento de clic para abrir el selector de archivos
-    dropZone.addEventListener('click', () => {
-      fileInput.click();
-    });
-  </script>
+    <!-- Visualizar el texto obtenido -->
+    <pre id="ocrResult"
+      style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; border-radius: 5px; display: none;"></pre>
+
+    <script>
+      document.querySelectorAll(".upload-container")[1].addEventListener("click", function () {
+        document.getElementById("ocrImage").click();
+      });
+
+      document.getElementById("ocrImage").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById("uploadedImage").src = e.target.result;
+            document.getElementById("uploadedImage").style.display = "block";
+          }
+          reader.readAsDataURL(file);
+        }
+      });
+
+      document.getElementById("startOcr").addEventListener("click", async function () {
+        const file = document.getElementById("ocrImage").files[0];
+        if (file) {
+          try {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch('/ocr', {
+              method: 'POST',
+              body: formData
+            });
+
+            if (!response.ok) {
+              alert('Hubo un error al procesar la imagen. Intenta nuevamente.');
+              return;
+            }
+
+            const textResult = await response.text();
+            document.getElementById("ocrResult").style.display = "block";
+            document.getElementById("ocrResult").textContent = textResult;
+
+          } catch (error) {
+            alert('Error al procesar la imagen.');
+          }
+
+        } else {
+          alert("Por favor, sube una imagen primero.");
+        }
+      });
+    </script>
+  </section>
 
 </body>
 

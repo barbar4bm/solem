@@ -97,12 +97,17 @@ def openCV_b64(imagenOpenCV):
 
     return imagen_base64
 
-def imagen_a_matriz(imagen_file):
-    # Leer la imagen desde el objeto de archivo
-    imagen_bytes = np.asarray(bytearray(imagen_file.read()), dtype=np.uint8)
+def imagen_a_matriz(imagen_data):
+    # Si los datos ya son en formato bytes
+    if isinstance(imagen_data, bytes):
+        imagen_bytes = np.frombuffer(imagen_data, dtype=np.uint8)
+    else:
+        imagen_bytes = np.asarray(bytearray(imagen_data), dtype=np.uint8)
+    
     imagen = cv2.imdecode(imagen_bytes, cv2.IMREAD_COLOR)
     return imagen
-   
+
+
 
 def leerQR(image):
 

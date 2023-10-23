@@ -3,7 +3,8 @@ from routes import pruebas
 from services import tools as tool
 
 app = Flask(__name__)
-app.register_blueprint(pruebas.pruebas) 
+
+app.register_blueprint(pruebas.pruebas)
 
 @app.route('/')
 def index():
