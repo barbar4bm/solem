@@ -8,8 +8,8 @@ import pytesseract
 import time
 
 inicio = time.time()
-image= cv2.imread('app/image/a2.jpg')#imagen frontal
-image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
+image= cv2.imread('app/image/a1.jpg')#imagen frontal
+image2= cv2.imread('app/image/16.2.jpeg')#imagen reverso
 
 #si se usa windows , esto es necesario
 #pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
@@ -74,13 +74,13 @@ documento_mrz=rut_otsu2[355:400,170:400]
 nacionalidad_mrz = rut_otsu2[400:435,420:495]
 fecha_anio_venci = rut_otsu2[395:431,244:297]#check
 fecha_mes_venci = rut_otsu2[395:431,295:345]#check
-fecha_dia_venci = rut_otsu2[396:433,347:398]#
-
+#fecha_dia_venci_seg = rut_otsu2[396:436,360:392]#lee el 5 en a1
+#fecha_dia_venci_pri = rut_otsu2[395:437,347:370] # no lee el 1 
+fecha_dia_venci = rut_otsu2[394:435,347:394] #no lee día
 plt.imshow(rut_otsu2,cmap='gray')
 show()
 plt.imshow(fecha_dia_venci,cmap='gray')
 show()
-
 print(OCR(fecha_dia_venci))
 
 
@@ -161,8 +161,6 @@ data_nacionalidad_back = limpiar_datos(OCR(nacionalidad_mrz))
 #umbral de aprobacion
 porcentaje_de_aprobar= 0.8 
  
-
-
 #Verificaciones
 nombres_comparacion = comparar_datos(data_nombre,data_nombre_back,porcentaje_de_aprobar)
 print("Verificación de nombres: ",nombres_comparacion)
@@ -172,6 +170,8 @@ rut_comparacion = comparar_datos(data_rut_grande, data_rut_back,porcentaje_de_ap
 print("Verificación de rut: ",rut_comparacion)
 #nacionalidad_comparacion = comparar_datos(nacionalidad_diccionario,data_nacionalidad_back,porcentaje_de_aprobar)
 #print(nacionalidad_comparacion)
+#fecha_dia_comparacion = comparar_datos() 
+#print("verificacion de fecha: ")
 numero_docu_comparacion = comparar_datos(data_numero_doc,data_numero_doc_back,porcentaje_de_aprobar)
 print("Verificación de número de documento: ", numero_docu_comparacion)
 fin = time.time()
