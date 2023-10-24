@@ -170,7 +170,10 @@ def numpy_to_png(imagen_np):
     return png_bytes
 
 def recorte(rut_bin, rut_bin2):
+    
     # 500x800
+    rut_bin=escalar_imagen(rut_bin,500,800)
+    rut_bin2=escalar_imagen(rut_bin2,500,800)
     #anverso
     nombres = rut_bin[171:211 , 291:806]
     apellidos = rut_bin[88:152 , 292:520]
@@ -212,19 +215,25 @@ def recorte(rut_bin, rut_bin2):
 
 
 def escalar_imagen(img, altura, anchura):
-    """
-    Escala una imagen a un tamaño especificado.
-    
-    Parámetros:
-    - img (numpy.ndarray): Imagen a escalar.
-    - altura (int): Altura deseada de la imagen escalada.
-    - anchura (int): Anchura deseada de la imagen escalada.
-    
-    Retorna:
-    - numpy.ndarray: Imagen escalada.
-    """
     
     if not isinstance(img, np.ndarray):
         raise ValueError("El parámetro 'img' debe ser un objeto numpy.ndarray.")
     
     return cv2.resize(img, (anchura, altura))
+
+def guardar_recortes(diccionario):
+    """
+    Toma un diccionario donde cada clave-valor corresponde a un nombre y una imagen, respectivamente.
+    Guarda cada imagen en una carpeta llamada "recortes" con un nombre correspondiente a su clave en formato PNG.
+    
+    Parámetros:
+    - diccionario (dict): Diccionario de imágenes.
+    """
+    
+    # Crear la carpeta "recortes" si no existe
+    if not os.path.exists('recortes'):
+        os.makedirs('recortes')
+        
+    for clave, imagen in diccionario.items():
+        ruta = os.path.join('recortes', f'{clave}.png')
+        cv2.imwrite(ruta, imagen)
