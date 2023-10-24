@@ -172,8 +172,8 @@ def numpy_to_png(imagen_np):
 def recorte(rut_bin, rut_bin2):
     
     # 500x800
-    rut_bin=escalar_imagen(rut_bin,500,800)
-    rut_bin2=escalar_imagen(rut_bin2,500,800)
+    rut_bin=escalar_imagen(rut_bin,530,840)
+    rut_bin2=escalar_imagen(rut_bin2,530,840)
     #anverso
     nombres = rut_bin[171:211 , 291:806]
     apellidos = rut_bin[88:152 , 292:520]
