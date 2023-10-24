@@ -38,7 +38,10 @@ def upload_json():
     anverso=tools.b64_openCV(data['anverso'])
     reverso=tools.b64_openCV(data['reverso'])
     diccionario_img=tools.recorte(anverso,reverso)
-    diccionario_ocr=Ocr.obtenerTexto(diccionario_img)
+    clave_omitida="qr"
+
+    diccionario_ocr =Ocr.obtenerTexto(diccionario_img,clave_omitida)
+    
     return  jsonify(diccionario_ocr)
 
 @pruebas.route('/ocr', methods=['POST'])

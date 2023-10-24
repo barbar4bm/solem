@@ -1,16 +1,28 @@
 import cv2 as cv2
 import pytesseract
 import numpy as np
+from . import tools as tool
 
-def obtenerTexto(dicc_imagenes):
+def obtenerTexto(dicc_imagenes, *claves_omitidas):
     if not isinstance(dicc_imagenes, dict):
         raise TypeError("El argumento 'dicc_imagenes' debe ser un diccionario con nombres de atributos y imágenes.")
+
+    # Convertir claves_omitidas en un conjunto para hacer la comprobación más eficiente
+    claves_omitidas = set(claves_omitidas)
 
     # Diccionario para almacenar los resultados
     resultado = {}
 
     # Recorre las imágenes en el diccionario y extrae el texto
     for nombre, imagen in dicc_imagenes.items():
+        # Si la clave actual está en claves_omitidas, añadimos la imagen al resultado y saltamos esta iteración
+        if nombre in claves_omitidas:
+            if nombre=="qr":
+                resultado[nombre]=tool.leerQR(imagen)
+                print(resultado[nombre])
+                continue
+                #se agregua elif para otros casos...
+
         # Verificar que la imagen sea un ndarray de numpy
         if not isinstance(imagen, np.ndarray):
             raise TypeError(f"La imagen asociada con '{nombre}' no es un ndarray válido.")
