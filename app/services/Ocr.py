@@ -5,7 +5,7 @@ import numpy as np
 def obtenerTexto(imagenes, nombres=None):
     # Si "imagenes" es solo una imagen (verificando si es un ndarray de numpy y no una lista)
     if isinstance(imagenes, np.ndarray):
-        return pytesseract.image_to_string(imagenes, lang="spa").strip()
+        return pytesseract.image_to_string(imagenes).strip()
     
     # Si "imagenes" es una lista de imágenes
     elif isinstance(imagenes, list) and all([isinstance(img, np.ndarray) for img in imagenes]):
