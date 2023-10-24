@@ -8,8 +8,9 @@ import pytesseract
 
 image= cv2.imread('app/image/a2.jpg')#imagen frontal
 image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
+
 #si se usa windows , esto es necesario
-pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def OCR(imagen):
     texto = pytesseract.image_to_string(imagen)

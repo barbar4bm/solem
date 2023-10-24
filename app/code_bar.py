@@ -5,19 +5,20 @@ from PIL import Image
 from pylab import * 
 import numpy as np
 import pytesseract
+import time
 
+inicio = time.time()
 image= cv2.imread('app/image/a2.jpg')#imagen frontal
 image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
+
 #si se usa windows , esto es necesario
-pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def OCR(imagen):
     texto = pytesseract.image_to_string(imagen)
     return str(texto)
 
 title('Cedula de Indentidad')
-
-
     
 #filtros iamgen delantera
 # Cambio de espacio de color de BGR a RGB
@@ -33,7 +34,6 @@ ret,rut_bin = cv2.threshold(rut_eq,100,255,cv2.THRESH_BINARY)
 # Binarización otsu
 ret2,rut_otsu = cv2.threshold(rut_eq,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
 
-
 #filtro foto back
 # Cambio de espacio de color de BGR a RGB
 img_rgb2 = cv2.cvtColor(image2, cv2.COLOR_BGR2RGB)
@@ -47,7 +47,6 @@ equ2 = cv2.equalizeHist(rut_eq2)
 ret,rut_bin2 = cv2.threshold(rut_eq2,100,255,cv2.THRESH_BINARY)
 # Binarización otsu
 ret2,rut_otsu2 = cv2.threshold(rut_eq2,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
-
 
 #lectura delantera
 nombre_texto = rut_bin[171:211 , 291:806] #nombre check
@@ -97,9 +96,9 @@ data_nombre = limpiar_datos(OCR(nombre_texto))
 data_apellido = limpiar_datos(OCR(apellido_texto))
 data_fecha_nacimiento = limpiar_datos(OCR(fecha_nacimiento))
 data_rut_grande = limpiar_datos(OCR(rut_grande))
-data_nacionalidad = OCR(nacionalidad).split() #limpiar?
-data_fecha_emision = OCR(fecha_emision).split()  #limpiar?
-data_fechaV_texto = OCR(fechaV_texto).split() #limpiar?
+data_nacionalidad = OCR(nacionalidad).split() #limpiar
+data_fecha_emision = OCR(fecha_emision).split()  #limpiar 
+data_fechaV_texto = OCR(fechaV_texto).split() #limpiar
 
 # data String Back
 data_nombre_back = limpiar_datos(OCR(nombre_mrz))
@@ -116,3 +115,5 @@ apellido_comparacion = comparar_datos(data_apellido,data_apellido_back,porcentaj
 print(apellido_comparacion)
 rut_comparacion = comparar_datos(data_rut_grande, data_rut_back,porcentaje_de_aprobar)
 print(rut_comparacion)
+fin = time.time()
+print("El tiempo de ejecución final fue: ", fin-inicio)
