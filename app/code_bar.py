@@ -58,6 +58,9 @@ fecha_nacimiento = rut_bin[276:311 , 250:480] #fecha nacimiento check
 doc_texto = rut_bin[275:310, 487:663] #numero documento check
 fecha_emision = rut_bin[330:369 , 292:463] #fecha emision check
 fechaV_texto = rut_bin[335:367 , 477:667] #fecha vencimiento check 
+fecha_anio_ven_del = rut_bin[335:367 , 477:667]
+#plt.imshow(rut_bin,cmap='gray')
+#show()
 #rut_chico=rut_otsu[282:308,686:808] #rut en foto pequeña falta mejorar su visibilidad
 
 #lectura trasera
@@ -67,7 +70,18 @@ mrz = rut_otsu2[354:492, 42:800]
 nombre_mrz = rut_otsu2[440:482, 418:800]
 apellido_mrz = rut_otsu2[440:478, 44:375]
 rut_mrz = rut_otsu2[395:440,495:747]
-documento_mrz=rut_otsu2[88:127,4:330]
+documento_mrz=rut_otsu2[355:400,170:400]
+nacionalidad_mrz = rut_otsu2[400:435,420:495]
+fecha_anio_venci = rut_otsu2[395:431,244:297]#check
+fecha_mes_venci = rut_otsu2[395:431,295:345]#check
+fecha_dia_venci = rut_otsu2[396:433,347:398]#
+
+plt.imshow(rut_otsu2,cmap='gray')
+show()
+plt.imshow(fecha_dia_venci,cmap='gray')
+show()
+
+print(OCR(fecha_dia_venci))
 
 
 def limpiar_datos(ocr_result):
@@ -90,30 +104,75 @@ def comparar_datos(datos_frontales, datos_traseros, umbral):
         return True
     else:
         return False
+
+def obtener_nombre_pais_diccionario(abreviatura, paises_abreviados):
+    if abreviatura in paises_abreviados:
+        return abreviatura
+    else:
+        return None
     
+paises_abreviados = {
+    "ALEMANA" : "AL",
+    "CHILENA": "CHL",
+    "BOL": "BOL",
+    "PERUANA": "PE",
+    "ARGENTINA" : "AR",
+    "COLOMBIANA" : "COL",
+    "VENEZOLANA": "VEN",
+    "HAITIANA": "HAI",
+
+     #Agrega más pares clave-valor según sea necesario
+}
+meses_abreviados = {
+    "ENER": "01",
+    "FEBR": "02",
+    "MAR": "03",
+    "ABR": "04",
+    "MAYO": "05",
+    "JUN": "06",
+    "JUL": "07",
+    "AGO": "08",
+    "SEPT": "09",
+    "OCT": "10",
+    "NOV": "11",
+    "DIC": "12"
+}
+
  #data string front
 data_nombre = limpiar_datos(OCR(nombre_texto))
 data_apellido = limpiar_datos(OCR(apellido_texto))
 data_fecha_nacimiento = limpiar_datos(OCR(fecha_nacimiento))
 data_rut_grande = limpiar_datos(OCR(rut_grande))
-data_nacionalidad = OCR(nacionalidad).split() #limpiar
-data_fecha_emision = OCR(fecha_emision).split()  #limpiar 
-data_fechaV_texto = OCR(fechaV_texto).split() #limpiar
+data_nacionalidad = limpiar_datos(OCR(nacionalidad))
+data_fecha_emision = limpiar_datos(OCR(fecha_emision))  
+data_fechaV_texto = limpiar_datos(OCR(fechaV_texto)) 
+data_numero_doc = limpiar_datos(OCR(doc_texto))
 
+#nacionalidad en diccionario? 
+#nacionalidad_diccionario = obtener_nombre_pais_diccionario(nacionalidad,paises_abreviados)
+#print(nacionalidad_diccionario)
 # data String Back
 data_nombre_back = limpiar_datos(OCR(nombre_mrz))
 data_apellido_back = limpiar_datos(OCR(apellido_mrz))
 data_rut_back = limpiar_datos(OCR(rut_mrz))
+data_numero_doc_back = limpiar_datos(OCR(documento_mrz))
+data_nacionalidad_back = limpiar_datos(OCR(nacionalidad_mrz))
 
 #umbral de aprobacion
-porcentaje_de_aprobar= 0.8  
+porcentaje_de_aprobar= 0.8 
+ 
 
-#pruebas
+
+#Verificaciones
 nombres_comparacion = comparar_datos(data_nombre,data_nombre_back,porcentaje_de_aprobar)
-print(nombres_comparacion)
+print("Verificación de nombres: ",nombres_comparacion)
 apellido_comparacion = comparar_datos(data_apellido,data_apellido_back,porcentaje_de_aprobar)
-print(apellido_comparacion)
+print("Verificación de apellidos: ",apellido_comparacion)
 rut_comparacion = comparar_datos(data_rut_grande, data_rut_back,porcentaje_de_aprobar)
-print(rut_comparacion)
+print("Verificación de rut: ",rut_comparacion)
+#nacionalidad_comparacion = comparar_datos(nacionalidad_diccionario,data_nacionalidad_back,porcentaje_de_aprobar)
+#print(nacionalidad_comparacion)
+numero_docu_comparacion = comparar_datos(data_numero_doc,data_numero_doc_back,porcentaje_de_aprobar)
+print("Verificación de número de documento: ", numero_docu_comparacion)
 fin = time.time()
 print("El tiempo de ejecución final fue: ", fin-inicio)
