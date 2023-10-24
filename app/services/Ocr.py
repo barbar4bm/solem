@@ -28,6 +28,10 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
             raise TypeError(f"La imagen asociada con '{nombre}' no es un ndarray válido.")
         
         texto = pytesseract.image_to_string(imagen, lang="spa").strip()
+        
+        # Eliminar saltos de línea
+        texto = texto.replace("\n", "")
+
         resultado[nombre] = texto
 
     return resultado

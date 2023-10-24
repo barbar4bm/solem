@@ -41,6 +41,7 @@ def upload_json():
     clave_omitida="qr"
 
     diccionario_ocr =Ocr.obtenerTexto(diccionario_img,clave_omitida)
+    print(diccionario_ocr)
     
     return  jsonify(diccionario_ocr)
 
