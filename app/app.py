@@ -1,8 +1,10 @@
 from flask import Flask, request,Response, jsonify,render_template
-from routes import identity_card
+from routes import pruebas
 from services import tools as tool
 
 app = Flask(__name__)
+
+app.register_blueprint(pruebas.pruebas)
 
 @app.route('/')
 def index():
@@ -61,8 +63,11 @@ def enviarContenidoQr():
     if not file or not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
         return jsonify({'error': 'Invalid image format'}), 400
 
+    # Leer el archivo en bytes
+    image_data = file.read()
+
     # Convertir la imagen en una matriz
-    imagenp = tool.imagen_a_matriz(file)  # Asumiendo que esta función acepta un objeto de archivo
+    imagenp = tool.imagen_a_matriz(image_data)
 
     # Leer QR desde la matriz
     textoleido = tool.leerQR(imagenp)

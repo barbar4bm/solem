@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subir JSON y OCR</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    pre {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .upload-container {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Subir JSON Con Estructura</h1>
+
+  <p>Estructura del JSON:</p>
+  <pre>
+{
+    "anverso": "codigo_base_64_de_imagen...anverso",
+    "reverso": "codigo_base_64_de_imagen...reverso"
+}
+</pre>
+
+  <section>
+    <h2>Subir archivo JSON:</h2>
+
+    <div class="upload-container">
+      Arrastra y suelta un archivo JSON aquí o haz clic para seleccionarlo
+      <input type="file" id="jsonFile" style="display: none;" accept=".json">
+    </div>
+
+    <br><br>
+    <button id="submitJson">Enviar al servidor</button>
+
+    <h3>Previsualización del Anverso</h3>
+    <img id="anversoImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen del Anverso">
+
+    <h3>Previsualización del Reverso</h3>
+    <img id="reversoImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen del Reverso">
+
+    <!-- Elemento para mostrar la respuesta JSON del servidor -->
+    <pre id="serverResponse"
+      style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; border-radius: 5px; display: none;"></pre>
+
+    <script>
+      document.querySelector(".upload-container").addEventListener("click", function () {
+        document.getElementById("jsonFile").click();
+      });
+
+      document.getElementById("jsonFile").addEventListener("change", function () {
+        const file = document.getElementById("jsonFile").files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const jsonData = JSON.parse(e.target.result);
+            if (jsonData.anverso) {
+              document.getElementById("anversoImage").src = 'data:image/png;base64,' + jsonData.anverso;
+              document.getElementById("anversoImage").style.display = "block";
+            }
+            if (jsonData.reverso) {
+              document.getElementById("reversoImage").src = 'data:image/png;base64,' + jsonData.reverso;
+              document.getElementById("reversoImage").style.display = "block";
+            }
+          }
+          reader.readAsText(file);
+        }
+      });
+
+      document.getElementById("submitJson").addEventListener("click", async function () {
+        const file = document.getElementById("jsonFile").files[0];
+        if (file) {
+          const formData = new FormData();
+          formData.append('archivo_json', file);
+
+          try {
+            const response = await fetch('/upload', {
+              method: 'POST',
+              body: formData
+            });
+
+            if (!response.ok) {
+              alert('Error al enviar el archivo JSON. Intenta nuevamente.');
+              return;
+            }
+
+            const jsonResponse = await response.json();
+            document.getElementById("serverResponse").style.display = "block";
+            document.getElementById("serverResponse").textContent = JSON.stringify(jsonResponse, null, 2);
+
+            alert('¡Archivo JSON enviado con éxito!');
+          } catch (error) {
+            alert('Error al enviar el archivo JSON.');
+          }
+
+        } else {
+          alert("Por favor, sube un archivo JSON primero.");
+        }
+      });
+    </script>
+  </section>
+
+  <section>
+    <h2>Pruebas OCR</h2>
+
+    <!-- Sección para subir imagen -->
+    <div class="upload-container">
+      Arrastra y suelta una imagen aquí o haz clic para seleccionarla
+      <input type="file" id="ocrImage" style="display: none;" accept="image/*">
+    </div>
+    <br>
+
+    <!-- Visualizar la imagen subida -->
+    <img id="uploadedImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen subida">
+
+    <!-- Botón para iniciar OCR -->
+    <button id="startOcr">Capturar texto con OCR</button>
+
+    <!-- Visualizar el texto obtenido -->
+    <pre id="ocrResult"
+      style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; border-radius: 5px; display: none;"></pre>
+
+    <script>
+      document.querySelectorAll(".upload-container")[1].addEventListener("click", function () {
+        document.getElementById("ocrImage").click();
+      });
+
+      document.getElementById("ocrImage").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById("uploadedImage").src = e.target.result;
+            document.getElementById("uploadedImage").style.display = "block";
+          }
+          reader.readAsDataURL(file);
+        }
+      });
+
+      document.getElementById("startOcr").addEventListener("click", async function () {
+        const file = document.getElementById("ocrImage").files[0];
+        if (file) {
+          try {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch('/ocr', {
+              method: 'POST',
+              body: formData
+            });
+
+            if (!response.ok) {
+              alert('Hubo un error al procesar la imagen. Intenta nuevamente.');
+              return;
+            }
+
+            const result = await response.text();
+            document.getElementById("ocrResult").style.display = "block";
+            document.getElementById("ocrResult").textContent = result;
+
+          } catch (error) {
+            alert('Hubo un error al procesar la imagen.');
+          }
+        } else {
+          alert("Por favor, sube una imagen primero.");
+        }
+      });
+    </script>
+  </section>
+
+</body>
+
+</html>

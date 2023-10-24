@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subir Archivo e Imagen</title>
     <style>
         /* Estilo básico para el contenedor de arrastre */
-        .drag-area, .image-preview {
+        .drag-area,
+        .image-preview {
             width: 300px;
             height: 150px;
             border: 2px dashed #ccc;
@@ -25,89 +27,91 @@
         }
     </style>
 </head>
+
 <body>
 
-<h1>Imagen b64 a .png</h1>
+    <h1>Imagen b64 a .png</h1>
 
-<!-- Formulario para subir el archivo -->
-<form id="myForm" enctype="multipart/form-data">
-    <input type="file" name="file" id="file" accept=".json, .txt" style="display: none;">
-    <div class="drag-area" onclick="document.getElementById('file').click();">
-        Haz clic o arrastra el archivo aquí
-    </div>
-    <div class="image-preview">
-        <img id="imagePreview" src="" alt="Vista previa de la imagen">
-    </div>
-    <br>
-    <button type="button" onclick="submitForm();">Enviar</button>
-</form>
+    <!-- Formulario para subir el archivo -->
+    <form id="myForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="file" accept=".json, .txt" style="display: none;">
+        <div class="drag-area" onclick="document.getElementById('file').click();">
+            Haz clic o arrastra el archivo aquí
+        </div>
+        <div class="image-preview">
+            <img id="imagePreview" src="" alt="Vista previa de la imagen">
+        </div>
+        <br>
+        <button type="button" onclick="submitForm();">Enviar</button>
+    </form>
 
-<h1>Leer QR</h1>
+    <h1>Leer QR</h1>
 
-<!-- Formulario para subir la imagen -->
-<form id="qrForm" enctype="multipart/form-data">
-    <input type="file" name="image" id="image" accept="image/*" style="display: none;">
-    <div class="drag-area" onclick="document.getElementById('image').click();">
-        Haz clic o arrastra la imagen aquí
-    </div>
-    <div class="image-preview">
-        <img id="qrPreview" src="" alt="Vista previa del QR">
-    </div>
-    <br>
-    <button type="button" onclick="submitQRForm();">Enviar</button>
-    <div id="qrText" style="margin-top: 10px;"></div>
-</form>
+    <!-- Formulario para subir la imagen -->
+    <form id="qrForm" enctype="multipart/form-data">
+        <input type="file" name="image" id="image" accept="image/*" style="display: none;">
+        <div class="drag-area" onclick="document.getElementById('image').click();">
+            Haz clic o arrastra la imagen aquí
+        </div>
+        <div class="image-preview">
+            <img id="qrPreview" src="" alt="Vista previa del QR">
+        </div>
+        <br>
+        <button type="button" onclick="submitQRForm();">Enviar</button>
+        <div id="qrText" style="margin-top: 10px;"></div>
+    </form>
 
-<script>
-    // Manipulación del DOM para mostrar el nombre del archivo o imagen cuando se selecciona
-    document.getElementById('file').onchange = function() {
-        let fileName = this.value.split('\\').pop();
-        this.nextElementSibling.innerText = fileName;
-    };
+    <script>
+        // Manipulación del DOM para mostrar el nombre del archivo o imagen cuando se selecciona
+        document.getElementById('file').onchange = function () {
+            let fileName = this.value.split('\\').pop();
+            this.nextElementSibling.innerText = fileName;
+        };
 
-    document.getElementById('image').onchange = function() {
-        let file = this.files[0];
-        if (file) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('qrPreview').src = e.target.result;
+        document.getElementById('image').onchange = function () {
+            let file = this.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('qrPreview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
+        };
+
+        function submitForm() {
+            var formData = new FormData(document.getElementById('myForm'));
+            fetch('/subirImagen', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.blob())
+                .then(imageBlob => {
+                    var imageUrl = URL.createObjectURL(imageBlob);
+                    document.getElementById('imagePreview').src = imageUrl;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-    };
 
-    function submitForm() {
-        var formData = new FormData(document.getElementById('myForm'));
-        fetch('/subirImagen', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.blob())
-        .then(imageBlob => {
-            var imageUrl = URL.createObjectURL(imageBlob);
-            document.getElementById('imagePreview').src = imageUrl;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
-
-    function submitQRForm() {
-    var formData = new FormData(document.getElementById('qrForm'));
-    fetch('/leerqr', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())  // Asumiendo que el servidor envía JSON como respuesta
-    .then(data => {
-        var qrText = data.contenido_qr; // Obtener el texto del JSON
-        document.getElementById('qrText').innerText = qrText;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-</script>
+        function submitQRForm() {
+            var formData = new FormData(document.getElementById('qrForm'));
+            fetch('/leerqr', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())  // Asumiendo que el servidor envía JSON como respuesta
+                .then(data => {
+                    var qrText = data.contenido_qr; // Obtener el texto del JSON
+                    document.getElementById('qrText').innerText = qrText;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
 
 </body>
+
 </html>
