@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subir Archivo e Imagen</title>
     <style>
-        /* Estilo básico para el contenedor de arrastre */
         .drag-area,
         .image-preview {
             width: 300px;
@@ -61,8 +60,30 @@
         <div id="qrText" style="margin-top: 10px;"></div>
     </form>
 
+    <h1>Subir Imágenes Anverso y Reverso</h1>
+
+    <!-- Formulario para subir las imágenes anverso y reverso -->
+    <form id="imagesForm" enctype="multipart/form-data">
+        <input type="file" name="anverso" id="anverso" accept="image/*" style="display: none;">
+        <div class="drag-area" onclick="document.getElementById('anverso').click();">
+            Haz clic o arrastra la imagen de anverso aquí
+        </div>
+        <div class="image-preview">
+            <img id="anversoPreview" src="" alt="Vista previa del anverso">
+        </div>
+
+        <input type="file" name="reverso" id="reverso" accept="image/*" style="display: none;">
+        <div class="drag-area" onclick="document.getElementById('reverso').click();">
+            Haz clic o arrastra la imagen de reverso aquí
+        </div>
+        <div class="image-preview">
+            <img id="reversoPreview" src="" alt="Vista previa del reverso">
+        </div>
+        <br>
+        <button type="button" onclick="generateJSON();">Obtener JSON</button>
+    </form>
+
     <script>
-        // Manipulación del DOM para mostrar el nombre del archivo o imagen cuando se selecciona
         document.getElementById('file').onchange = function () {
             let fileName = this.value.split('\\').pop();
             this.nextElementSibling.innerText = fileName;
@@ -101,14 +122,67 @@
                 method: 'POST',
                 body: formData
             })
-                .then(response => response.json())  // Asumiendo que el servidor envía JSON como respuesta
+                .then(response => response.json())
                 .then(data => {
-                    var qrText = data.contenido_qr; // Obtener el texto del JSON
+                    var qrText = data.contenido_qr;
                     document.getElementById('qrText').innerText = qrText;
                 })
                 .catch(error => {
                     console.error('Error:', error);
                 });
+        }
+
+        document.getElementById('anverso').onchange = function () {
+            displayImagePreview(this, 'anversoPreview');
+        };
+
+        document.getElementById('reverso').onchange = function () {
+            displayImagePreview(this, 'reversoPreview');
+        };
+
+        function displayImagePreview(inputElement, previewElementId) {
+            let file = inputElement.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(previewElementId).src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function generateJSON() {
+            let anversoFile = document.getElementById('anverso').files[0];
+            let reversoFile = document.getElementById('reverso').files[0];
+
+            if (!anversoFile || !reversoFile) {
+                alert("Por favor, sube ambas imágenes (anverso y reverso) antes de generar el JSON.");
+                return;
+            }
+
+            let anversoData, reversoData;
+            let reader1 = new FileReader();
+            reader1.onload = function (e) {
+                anversoData = e.target.result.split(',')[1];
+
+                let reader2 = new FileReader();
+                reader2.onload = function (e) {
+                    reversoData = e.target.result.split(',')[1];
+                    let json = {
+                        "anverso": anversoData,
+                        "reverso": reversoData
+                    };
+
+                    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json));
+                    let downloadAnchorNode = document.createElement('a');
+                    downloadAnchorNode.setAttribute("href", dataStr);
+                    downloadAnchorNode.setAttribute("download", "imagenes.json");
+                    downloadAnchorNode.click();
+                    downloadAnchorNode.remove();
+                }
+                reader2.readAsDataURL(reversoFile);
+            }
+            reader1.readAsDataURL(anversoFile);
         }
     </script>
 
