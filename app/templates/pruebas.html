@@ -51,9 +51,38 @@
     <br><br>
     <button id="submitJson">Enviar al servidor</button>
 
+    <h3>Previsualización del Anverso</h3>
+    <img id="anversoImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen del Anverso">
+
+    <h3>Previsualización del Reverso</h3>
+    <img id="reversoImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen del Reverso">
+
+    <!-- Elemento para mostrar la respuesta JSON del servidor -->
+    <pre id="serverResponse"
+      style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; border-radius: 5px; display: none;"></pre>
+
     <script>
       document.querySelector(".upload-container").addEventListener("click", function () {
         document.getElementById("jsonFile").click();
+      });
+
+      document.getElementById("jsonFile").addEventListener("change", function () {
+        const file = document.getElementById("jsonFile").files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const jsonData = JSON.parse(e.target.result);
+            if (jsonData.anverso) {
+              document.getElementById("anversoImage").src = 'data:image/png;base64,' + jsonData.anverso;
+              document.getElementById("anversoImage").style.display = "block";
+            }
+            if (jsonData.reverso) {
+              document.getElementById("reversoImage").src = 'data:image/png;base64,' + jsonData.reverso;
+              document.getElementById("reversoImage").style.display = "block";
+            }
+          }
+          reader.readAsText(file);
+        }
       });
 
       document.getElementById("submitJson").addEventListener("click", async function () {
@@ -63,7 +92,7 @@
           formData.append('archivo_json', file);
 
           try {
-            const response = await fetch('/ocr', {
+            const response = await fetch('/upload', {
               method: 'POST',
               body: formData
             });
@@ -72,6 +101,10 @@
               alert('Error al enviar el archivo JSON. Intenta nuevamente.');
               return;
             }
+
+            const jsonResponse = await response.json();
+            document.getElementById("serverResponse").style.display = "block";
+            document.getElementById("serverResponse").textContent = JSON.stringify(jsonResponse, null, 2);
 
             alert('¡Archivo JSON enviado con éxito!');
           } catch (error) {
@@ -139,14 +172,13 @@
               return;
             }
 
-            const textResult = await response.text();
+            const result = await response.text();
             document.getElementById("ocrResult").style.display = "block";
-            document.getElementById("ocrResult").textContent = textResult;
+            document.getElementById("ocrResult").textContent = result;
 
           } catch (error) {
-            alert('Error al procesar la imagen.');
+            alert('Hubo un error al procesar la imagen.');
           }
-
         } else {
           alert("Por favor, sube una imagen primero.");
         }

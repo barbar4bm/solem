@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify,json
 from services import Ocr,tools
 
 pruebas = Blueprint('pruebas', __name__)
@@ -25,8 +25,21 @@ def upload_json():
     # Leer el archivo JSON
     json_content = file.read()
 
-    # Aquí puedes procesar el contenido del JSON como lo necesites.
-    return jsonify({'message': 'Archivo JSON recibido con éxito!'})
+    try:
+        data = json.loads(json_content)
+    except Exception as e:
+        return jsonify({'error': 'Error al analizar el archivo JSON'}), 400
+
+    # Verificar que las claves 'anverso' y 'reverso' estén presentes
+    if 'anverso' not in data or 'reverso' not in data:
+        return jsonify({'error': 'El archivo JSON no tiene la estructura esperada'}), 400
+
+    # Convertir las imágenes de base64 a objetos de imagen
+    anverso=tools.b64_openCV(data['anverso'])
+    reverso=tools.b64_openCV(data['reverso'])
+    diccionario_img=tools.recorte(anverso,reverso)
+    diccionario_ocr=Ocr.obtenerTexto(diccionario_img)
+    return  jsonify(diccionario_ocr)
 
 @pruebas.route('/ocr', methods=['POST'])
 def procesar_ocr():
@@ -42,8 +55,9 @@ def procesar_ocr():
 
     # Convertir la imagen recibida a un formato utilizable para el OCR
     image_data = image_file.read()
-    imgnp=tools.imagen_a_matriz(image_data)
-    textoCap=Ocr.obtenerTexto(imgnp)
+    image_data=tools.imagen_a_matriz(image_data)
+    dicionario={"imagen":image_data}
+    textoCap=Ocr.obtenerTexto(dicionario)
     # Procesar la imagen con la función OCR
     # Asumo que la función Ocr.process() es la que se encarga de esto, si no, reemplázalo por la función adecuada.
   

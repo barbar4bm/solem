@@ -64,10 +64,10 @@ def enviarContenidoQr():
         return jsonify({'error': 'Invalid image format'}), 400
 
     # Convertir la imagen en una matriz
-    imagenp = tool.imagen_a_matriz(file)  # Asumiendo que esta función acepta un objeto de archivo
+    imagenp = tool.b64_openCV(file)  # Asumiendo que esta función acepta un objeto de archivo
 
     # Leer QR desde la matriz
-    textoleido = tool.leerQR(imagenp)
+    textoleido = tool.b64_openCV(imagenp)
 
     # Retornar el contenido leído
     return jsonify({'contenido_qr': textoleido})

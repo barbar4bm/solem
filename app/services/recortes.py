@@ -1,4 +1,5 @@
 import tools as tool
+import Ocr
 import cv2 as cv2
 import os
 
@@ -26,4 +27,6 @@ reverso=cv2.imread(ruta+'8.2.jpg')
 
 
 recorte_dic=tool.recorte(anverso,reverso)
+dic_final=Ocr.obtenerTexto(recorte_dic)
+print(dic_final)
 tool.guardar_recortes(recorte_dic)
