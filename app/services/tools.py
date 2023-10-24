@@ -174,6 +174,7 @@ def recorte(rut_bin, rut_bin2):
     # 500x800
     rut_bin=escalar_imagen(rut_bin,530,840)
     rut_bin2=escalar_imagen(rut_bin2,530,840)
+
     #anverso
     nombres = rut_bin[171:211 , 291:806]
     apellidos = rut_bin[88:152 , 292:520]
@@ -193,6 +194,7 @@ def recorte(rut_bin, rut_bin2):
     apellido_mrz = rut_bin2[440:478, 44:375]
     rut_mrz = rut_bin2[395:440,495:747]
     documento_mrz = rut_bin2[354:398,170:400]
+    qr=recortar_qr(rut_bin2)
 
     return {
         "nombres": nombres,
@@ -210,7 +212,8 @@ def recorte(rut_bin, rut_bin2):
         "nombre_mrz": nombre_mrz,
         "apellido_mrz": apellido_mrz,
         "rut_mrz": rut_mrz,
-        "documento_mrz": documento_mrz
+        "documento_mrz": documento_mrz,
+        "qr":qr
     }
 
 
@@ -237,3 +240,14 @@ def guardar_recortes(diccionario):
     for clave, imagen in diccionario.items():
         ruta = os.path.join('recortes', f'{clave}.png')
         cv2.imwrite(ruta, imagen)
+
+def recortar_qr(imagen):
+    # Coordenadas del rectángulo donde se encuentra el QR
+    x = 23
+    y = 30
+    w = 170
+    h = 170
+
+    # Recortar la imagen
+    qr_recortado = imagen[y:y+h, x:x+w]
+    return qr_recortado    
