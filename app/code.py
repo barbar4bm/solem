@@ -6,13 +6,17 @@ from PIL import Image
 from pylab import * 
 import numpy as np
 import pytesseract
+from google.cloud import vision
+from google.cloud.vision_v1 import types
 import argparse
 import os
 import re
 
 #cedula derecha
 
-#image = array(Image.open('app/a6.jpg'))
+#image = array(Image.open('app/cedula.jpg'))
+pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+
 def OCR(imagen):
     texto = pytesseract.image_to_string(imagen)
     return str(texto)
@@ -80,9 +84,11 @@ documento_mrz=rut_bin2[354:398,170:400] #check
 #gray3 = cv2.medianBlur(mrz, 5)
 #dst2 = cv2.adaptiveThreshold(gray3, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
-plt.imshow(mrz,cmap='gray')
 
-show()
+
+#plt.imshow(rut_mrz,cmap='gray')
+
+#show()
 
 #edges = cv2.Canny(mrz, 100, 200)
 
@@ -110,24 +116,23 @@ data_fechaV_texto= OCR(fechaV_texto).split(' ')
 data_documento=OCR(doc_texto).replace('.', '').replace('\n', '').split(' ')
 
 #data String Back
-data_nombre_back=OCR(nombre_mrz).replace(" ", '').replace('<', '').split()
-data_apellido_back=OCR(apellido_mrz).replace(" ", '').replace('<', '').split()
+data_nombre_back= OCR(nombre_mrz).replace(" ", '').replace('<', '').split()
+data_apellido_back= OCR(apellido_mrz).replace(" ", '').replace('<', '').split()
 data_rut_mrz = OCR(rut_mrz).replace('<', '').split()
-data_documento_mrz=OCR(documento_mrz).replace(" ", '').replace('<', '').split()
+data_documento_mrz= OCR(documento_mrz).replace(" ", '').replace('<', '').split()
 
 porcentaje_de_aprobar= 0.8  #si la comparación de datos supera este umbral es porque es el nombre
 
-porcentaje_de_aprobar= 0.9  #si la comparación de datos supera este umbral es porque es el nombre
-
-#para comparar nombres
+#crear una sola funcion de calcular luego
+##calcular el porcentaje de parecerse el nombre
 calcular = 0
+contar = 0
 for i in range(len(data_nombre_back[0])):
     datos1=data_nombre[0]
     datos2=data_nombre_back[0]
     if(datos1[i]==datos2[i]):
-        contar=contar+1
-    calcular = contar/len(data_nombre)
-    
+        contar = contar + 1   
+    calcular = contar/len(data_nombre[0])
 
 if (calcular >=porcentaje_de_aprobar):
     print("El nombre se asemeja")

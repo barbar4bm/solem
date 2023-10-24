@@ -8,6 +8,8 @@ import pytesseract
 
 image= cv2.imread('app/image/a2.jpg')#imagen frontal
 image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
+#si se usa windows , esto es necesario
+pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def OCR(imagen):
     texto = pytesseract.image_to_string(imagen)
@@ -60,24 +62,17 @@ fechaV_texto = rut_bin[335:367 , 477:667] #fecha vencimiento check
 #rut_chico=rut_otsu[282:308,686:808] #rut en foto pequeña falta mejorar su visibilidad
 
 #lectura trasera
-nacio_en= rut_bin[211:247 , 182:600] 
-profesion = rut_bin[242:274,182:403]
-mrz = rut_otsu[354:492, 42:800]
-nombre_mrz= rut_otsu[440:482, 418:800]
-apellido_mrz=rut_otsu[440:482, 418:800]
-rut_mrz = rut_otsu[44:84,453:705]
-documento_mrz=rut_otsu[88:127,4:330]
+nacio_en = rut_bin2[211:247 , 182:600] 
+profesion = rut_bin2[242:274,182:403]
+mrz = rut_otsu2[354:492, 42:800]
+nombre_mrz = rut_otsu2[440:482, 418:800]
+apellido_mrz = rut_otsu2[440:478, 44:375]
+rut_mrz = rut_otsu2[395:440,495:747]
+documento_mrz=rut_otsu2[88:127,4:330]
 
-gray2 = cv2.medianBlur(mrz, 5)
-dst2 = cv2.adaptiveThreshold(gray2, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-
-plt.imshow(mrz,cmap='gray')
-show()
-
-print("MRZ: " , OCR(mrz))
 
 def limpiar_datos(ocr_result):
-    cleaned_data = ocr_result.replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').split()
+    cleaned_data = str(ocr_result).replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').split()
     return cleaned_data
 
 def comparar_datos(datos_frontales, datos_traseros, umbral):
@@ -85,14 +80,14 @@ def comparar_datos(datos_frontales, datos_traseros, umbral):
     porcentaje_de_aprobar = umbral
     calcular = 0
     contar = 0
-    for i in range(len(datos_frontales[0])):
+    for i in range(len(datos_traseros[0])):
         datos1 = datos_frontales[0]
         datos2 = datos_traseros[0]
-        if datos1[i] == datos2[i]:
+        if (datos1[i] == datos2[i]):
             contar = contar + 1
         calcular = contar / len(datos_frontales[0])
 
-    if calcular >= porcentaje_de_aprobar:
+    if (calcular >= porcentaje_de_aprobar):
         return True
     else:
         return False
@@ -111,8 +106,13 @@ data_nombre_back = limpiar_datos(OCR(nombre_mrz))
 data_apellido_back = limpiar_datos(OCR(apellido_mrz))
 data_rut_back = limpiar_datos(OCR(rut_mrz))
 
+#umbral de aprobacion
 porcentaje_de_aprobar= 0.8  
 
-nombres_comparacion = comparar_datos(data_nombre_back,data_nombre,porcentaje_de_aprobar)
-apellido_comparacion = comparar_datos(data_apellido_back,data_apellido,porcentaje_de_aprobar)
-rut_comparacion = comparar_datos(data_rut_back, data_rut_grande,porcentaje_de_aprobar)
+#pruebas
+nombres_comparacion = comparar_datos(data_nombre,data_nombre_back,porcentaje_de_aprobar)
+print(nombres_comparacion)
+apellido_comparacion = comparar_datos(data_apellido,data_apellido_back,porcentaje_de_aprobar)
+print(apellido_comparacion)
+rut_comparacion = comparar_datos(data_rut_grande, data_rut_back,porcentaje_de_aprobar)
+print(rut_comparacion)
