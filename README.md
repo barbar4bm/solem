@@ -1,11 +1,20 @@
 # CedulaOCR
 
-API que procesa imágenes de cédulas y extrae información mediante OCR. La API espera recibir imágenes en formato JSON con una estructura específica.
+API que procesa imágenes de cédulas y extrae información mediante OCR. La API espera recibir imágenes en formato JSON con una estructura específica. 
+La imagen debe venir codificada en cadena de caracteres en base 64
+
+
+```plaintext
+9j/4AAQSk...
+```
+### Estructura del JSON
 ```json
 {
-  "anverso": "codigo_imagen_base64_anverso",
+  "anverso": "9j/4AAQSk...",
   "reverso": "codigo_imagen_base64_reverso"
 }
+
+```
 
 ## Requisitos
 
@@ -16,8 +25,6 @@ API que procesa imágenes de cédulas y extrae información mediante OCR. La API
 ## Instalación y configuración
 
 ### 1. Clonar Repositorio
+### 2. Activar entorno virtual (venv "Virtual Environment") ejecutando "app.py"
+### 3. Visitar servidor http://127.0.0.1:5000 escoger la ruta de prueba http://127.0.0.1:5000/pruebas
 
-Usa el comando de git para clonar el repositorio en tu máquina local:
-
-```bash
-git clone URL_DEL_REPOSITORIO
