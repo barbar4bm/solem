@@ -57,10 +57,12 @@ nacionalidad = rut_bin[220:265, 291:425] #nacionalidad check
 fecha_nacimiento = rut_bin[276:311 , 250:480] #fecha nacimiento check
 doc_texto = rut_bin[275:310, 487:663] #numero documento check
 fecha_emision = rut_bin[330:369 , 292:463] #fecha emision check
-fechaV_texto = rut_bin[335:367 , 477:667] #fecha vencimiento check 
-fecha_anio_ven_del = rut_bin[335:367 , 477:667]
-#plt.imshow(rut_bin,cmap='gray')
+fechaV_texto = rut_bin[328:370 , 473:670] #fecha vencimiento check 
+
+#plt.imshow(fechaV_texto,cmap='gray')
 #show()
+
+
 #rut_chico=rut_otsu[282:308,686:808] #rut en foto pequeña falta mejorar su visibilidad
 
 #lectura trasera
@@ -71,17 +73,11 @@ nacionalidad_rut_mrz = rut_otsu2[343:395, 37:800]
 fechas_rut_mrz =rut_otsu2[390:436,37:800]
 nombre_full_mrz = rut_otsu2[432:482,37:800]
 
-plt.imshow(nacionalidad_rut_mrz,cmap='gray')
-show()
-plt.imshow(fechas_rut_mrz,cmap='gray')
-show()
-plt.imshow(nombre_full_mrz,cmap='gray')
-show()
 #plt.imshow(fecha_mes_venci,cmap='gray')
 #show()
 
 def limpiar_datos(ocr_result):
-    cleaned_data = str(ocr_result).replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').split()
+    cleaned_data = str(ocr_result).replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
     return cleaned_data
 
 def comparar_datos(datos_frontales, datos_traseros, umbral):
@@ -145,11 +141,45 @@ data_fechaV_texto = limpiar_datos(OCR(fechaV_texto))
 data_numero_doc = limpiar_datos(OCR(doc_texto))
 
 #union y/o separacion de datos 
-data_apellido_nombre = data_apellido + data_nombre
-data_final_nombre=''
-for x in range(len(data_apellido_nombre)):
-    data_final_nombre=data_apellido_nombre[0]+data_apellido_nombre[1]
-print(data_final_nombre)
+data_apellido_nombre = data_apellido[0] + data_nombre[0]
+
+def transformar_fecha_front(fecha): #check
+    fecha_formato=''
+    if (len(fecha) == 9):
+        dia = fecha[0:2]
+        mes = fecha[2:5]
+        #condicionar mes para pasarlo al numero
+        año = fecha[7:]
+        fecha_formato= año+mes+dia
+        return fecha_formato
+    elif (len(fecha) == 10):
+        dia = fecha[0:2]
+        mes = fecha[2:6]
+        #condicionar mes para pasarlo al numero
+        año = fecha[8:]
+        fecha_formato= año+mes+dia
+        return fecha_formato
+    else:
+        return fecha_formato #si la fecha no tiene esos tamaños 
+
+
+def obtener_fecha_vencimiento_mrz(data): #check
+    fecha_salida=''
+    if (len(data)==28):
+        fecha = data[8:14]
+        fecha_salida = fecha
+        return fecha_salida
+    else:
+        return fecha_salida
+
+def obtener_fecha_nacimiento_mrz(data): #check
+    fecha_salida=''
+    if (len(data)==28):
+        fecha = data[0:6]
+        fecha_salida = fecha
+        return fecha_salida
+    else:
+        return fecha_salida
 
 #nacionalidad en diccionario? 
 #nacionalidad_diccionario = obtener_nombre_pais_diccionario(nacionalidad,paises_abreviados)
@@ -159,9 +189,6 @@ data_nacionalidad_rut_mrz = limpiar_datos(OCR(nacionalidad_rut_mrz))
 data_fechas_rut_mrz = limpiar_datos(OCR(fechas_rut_mrz))
 data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
 
-print(data_nacionalidad_rut_mrz)
-print(data_fechas_rut_mrz)
-print(data_nombre_full_mrz)
 
 #umbral de aprobacion
 porcentaje_de_aprobar= 0.8 
