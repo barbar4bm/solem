@@ -125,6 +125,13 @@ data_fecha_emision = limpiar_datos(OCR(fecha_emision))
 data_fechaV_texto = limpiar_datos(OCR(fechaV_texto)) 
 data_numero_doc = limpiar_datos(OCR(doc_texto))
 
+# data String Back
+data_nacionalidad_rut_mrz = limpiar_datos(OCR(nacionalidad_rut_mrz))
+data_fechas_rut_mrz = limpiar_datos(OCR(fechas_rut_mrz))
+data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
+
+
+
 #union y/o separacion de datos 
 data_apellido_nombre = data_apellido[0] + data_nombre[0]
 def comparar_datos(datos_frontales, datos_traseros, umbral):
@@ -153,7 +160,18 @@ def comparar_nombre_completo(nombre , arreglo, umbral):
         return True
     else:
         return False
-
+def comparar_fecha(fecha_front,fecha_back,umbral):
+    porcentaje_de_aprobar = umbral
+    calcular = 0
+    contar = 0
+    for i in range(len(fecha_back)):
+        if (fecha_front[i] == fecha_back[i]):
+            contar = contar + 1
+        calcular = contar / len(fecha_front)
+    if (calcular >= porcentaje_de_aprobar):
+        return True
+    else:
+        return False
 
 def transformar_fecha_front(fecha): #check
     fecha_formato=''
@@ -161,15 +179,19 @@ def transformar_fecha_front(fecha): #check
         dia = fecha[0:2]
         mes = fecha[2:5]
         #condicionar mes para pasarlo al numero
+        if mes in meses_abreviados:
+            valor_numerico = meses_abreviados[mes]
         año = fecha[7:]
-        fecha_formato= año+mes+dia
+        fecha_formato= año+valor_numerico+dia
         return fecha_formato
     elif (len(fecha) == 10):
         dia = fecha[0:2]
         mes = fecha[2:6]
         #condicionar mes para pasarlo al numero
+        if mes in meses_abreviados:
+            valor_numerico = meses_abreviados[mes]
         año = fecha[8:]
-        fecha_formato= año+mes+dia
+        fecha_formato= año+valor_numerico+dia
         return fecha_formato
     else:
         return fecha_formato #si la fecha no tiene esos tamaños 
@@ -196,17 +218,14 @@ def obtener_fecha_nacimiento_mrz(data): #check
 #nacionalidad en diccionario? 
 #nacionalidad_diccionario = obtener_nombre_pais_diccionario(nacionalidad,paises_abreviados)
 #print(nacionalidad_diccionario)
-# data String Back
-data_nacionalidad_rut_mrz = limpiar_datos(OCR(nacionalidad_rut_mrz))
-data_fechas_rut_mrz = limpiar_datos(OCR(fechas_rut_mrz))
-data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
-
 
 #umbral de aprobacion
 porcentaje_de_aprobar= 0.85 
  
 #Verificaciones
 comparar_nombre = comparar_nombre_completo(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
+print(comparar_nombre)
+compara_fecha_vencimiento= comparar_fecha(transformar_fecha_front(data_fechaV_texto[0]),obtener_fecha_vencimiento_mrz(data_fechas_rut_mrz[0]),porcentaje_de_aprobar)
 print(comparar_nombre)
 
 fin = time.time()
