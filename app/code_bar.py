@@ -146,7 +146,10 @@ data_numero_doc = limpiar_datos(OCR(doc_texto))
 
 #union y/o separacion de datos 
 data_apellido_nombre = data_apellido + data_nombre
-print(data_apellido_nombre  )
+data_final_nombre=''
+for x in range(len(data_apellido_nombre)):
+    data_final_nombre=data_apellido_nombre[0]+data_apellido_nombre[1]
+print(data_final_nombre)
 
 #nacionalidad en diccionario? 
 #nacionalidad_diccionario = obtener_nombre_pais_diccionario(nacionalidad,paises_abreviados)
