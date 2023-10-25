@@ -80,22 +80,7 @@ def limpiar_datos(ocr_result):
     cleaned_data = str(ocr_result).replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
     return cleaned_data
 
-def comparar_datos(datos_frontales, datos_traseros, umbral):
-    # Comparación de nombres
-    porcentaje_de_aprobar = umbral
-    calcular = 0
-    contar = 0
-    for i in range(len(datos_traseros[0])):
-        datos1 = datos_frontales[0]
-        datos2 = datos_traseros[0]
-        if (datos1[i] == datos2[i]):
-            contar = contar + 1
-        calcular = contar / len(datos_frontales[0])
 
-    if (calcular >= porcentaje_de_aprobar):
-        return True
-    else:
-        return False
 
 def obtener_nombre_pais_diccionario(abreviatura, paises_abreviados):
     if abreviatura in paises_abreviados:
@@ -142,6 +127,33 @@ data_numero_doc = limpiar_datos(OCR(doc_texto))
 
 #union y/o separacion de datos 
 data_apellido_nombre = data_apellido[0] + data_nombre[0]
+def comparar_datos(datos_frontales, datos_traseros, umbral):
+    for i in range(len(datos_traseros[0])):
+        datos1 = datos_frontales[0]
+        datos2 = datos_traseros[0]
+        if (datos1[i] == datos2[i]):
+            contar = contar + 1
+        calcular = contar / len(datos_frontales[0])
+
+    if (calcular >= porcentaje_de_aprobar):
+        return True
+    else:
+        return False
+
+def comparar_nombre_completo(nombre , arreglo, umbral):
+    porcentaje_de_aprobar = umbral
+    calcular = 0
+    contar = 0
+    for i in range(len(arreglo[0])):
+        datos_mrz = arreglo[0]
+        if (nombre[i] == datos_mrz[i]):
+            contar = contar + 1
+        calcular = contar / len(nombre)
+    if (calcular >= porcentaje_de_aprobar):
+        return True
+    else:
+        return False
+
 
 def transformar_fecha_front(fecha): #check
     fecha_formato=''
@@ -191,20 +203,11 @@ data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
 
 
 #umbral de aprobacion
-porcentaje_de_aprobar= 0.8 
+porcentaje_de_aprobar= 0.85 
  
 #Verificaciones
-#nombres_comparacion = comparar_datos(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
-#print("Verificación de nombres: ",nombres_comparacion)
-#apellido_comparacion = comparar_datos(data_apellido,data_apellido_back,porcentaje_de_aprobar)
-#print("Verificación de apellidos: ",apellido_comparacion)
-#rut_comparacion = comparar_datos(data_rut_grande, data_rut_back,porcentaje_de_aprobar)
-#print("Verificación de rut: ",rut_comparacion)
-#nacionalidad_comparacion = comparar_datos(nacionalidad_diccionario,data_nacionalidad_back,porcentaje_de_aprobar)
-#print(nacionalidad_comparacion)
-#fecha_dia_comparacion = comparar_datos() 
-#print("verificacion de fecha: ")
-#numero_docu_comparacion = comparar_datos(data_numero_doc,data_numero_doc_back,porcentaje_de_aprobar)
-#print("Verificación de número de documento: ", numero_docu_comparacion)
+comparar_nombre = comparar_nombre_completo(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
+print(comparar_nombre)
+
 fin = time.time()
 print("El tiempo de ejecución final fue: ", fin-inicio)
