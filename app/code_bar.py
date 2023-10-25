@@ -69,11 +69,11 @@ fechaV_texto = rut_bin[328:370 , 473:670] #fecha vencimiento check
 nacio_en = rut_bin2[211:247 , 182:600] 
 profesion = rut_bin2[242:274,182:403]
 mrz = rut_otsu2[354:492, 42:800]
-nacionalidad_rut_mrz = rut_otsu2[343:395, 37:800]
+nacionalidad_doc_mrz = rut_otsu2[343:398, 37:800]
 fechas_rut_mrz =rut_otsu2[390:436,37:800]
 nombre_full_mrz = rut_otsu2[432:482,37:800]
 
-#plt.imshow(fecha_mes_venci,cmap='gray')
+#plt.imshow(nacionalidad_doc_mrz,cmap='gray')
 #show()
 
 def limpiar_datos(ocr_result):
@@ -126,7 +126,7 @@ data_fechaV_texto = limpiar_datos(OCR(fechaV_texto))
 data_numero_doc = limpiar_datos(OCR(doc_texto))
 
 # data String Back
-data_nacionalidad_rut_mrz = limpiar_datos(OCR(nacionalidad_rut_mrz))
+data_nacionalidad_doc_mrz = limpiar_datos(OCR(nacionalidad_doc_mrz))
 data_fechas_rut_mrz = limpiar_datos(OCR(fechas_rut_mrz))
 data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
 
@@ -134,19 +134,8 @@ data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
 
 #union y/o separacion de datos 
 data_apellido_nombre = data_apellido[0] + data_nombre[0]
-def comparar_datos(datos_frontales, datos_traseros, umbral):
-    for i in range(len(datos_traseros[0])):
-        datos1 = datos_frontales[0]
-        datos2 = datos_traseros[0]
-        if (datos1[i] == datos2[i]):
-            contar = contar + 1
-        calcular = contar / len(datos_frontales[0])
 
-    if (calcular >= porcentaje_de_aprobar):
-        return True
-    else:
-        return False
-
+#funciones para cada caso
 def comparar_nombre_completo(nombre , arreglo, umbral):
     porcentaje_de_aprobar = umbral
     calcular = 0
@@ -155,11 +144,14 @@ def comparar_nombre_completo(nombre , arreglo, umbral):
         datos_mrz = arreglo[0]
         if (nombre[i] == datos_mrz[i]):
             contar = contar + 1
+        else:
+            return False
         calcular = contar / len(nombre)
     if (calcular >= porcentaje_de_aprobar):
         return True
     else:
         return False
+    
 def comparar_fecha(fecha_front,fecha_back,umbral):
     porcentaje_de_aprobar = umbral
     calcular = 0
@@ -167,6 +159,8 @@ def comparar_fecha(fecha_front,fecha_back,umbral):
     for i in range(len(fecha_back)):
         if (fecha_front[i] == fecha_back[i]):
             contar = contar + 1
+        else:
+            return False
         calcular = contar / len(fecha_front)
     if (calcular >= porcentaje_de_aprobar):
         return True
@@ -181,6 +175,8 @@ def transformar_fecha_front(fecha): #check
         #condicionar mes para pasarlo al numero
         if mes in meses_abreviados:
             valor_numerico = meses_abreviados[mes]
+        else:
+            return fecha_formato
         año = fecha[7:]
         fecha_formato= año+valor_numerico+dia
         return fecha_formato
@@ -190,6 +186,8 @@ def transformar_fecha_front(fecha): #check
         #condicionar mes para pasarlo al numero
         if mes in meses_abreviados:
             valor_numerico = meses_abreviados[mes]
+        else:
+            return fecha_formato
         año = fecha[8:]
         fecha_formato= año+valor_numerico+dia
         return fecha_formato
@@ -214,6 +212,32 @@ def obtener_fecha_nacimiento_mrz(data): #check
         return fecha_salida
     else:
         return fecha_salida
+    
+def obtener_documento_mrz(data): 
+    documento_salida=''
+    if (len(data)==18):
+        documento = data[5:14]
+        documento_salida = documento
+        return documento_salida
+    else:
+        return documento_salida
+
+def comparar_documentos(front,back,umbral): 
+    porcentaje_de_aprobar=umbral
+    calcular = 0
+    contar = 0
+    for i in range(len(back)):
+        if (front[i] == back[i]):
+            contar = contar + 1
+        else:
+            return False
+        calcular = contar / len(front)
+    if (calcular >= porcentaje_de_aprobar):
+        return True
+    else:
+        return False
+
+
 
 #nacionalidad en diccionario? 
 #nacionalidad_diccionario = obtener_nombre_pais_diccionario(nacionalidad,paises_abreviados)
@@ -223,10 +247,14 @@ def obtener_fecha_nacimiento_mrz(data): #check
 porcentaje_de_aprobar= 0.85 
  
 #Verificaciones
-comparar_nombre = comparar_nombre_completo(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
-print(comparar_nombre)
-compara_fecha_vencimiento= comparar_fecha(transformar_fecha_front(data_fechaV_texto[0]),obtener_fecha_vencimiento_mrz(data_fechas_rut_mrz[0]),porcentaje_de_aprobar)
-print(comparar_nombre)
+compara_nombre = comparar_nombre_completo(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
+print('Nombres iguales?',compara_nombre)
+compara_fecha_vencimiento = comparar_fecha(transformar_fecha_front(data_fechaV_texto[0]),obtener_fecha_vencimiento_mrz(data_fechas_rut_mrz[0]),porcentaje_de_aprobar)
+print('Fecha de vencimiento iguales?',compara_fecha_vencimiento)
+compara_fecha_nacimiento = comparar_fecha(transformar_fecha_front(data_fecha_nacimiento[0]),obtener_fecha_nacimiento_mrz(data_fechas_rut_mrz[0]),porcentaje_de_aprobar)
+print('Fecha de nacimiento iguales?',compara_fecha_nacimiento)
+compara_documento= comparar_documentos(data_numero_doc[0],obtener_documento_mrz(data_nacionalidad_doc_mrz[0]),porcentaje_de_aprobar)
+print('Número de documento iguales?',compara_documento)
 
 fin = time.time()
 print("El tiempo de ejecución final fue: ", fin-inicio)
