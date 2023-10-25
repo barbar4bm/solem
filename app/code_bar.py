@@ -12,7 +12,7 @@ image= cv2.imread('app/image/a1.jpg')#imagen frontal
 image2= cv2.imread('app/image/16.2.jpeg')#imagen reverso
 
 #si se usa windows , esto es necesario
-#pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def OCR(imagen):
     texto = pytesseract.image_to_string(imagen)
@@ -67,22 +67,18 @@ fecha_anio_ven_del = rut_bin[335:367 , 477:667]
 nacio_en = rut_bin2[211:247 , 182:600] 
 profesion = rut_bin2[242:274,182:403]
 mrz = rut_otsu2[354:492, 42:800]
-nombre_mrz = rut_otsu2[440:482, 418:800]
-apellido_mrz = rut_otsu2[440:478, 44:375]
-rut_mrz = rut_otsu2[395:440,495:747]
-documento_mrz=rut_otsu2[355:400,170:400]
-nacionalidad_mrz = rut_otsu2[400:435,420:495]
-fecha_anio_venci = rut_otsu2[395:431,244:297]#check
-fecha_mes_venci = rut_otsu2[395:431,295:345]#check
-#fecha_dia_venci_seg = rut_otsu2[396:436,360:392]#lee el 5 en a1
-#fecha_dia_venci_pri = rut_otsu2[395:437,347:370] # no lee el 1 
-fecha_dia_venci = rut_otsu2[394:435,347:394] #no lee día
-plt.imshow(rut_otsu2,cmap='gray')
-show()
-plt.imshow(fecha_dia_venci,cmap='gray')
-show()
-print(OCR(fecha_dia_venci))
+nacionalidad_rut_mrz = rut_otsu2[343:395, 37:800]
+fechas_rut_mrz =rut_otsu2[390:436,37:800]
+nombre_full_mrz = rut_otsu2[432:482,37:800]
 
+plt.imshow(nacionalidad_rut_mrz,cmap='gray')
+show()
+plt.imshow(fechas_rut_mrz,cmap='gray')
+show()
+plt.imshow(nombre_full_mrz,cmap='gray')
+show()
+#plt.imshow(fecha_mes_venci,cmap='gray')
+#show()
 
 def limpiar_datos(ocr_result):
     cleaned_data = str(ocr_result).replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').split()
@@ -148,31 +144,37 @@ data_fecha_emision = limpiar_datos(OCR(fecha_emision))
 data_fechaV_texto = limpiar_datos(OCR(fechaV_texto)) 
 data_numero_doc = limpiar_datos(OCR(doc_texto))
 
+#union y/o separacion de datos 
+data_apellido_nombre = data_apellido + data_nombre
+print(data_apellido_nombre  )
+
 #nacionalidad en diccionario? 
 #nacionalidad_diccionario = obtener_nombre_pais_diccionario(nacionalidad,paises_abreviados)
 #print(nacionalidad_diccionario)
 # data String Back
-data_nombre_back = limpiar_datos(OCR(nombre_mrz))
-data_apellido_back = limpiar_datos(OCR(apellido_mrz))
-data_rut_back = limpiar_datos(OCR(rut_mrz))
-data_numero_doc_back = limpiar_datos(OCR(documento_mrz))
-data_nacionalidad_back = limpiar_datos(OCR(nacionalidad_mrz))
+data_nacionalidad_rut_mrz = limpiar_datos(OCR(nacionalidad_rut_mrz))
+data_fechas_rut_mrz = limpiar_datos(OCR(fechas_rut_mrz))
+data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
+
+print(data_nacionalidad_rut_mrz)
+print(data_fechas_rut_mrz)
+print(data_nombre_full_mrz)
 
 #umbral de aprobacion
 porcentaje_de_aprobar= 0.8 
  
 #Verificaciones
-nombres_comparacion = comparar_datos(data_nombre,data_nombre_back,porcentaje_de_aprobar)
-print("Verificación de nombres: ",nombres_comparacion)
-apellido_comparacion = comparar_datos(data_apellido,data_apellido_back,porcentaje_de_aprobar)
-print("Verificación de apellidos: ",apellido_comparacion)
-rut_comparacion = comparar_datos(data_rut_grande, data_rut_back,porcentaje_de_aprobar)
-print("Verificación de rut: ",rut_comparacion)
+#nombres_comparacion = comparar_datos(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
+#print("Verificación de nombres: ",nombres_comparacion)
+#apellido_comparacion = comparar_datos(data_apellido,data_apellido_back,porcentaje_de_aprobar)
+#print("Verificación de apellidos: ",apellido_comparacion)
+#rut_comparacion = comparar_datos(data_rut_grande, data_rut_back,porcentaje_de_aprobar)
+#print("Verificación de rut: ",rut_comparacion)
 #nacionalidad_comparacion = comparar_datos(nacionalidad_diccionario,data_nacionalidad_back,porcentaje_de_aprobar)
 #print(nacionalidad_comparacion)
 #fecha_dia_comparacion = comparar_datos() 
 #print("verificacion de fecha: ")
-numero_docu_comparacion = comparar_datos(data_numero_doc,data_numero_doc_back,porcentaje_de_aprobar)
-print("Verificación de número de documento: ", numero_docu_comparacion)
+#numero_docu_comparacion = comparar_datos(data_numero_doc,data_numero_doc_back,porcentaje_de_aprobar)
+#print("Verificación de número de documento: ", numero_docu_comparacion)
 fin = time.time()
 print("El tiempo de ejecución final fue: ", fin-inicio)
