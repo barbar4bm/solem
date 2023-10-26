@@ -1,8 +1,12 @@
-from flask import Flask, request,Response, jsonify,render_template
+from flask import Flask, request,Response, jsonify,render_template,current_app
 from routes import pruebas
-from services import tools as tool
+from services import tools as tool 
+from services import sift as sift
 
 app = Flask(__name__)
+
+
+app.before_request_funcs = [(None, sift.guardarDescriptores())]
 
 app.register_blueprint(pruebas.pruebas)
 

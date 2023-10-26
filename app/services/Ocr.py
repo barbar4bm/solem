@@ -16,6 +16,7 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
     # Recorre las imágenes en el diccionario y extrae el texto
     for nombre, imagen in dicc_imagenes.items():
         # Si la clave actual está en claves_omitidas, añadimos la imagen al resultado y saltamos esta iteración
+        #en este caso se lee el qr, ya que no se puede aplciar OCR al QR
         if nombre in claves_omitidas:
             if nombre=="qr":
                 resultado[nombre]=tool.leerQR(imagen)

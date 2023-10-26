@@ -60,7 +60,9 @@
     <!-- Elemento para mostrar la respuesta JSON del servidor -->
     <pre id="serverResponse"
       style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; border-radius: 5px; display: none;"></pre>
-
+    <h3>Resultados:</h3>
+    <p>Anverso: <span id="resultAnverso"></span></p>
+    <p>Reverso: <span id="resultReverso"></span></p>
     <script>
       document.querySelector(".upload-container").addEventListener("click", function () {
         document.getElementById("jsonFile").click();
@@ -103,8 +105,22 @@
             }
 
             const jsonResponse = await response.json();
+
+            // Crear una nueva respuesta sin 'ocr_data'
+            const responseToDisplay = {
+              resp_Anverso: jsonResponse.ocr_data
+            };
+
             document.getElementById("serverResponse").style.display = "block";
-            document.getElementById("serverResponse").textContent = JSON.stringify(jsonResponse, null, 2);
+            document.getElementById("serverResponse").textContent = JSON.stringify(responseToDisplay, null, 2);
+
+            // Aquí mostramos los resultados resp_Anverso y resp_reverso
+            if (jsonResponse.resp_Anverso) {
+              document.getElementById("resultAnverso").textContent = jsonResponse.resp_Anverso;
+            }
+            if (jsonResponse.resp_reverso) {
+              document.getElementById("resultReverso").textContent = jsonResponse.resp_reverso;
+            }
 
             alert('¡Archivo JSON enviado con éxito!');
           } catch (error) {
@@ -116,6 +132,7 @@
         }
       });
     </script>
+
   </section>
 
   <section>

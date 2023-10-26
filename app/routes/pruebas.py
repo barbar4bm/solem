@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify,json
-from services import Ocr,tools
+from services import Ocr,tools,sift
 
 pruebas = Blueprint('pruebas', __name__)
 
@@ -36,14 +36,30 @@ def upload_json():
 
     # Convertir las imágenes de base64 a objetos de imagen
     anverso=tools.b64_openCV(data['anverso'])
+    anverso=tools.escalaGrises(anverso)
     reverso=tools.b64_openCV(data['reverso'])
+
+    #anverso=sift.preparacionInicial(anverso)
+    #reverso=sift.preparacionInicial(reverso)
+
+    resp_Anverso,resp_reverso=sift.identificador_lados(anverso,reverso)
+    resp_Anverso=str(resp_Anverso)
+    resp_reverso=str(resp_reverso)
+
+
+
     diccionario_img=tools.recorte(anverso,reverso)
     clave_omitida="qr"
+    #realizar transformaciones iniciales a cada imagen, se llama a sift.py: diccionario_img=
 
     diccionario_ocr =Ocr.obtenerTexto(diccionario_img,clave_omitida)
-    print(diccionario_ocr)
+    datos_respuesta={
+        'ocr_data': diccionario_ocr,
+        'resp_Anverso': resp_Anverso,
+        'resp_reverso': resp_reverso
+    }
     
-    return  jsonify(diccionario_ocr)
+    return  jsonify(datos_respuesta)
 
 @pruebas.route('/ocr', methods=['POST'])
 def procesar_ocr():
