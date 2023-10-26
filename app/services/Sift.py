@@ -3,6 +3,7 @@ import cv2 as cv2
 import numpy as np
 import os
 import glob
+import pywt
 
 def guardarDescriptores():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
