@@ -1,7 +1,7 @@
 from flask import Flask, request,Response, jsonify,render_template,current_app
 from routes import pruebas
 from services import tools as tool 
-from services import sift as sift
+from services import Sift as sift
 
 app = Flask(__name__)
 
