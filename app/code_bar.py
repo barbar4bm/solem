@@ -1,5 +1,4 @@
 from flask import Flask, jsonify
-from carnet import carnet 
 import cv2
 from PIL import Image
 from pylab import * 
@@ -8,11 +7,11 @@ import pytesseract
 import time
 
 inicio = time.time()
-image= cv2.imread('app/image/a1.jpg')#imagen frontal
-image2= cv2.imread('app/image/16.2.jpeg')#imagen reverso
+image= cv2.imread('app/image/a2.jpg')#imagen frontal
+image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
 
 #si se usa windows , esto es necesario
-pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def OCR(imagen):
     texto = pytesseract.image_to_string(imagen)
@@ -53,15 +52,14 @@ nombre_texto = rut_bin[171:211 , 291:806] #nombre check
 apellido_texto = rut_bin[88:152 , 292:520] #apellido check
 rut_grande = rut_bin[460:496 , 98:273] #rut grande check
 nacionalidad = rut_bin[220:265, 291:425] #nacionalidad check
-#sexo = rut_otsu[222:263, 450:600] #no detecta genero
+sexo = rut_bin[229:257, 486:509] #no detecta solo un caracter
 fecha_nacimiento = rut_bin[276:311 , 250:480] #fecha nacimiento check
 doc_texto = rut_bin[275:310, 487:663] #numero documento check
 fecha_emision = rut_bin[330:369 , 292:463] #fecha emision check
 fechaV_texto = rut_bin[328:370 , 473:670] #fecha vencimiento check 
-
-#plt.imshow(fechaV_texto,cmap='gray')
-#show()
-
+plt.imshow(sexo,cmap='gray')
+show()
+print(OCR(sexo))
 
 #rut_chico=rut_otsu[282:308,686:808] #rut en foto pequeña falta mejorar su visibilidad
 
@@ -73,21 +71,16 @@ nacionalidad_doc_mrz = rut_otsu2[343:398, 37:800]
 fechas_rut_mrz =rut_otsu2[390:436,37:800]
 nombre_full_mrz = rut_otsu2[432:482,37:800]
 
+print("la cantidad de elementos de primera linea es: ",len(OCR(nombre_full_mrz)))
 #plt.imshow(nacionalidad_doc_mrz,cmap='gray')
 #show()
+
+
 
 def limpiar_datos(ocr_result):
     cleaned_data = str(ocr_result).replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
     return cleaned_data
 
-
-
-def obtener_nombre_pais_diccionario(abreviatura, paises_abreviados):
-    if abreviatura in paises_abreviados:
-        return abreviatura
-    else:
-        return None
-    
 paises_abreviados = {
     "ALEMANA" : "AL",
     "CHILENA": "CHL",
@@ -97,8 +90,6 @@ paises_abreviados = {
     "COLOMBIANA" : "COL",
     "VENEZOLANA": "VEN",
     "HAITIANA": "HAI",
-
-     #Agrega más pares clave-valor según sea necesario
 }
 meses_abreviados = {
     "ENER": "01",
@@ -129,9 +120,6 @@ data_numero_doc = limpiar_datos(OCR(doc_texto))
 data_nacionalidad_doc_mrz = limpiar_datos(OCR(nacionalidad_doc_mrz))
 data_fechas_rut_mrz = limpiar_datos(OCR(fechas_rut_mrz))
 data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
-
-
-
 #union y/o separacion de datos 
 data_apellido_nombre = data_apellido[0] + data_nombre[0]
 
@@ -167,6 +155,20 @@ def comparar_fecha(fecha_front,fecha_back,umbral):
     else:
         return False
 
+def comparar_nacionalidad(nacionalidad_front,nacionalidad_back,umbral):
+    porcentaje_de_aprobar = umbral
+    calcular = 0
+    contar = 0
+    for i in range(len(nacionalidad_back)):
+        if (nacionalidad_front[i] == nacionalidad_back[i]):
+            contar = contar + 1
+        else:
+            return False
+        calcular = contar / len(nacionalidad_front)
+    if (calcular >= porcentaje_de_aprobar):
+        return True
+    else:
+        return False
 def transformar_fecha_front(fecha): #check
     fecha_formato=''
     if (len(fecha) == 9):
@@ -194,7 +196,24 @@ def transformar_fecha_front(fecha): #check
     else:
         return fecha_formato #si la fecha no tiene esos tamaños 
 
+def transformar_pais_a_abreviatura(pais, paises_abreviados):
 
+    if pais in paises_abreviados:
+        return paises_abreviados[pais]
+    else:
+        return "No se encontró la abreviatura para el país especificado."
+
+
+
+
+def obtener_nacionalidad_mrz(data): 
+    fecha_salida=''
+    if (len(data)==18):
+        fecha = data[2:5]
+        fecha_salida = fecha
+        return fecha_salida
+    else:
+        return fecha_salida
 def obtener_fecha_vencimiento_mrz(data): #check
     fecha_salida=''
     if (len(data)==28):
@@ -239,14 +258,16 @@ def comparar_documentos(front,back,umbral):
 
 
 
-#nacionalidad en diccionario? 
-#nacionalidad_diccionario = obtener_nombre_pais_diccionario(nacionalidad,paises_abreviados)
-#print(nacionalidad_diccionario)
-
 #umbral de aprobacion
 porcentaje_de_aprobar= 0.85 
  
 #Verificaciones
+abreviatura = transformar_pais_a_abreviatura(data_nacionalidad[0], paises_abreviados)
+print(f"La abreviatura para {data_nacionalidad[0]} es: {abreviatura}")
+obtener = obtener_nacionalidad_mrz(data_nacionalidad_doc_mrz[0])
+comparar_nacionalidad = comparar_nacionalidad(abreviatura,obtener,porcentaje_de_aprobar)
+print("nacionalidad iguales?",comparar_nacionalidad)
+print(obtener,"a" , abreviatura)
 compara_nombre = comparar_nombre_completo(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
 print('Nombres iguales?',compara_nombre)
 compara_fecha_vencimiento = comparar_fecha(transformar_fecha_front(data_fechaV_texto[0]),obtener_fecha_vencimiento_mrz(data_fechas_rut_mrz[0]),porcentaje_de_aprobar)
