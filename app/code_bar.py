@@ -7,8 +7,8 @@ import pytesseract
 import time
 
 inicio = time.time()
-image= cv2.imread('app/image/a2.jpg')#imagen frontal
-image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
+image= cv2.imread('app/image/13.1.jpeg')#imagen frontal
+image2= cv2.imread('app/image/13.2.jpeg')#imagen reverso
 
 #si se usa windows , esto es necesario
 #pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
@@ -57,24 +57,18 @@ fecha_nacimiento = rut_bin[276:311 , 250:480] #fecha nacimiento check
 doc_texto = rut_bin[275:310, 487:663] #numero documento check
 fecha_emision = rut_bin[330:369 , 292:463] #fecha emision check
 fechaV_texto = rut_bin[328:370 , 473:670] #fecha vencimiento check 
-plt.imshow(sexo,cmap='gray')
-show()
-print(OCR(sexo))
 
 #rut_chico=rut_otsu[282:308,686:808] #rut en foto pequeña falta mejorar su visibilidad
 
 #lectura trasera
 nacio_en = rut_bin2[211:247 , 182:600] 
-profesion = rut_bin2[242:274,182:403]
-mrz = rut_otsu2[354:492, 42:800]
-nacionalidad_doc_mrz = rut_otsu2[343:398, 37:800]
-fechas_rut_mrz =rut_otsu2[390:436,37:800]
-nombre_full_mrz = rut_otsu2[432:482,37:800]
+profesion = rut_bin2[242:274 , 182:403]
+mrz = rut_otsu2[354:492 , 42:800]
+nacionalidad_doc_mrz = rut_otsu2[343:398 , 37:800]
+fechas_rut_mrz =rut_otsu2[390:436 , 37:800]
+nombre_full_mrz = rut_otsu2[432:482 , 37:800]
 
-print("la cantidad de elementos de primera linea es: ",len(OCR(nombre_full_mrz)))
-#plt.imshow(nacionalidad_doc_mrz,cmap='gray')
-#show()
-
+#print("la cantidad de elementos de primera linea es: ",len(OCR(nombre_full_mrz)))
 
 
 def limpiar_datos(ocr_result):
@@ -203,9 +197,6 @@ def transformar_pais_a_abreviatura(pais, paises_abreviados):
     else:
         return "No se encontró la abreviatura para el país especificado."
 
-
-
-
 def obtener_nacionalidad_mrz(data): 
     fecha_salida=''
     if (len(data)==18):
@@ -214,6 +205,16 @@ def obtener_nacionalidad_mrz(data):
         return fecha_salida
     else:
         return fecha_salida
+    
+def obtener_sexo_mrz(data): 
+    sexo_salida=''
+    if (len(data)==28):
+        sexo = data[7:8]
+        sexo_salida = sexo
+        return sexo_salida
+    else:
+        return sexo_salida
+    
 def obtener_fecha_vencimiento_mrz(data): #check
     fecha_salida=''
     if (len(data)==28):
@@ -256,26 +257,50 @@ def comparar_documentos(front,back,umbral):
     else:
         return False
 
-
-
 #umbral de aprobacion
 porcentaje_de_aprobar= 0.85 
  
+#print de informacion relevante
+print("_________________________________________________________________________")
+print("________Info captada en la parte de adelante del carnet:______________________")
+
+print("Nombre:",data_nombre)
+print("Apellido:",data_apellido)
+print("Fecha nacimiento:",data_fecha_nacimiento)
+print("Rut:",data_rut_grande)
+print("Nacionalidad:" ,data_nacionalidad)
+print("Fecha emision:",data_fecha_emision)
+print("Fecha de vencimiento:",data_fechaV_texto)
+print("Numero documento:",data_numero_doc)
+print("_______________________________________________________________________________")
+print("______________Info limpia captada en la parte del reverso del carnet_____________________")
+print("Nacio en: ",OCR(nacio_en))
+print("Profesion:",OCR(profesion))
+print("1era linea MRZ:",data_nacionalidad_doc_mrz)
+print("2da linea MRZ:",data_fechas_rut_mrz)
+print("3era linea MRZ:",data_nombre_full_mrz)
+
+
+print("___________________________________________________")
+
+print("____________VERIFICACIONES_______________________________")
+
 #Verificaciones
-abreviatura = transformar_pais_a_abreviatura(data_nacionalidad[0], paises_abreviados)
-print(f"La abreviatura para {data_nacionalidad[0]} es: {abreviatura}")
-obtener = obtener_nacionalidad_mrz(data_nacionalidad_doc_mrz[0])
-comparar_nacionalidad = comparar_nacionalidad(abreviatura,obtener,porcentaje_de_aprobar)
-print("nacionalidad iguales?",comparar_nacionalidad)
-print(obtener,"a" , abreviatura)
+obtener_sexo = obtener_sexo_mrz(data_fechas_rut_mrz[0])
+print("El sexo de la persona en el MRZ es:", obtener_sexo)
+abreviatura_nac= transformar_pais_a_abreviatura(data_nacionalidad[0], paises_abreviados)
+obtener_nac = obtener_nacionalidad_mrz(data_nacionalidad_doc_mrz[0])
+comparar_nacionalidad = comparar_nacionalidad(abreviatura_nac,obtener_nac,porcentaje_de_aprobar)
+print("¿La nacionalidad es verídica?: ",comparar_nacionalidad)
 compara_nombre = comparar_nombre_completo(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
-print('Nombres iguales?',compara_nombre)
+print('¿El primer y segundo nombre son veridicos?: ',compara_nombre)
 compara_fecha_vencimiento = comparar_fecha(transformar_fecha_front(data_fechaV_texto[0]),obtener_fecha_vencimiento_mrz(data_fechas_rut_mrz[0]),porcentaje_de_aprobar)
-print('Fecha de vencimiento iguales?',compara_fecha_vencimiento)
+print('¿La fecha de vencimiento es verídico?:',compara_fecha_vencimiento)
 compara_fecha_nacimiento = comparar_fecha(transformar_fecha_front(data_fecha_nacimiento[0]),obtener_fecha_nacimiento_mrz(data_fechas_rut_mrz[0]),porcentaje_de_aprobar)
-print('Fecha de nacimiento iguales?',compara_fecha_nacimiento)
+print('¿La Fecha de nacimiento es verídico?',compara_fecha_nacimiento)
 compara_documento= comparar_documentos(data_numero_doc[0],obtener_documento_mrz(data_nacionalidad_doc_mrz[0]),porcentaje_de_aprobar)
-print('Número de documento iguales?',compara_documento)
+print('¿El número de documento es verídicos?:',compara_documento)
 
 fin = time.time()
+print("_____________TIEMPO______________________________")
 print("El tiempo de ejecución final fue: ", fin-inicio)
