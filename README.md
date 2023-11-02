@@ -10,7 +10,7 @@ La imagen debe venir codificada en cadena de caracteres en base 64
 ### Estructura del JSON
 ```json
 {
-  "anverso": "9j/4AAQSk...",
+  "anverso": "9j/4AAQSk...codigo..base..64",
   "reverso": "codigo_imagen_base64_reverso"
 }
 
