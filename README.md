@@ -1,6 +1,6 @@
 # CedulaOCR
 
-API que procesa imágenes de cédulas y extrae información mediante OCR. La API espera recibir imágenes en formato JSON con una estructura específica. 
+API que procesa imágenes de cédulas de identidad y extrae su información mediante OCR. La API espera recibir dos imágenes (anverso, reverso) encapsuladas en formato JSON, con una estructura específica. 
 La imagen debe venir codificada en cadena de caracteres en base 64
 
 
