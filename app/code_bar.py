@@ -11,7 +11,7 @@ image= cv2.imread('app/image/13.1.jpeg')#imagen frontal
 image2= cv2.imread('app/image/13.2.jpeg')#imagen reverso
 
 #si se usa windows , esto es necesario
-#pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def OCR(imagen):
     texto = pytesseract.image_to_string(imagen)
@@ -72,7 +72,7 @@ nombre_full_mrz = rut_otsu2[432:482 , 37:800]
 
 
 def limpiar_datos(ocr_result):
-    cleaned_data = str(ocr_result).replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
+    cleaned_data = str(ocr_result).replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
     return cleaned_data
 
 paises_abreviados = {
