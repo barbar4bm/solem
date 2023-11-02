@@ -1,5 +1,4 @@
 from flask import Flask, jsonify
-from carnet import carnet 
 import cv2
 from PIL import Image
 from pylab import * 
