@@ -28,7 +28,6 @@ def guardarDescriptores():
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'descriptores_{name}.pkl')
         with open(SAVE_PATH, 'wb') as f:
             pkl.dump(dic, f)
-        print(f' Descriptores {name} Guardados')
         print(descriptores)
 
 
@@ -139,9 +138,7 @@ def guardarDescriptores():
         dic = {name: descriptores}
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'descriptores_{name}.pkl')
         with open(SAVE_PATH, 'wb') as f:
-            pkl.dump(dic, f)
-        print(f' Descriptores {name} Guardados')
-        print(descriptores)        
+            pkl.dump(dic, f)     
 
 def identificador_lados(anverso,reverso):
 
@@ -157,7 +154,7 @@ def identificador_lados(anverso,reverso):
                 good.append([m])
 
         coincidencias = len(good)
-        print(f'Número de coincidencia de descriptores: {coincidencias}')
+        #print(f'Número de coincidencia de descriptores: {coincidencias}')
 
 
         if (coincidencias > 20):
@@ -167,12 +164,10 @@ def identificador_lados(anverso,reverso):
     
     ##########################################
 
-
     #cargar descriotires
     desc_lado_anverso = cargarDescriptores('anverso')
     desc_lado_reverso = cargarDescriptores('reverso')
 
-    print(desc_lado_anverso)
 
     # Calculo los descriptores de la imagen nueva
     # Inicializo el detector SIFT

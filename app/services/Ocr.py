@@ -26,7 +26,8 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
 
         # Verificar que la imagen sea un ndarray de numpy
         if not isinstance(imagen, np.ndarray):
-            raise TypeError(f"La imagen asociada con '{nombre}' no es un ndarray válido.")
+            resultado[nombre] = "Imagen ilegible"
+            continue
         
         texto = pytesseract.image_to_string(imagen, lang="spa").strip()
         
@@ -44,3 +45,5 @@ def Asignar_Valores_Objeto(obj, attributes_dict):
             setattr(obj, key, value)
         else:
             print(f"Advertencia: El objeto no tiene el atributo '{key}'. El valor no fue asignado.")
+
+

@@ -2,6 +2,7 @@ from flask import Flask, request,Response, jsonify,render_template,current_app
 from routes import pruebas
 from services import tools as tool 
 from services import Sift as sift
+from services.carnet import Cedula
 
 app = Flask(__name__)
 
@@ -12,7 +13,11 @@ app.register_blueprint(pruebas.pruebas)
 
 @app.route('/')
 def index():
+    #crear objeto cedula
+    cedula = Cedula()
+    print(cedula)
     return render_template('subir.html')
+
 
 @app.route('/subirImagen', methods=['POST'])
 def recibirImagenes():
