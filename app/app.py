@@ -6,9 +6,6 @@ from services.carnet import Cedula
 
 app = Flask(__name__)
 
-
-app.before_request_funcs = [(None, sift.guardarDescriptores())]
-
 app.register_blueprint(pruebas.pruebas)
 
 @app.route('/')
@@ -86,4 +83,5 @@ def enviarContenidoQr():
     
 
 if __name__ == "__main__":
+    sift.guardarDescriptores()
     app.run(debug=True)

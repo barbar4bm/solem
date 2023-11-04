@@ -29,7 +29,7 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
             resultado[nombre] = "Imagen ilegible"
             continue
         
-        texto = pytesseract.image_to_string(imagen, lang="spa").strip()
+        texto = pytesseract.image_to_string(imagen).strip()
         
         # Eliminar saltos de línea
         texto = texto.replace("\n", "")
