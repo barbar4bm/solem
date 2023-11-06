@@ -48,23 +48,22 @@ class Cedula:
                 f"MRZ: {self.mrz}\n"
                 f"QR: {self.qr}\n")
     
-    #keys_to_update es una lista ['','',''] de claves que se deben actualizar.
     def actualizar_desde_dicionario(self, data, keys_to_update=None):
-        # Si se proporciona keys_to_update, solo se actualizan esos claves.
-        # De lo contrario, se actualizan todas las claves que coincidan.
+        # Verifica si las claves MRZ específicas están en el diccionario y tienen contenido
+        claves_mrz = ['mrz_linea1', 'mrz_linea2', 'mrz_linea3']
+        if all(clave in data and data[clave].strip() for clave in claves_mrz):
+            # Construye el texto general MRZ y lo asigna
+            self.mrz['datosMRZ']['textoGeneral_MRZ'] = " ".join(data[clave] for clave in claves_mrz)
+            self.mrz['tieneMRZ'] = True
+        
+        # Si se proporciona keys_to_update, solo se actualizan esas claves.
         if keys_to_update is not None:
             data = {key: data[key] for key in keys_to_update if key in data}
         
+        # Actualiza las demás claves proporcionadas en data
         for key, value in data.items():
-            if hasattr(self, key):
+            if hasattr(self, key) and key not in claves_mrz:  # Ignora las claves MRZ ya que ya se han procesado
                 setattr(self, key, value)
-                
-        # Actualizar el MRZ si es necesario
-        if 'mrz' in data and isinstance(data['mrz'], dict):
-            for key, value in data['mrz'].items():
-                if key in self.mrz['datosMRZ']:
-                    self.mrz['datosMRZ'][key] = value
-            self.mrz["tieneMRZ"] = True
                 
 
     def actualizar_datos_mrz(self, datos_actualizacion):

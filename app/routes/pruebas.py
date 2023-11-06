@@ -76,6 +76,7 @@ def upload_json():
 
     print('////////////////////////////////')
     carnet=Cedula(diccionario_ocr)
+    #esta linea se va
     carnet.mrz['datosMRZ']['textoGeneral_MRZ']=diccionario_ocr['mrz_linea1']+" "+diccionario_ocr['mrz_linea2']+" "+diccionario_ocr['mrz_linea3']
     carnet.actualizar_desde_dicionario(dicmrz)
    
