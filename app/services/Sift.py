@@ -36,17 +36,19 @@ def puntos_descriptores(image):
   puntos,descriptores=sift.detectAndCompute(image,None)
   return puntos,descriptores
 
+#cambio a RGB,conv a escala grises, 
 def preparacionInicial(imagenInicial):
   #de BGR a RGB
   imagenInicialRGB = cv2.cvtColor(imagenInicial, cv2.COLOR_BGR2RGB)
   # Cambio de espacio de color BGR a GRAY
   gray = cv2.cvtColor(imagenInicialRGB, cv2.COLOR_BGR2GRAY)
   # Ecualización "Contrast Limited Adaptive Histogram Equalization,
-  clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+  clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
   eq=clahe.apply(gray)
 
   return eq
 
+#realiza dos binarizaciones, escoger una entre 0 y 1
 def binarizacion(imagen, otsu=0):
     # Verificamos si otsu tiene valores válidos
     if otsu not in [0, 1]:raise ValueError("El valor de otsu debe ser 0 o 1.")

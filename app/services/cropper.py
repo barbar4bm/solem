@@ -14,8 +14,8 @@ def obtenerRecorteImagen(imagenbaseEq,imgEq,M):
   return warped
 
 def recorte(rut_bin, rut_bin2):
-    
-    # 500x800
+    estado_inicial = locals().copy()
+    # 530x840
     rut_bin=escalar_imagen(rut_bin,530,840)
     rut_bin2=escalar_imagen(rut_bin2,530,840)
 
@@ -33,32 +33,30 @@ def recorte(rut_bin, rut_bin2):
     #reverso
     ciudad = rut_bin2[211:247 , 182:600]
     profesion = rut_bin2[242:274,182:403]
-    mrz = rut_bin2[354:492, 42:800]
-    nombre_mrz = rut_bin2[440:482, 418:800]
-    apellido_mrz = rut_bin2[440:478, 44:375]
-    rut_mrz = rut_bin2[395:440,495:747]
-    documento_mrz = rut_bin2[354:398,170:400]
+
+    #recortar la tres
+    
+    mrz_linea1=rut_bin2[343:398 , 37:800]
+    mrz_linea2=rut_bin2[390:436 , 37:800]
+    mrz_linea3=rut_bin2[432:482 , 37:800]
+    textoGeneral_MRZ = None
+
+    nombres_MRZ = rut_bin2[440:482, 418:800]
+    apellidos_MRZ = rut_bin2[440:478, 44:375]
+    RUN_MRZ = rut_bin2[395:440,495:747]
+    numeroDocumento_MRZ = rut_bin2[354:398,170:400]
     qr=recortar_qr(rut_bin2)
 
-    return {
-        "nombres": nombres,
-        "apellidos": apellidos,
-        "RUN": RUN,
-        "nacionalidad": nacionalidad,
-        "sexo": sexo,
-        "fecha_nacimiento": fecha_nacimiento,
-        "numero_documento": numero_documento,
-        "fecha_emision": fecha_emision,
-        "fecha_vencimiento": fecha_vencimiento,
-        "ciudad": ciudad,
-        "profesion": profesion,
-        "mrz": mrz,
-        "nombre_mrz": nombre_mrz,
-        "apellido_mrz": apellido_mrz,
-        "rut_mrz": rut_mrz,
-        "documento_mrz": documento_mrz,
-        "qr":qr
-    }
+    # Guarda el estado final después de hacer los recortes
+    estado_final = locals().copy()
+
+    # Crea un diccionario para las variables de recortes
+    # Resta los estados para obtener solo las variables que se asignaron
+    resultado_recortes = {k: estado_final[k] for k in estado_final if k not in estado_inicial and k not in ['estado_inicial', 'estado_final']}
+
+
+
+    return resultado_recortes
 
 def guardar_recortes(diccionario):
     """
@@ -86,6 +84,7 @@ def recortar_qr(imagen):
 
     # Recortar la imagen
     qr_recortado = imagen[y:y+h, x:x+w]
+  
     return qr_recortado    
 
 def escalar_imagen(img, altura, anchura):

@@ -55,9 +55,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
         const jsonResponse = await response.json();
 
         // Crear una nueva respuesta sin 'ocr_data'
-        const responseToDisplay = {
-          resp_Anverso: jsonResponse.ocr_data,
-        };
+        const responseToDisplay = jsonResponse.ocr_data
+        ;
 
         serverResponse.style.display = "block";
         serverResponse.textContent = JSON.stringify(responseToDisplay, null, 2);

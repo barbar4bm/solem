@@ -3,6 +3,7 @@ import pytesseract
 import numpy as np
 from . import tools as tool
 
+#recibe un diccionario con imagenes
 def obtenerTexto(dicc_imagenes, *claves_omitidas):
     if not isinstance(dicc_imagenes, dict):
         raise TypeError("El argumento 'dicc_imagenes' debe ser un diccionario con nombres de atributos y imágenes.")
@@ -20,8 +21,8 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
         if nombre in claves_omitidas:
             if nombre=="qr":
                 resultado[nombre]=tool.leerQR(imagen)
-                print(resultado[nombre])
                 continue
+            continue
                 #se agregua elif para otros casos...
 
         # Verificar que la imagen sea un ndarray de numpy
@@ -29,11 +30,9 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
             resultado[nombre] = "Imagen ilegible"
             continue
         
-        texto = pytesseract.image_to_string(imagen).strip()
-        
-        # Eliminar saltos de línea
-        texto = texto.replace("\n", "")
-
+        texto = pytesseract.image_to_string(imagen)
+    
+        texto=limpiar_datos(texto)
         resultado[nombre] = texto
 
     return resultado
@@ -47,3 +46,6 @@ def Asignar_Valores_Objeto(obj, attributes_dict):
             print(f"Advertencia: El objeto no tiene el atributo '{key}'. El valor no fue asignado.")
 
 
+def limpiar_datos(ocr_result):
+    cleaned_data = str(ocr_result).replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
+    return ' '.join(cleaned_data)

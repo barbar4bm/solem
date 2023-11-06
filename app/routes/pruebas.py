@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, jsonify,json
 from services import Ocr,tools
 from services import Sift as sift
+from services import cropper
+from services.carnet import Cedula
 
 pruebas = Blueprint('pruebas', __name__)
 
@@ -37,25 +39,54 @@ def upload_json():
 
     # Convertir las imágenes de base64 a objetos de imagen
     anverso=tools.b64_openCV(data['anverso'])
-    anverso=tools.escalaGrises(anverso)
     reverso=tools.b64_openCV(data['reverso'])
 
-    #anverso=sift.preparacionInicial(anverso)
-    #reverso=sift.preparacionInicial(reverso)
+    #
+
+    anverso=sift.preparacionInicial(anverso)
+    reverso=sift.preparacionInicial(reverso)
 
     resp_Anverso,resp_reverso=sift.identificador_lados(anverso,reverso)
+
+    #atratapar cuando alguno es falso y generar jSON respuesta
+    #aqui se llama a alguna funcion de codeJSON
+
     resp_Anverso=str(resp_Anverso)
     resp_reverso=str(resp_reverso)
 
+    diccionario_img=cropper.recorte(anverso,reverso)
+    clave_omitida=('qr','textoGeneral_MRZ')
+
+    diccionario_ocr = Ocr.obtenerTexto(diccionario_img,*clave_omitida)
+
+    #hacer diccionario MRZ
+    dicmrz = {
+            "textoGeneral_MRZ": "123",
+            "codigoPais_MRZ": "chi", 
+                "nombres_MRZ": "juan",
+                "RUN_MRZ": "1893",
+                "numeroDocumento_MRZ": "5345",
+                "apellidos_MRZ": "noi,mbre",
+                "nacionalidad_MRZ": "per",
+                "sexo_MRZ": "hsudf",
+                "fechaNacimiento_MRZ": "1223",
+                "fechaVencimiento_MRZ": "23123",
+        }
 
 
-    diccionario_img=tools.recorte(anverso,reverso)
-    clave_omitida="qr"
-    #realizar transformaciones iniciales a cada imagen, se llama a sift.py: diccionario_img=
+    print('////////////////////////////////')
+    carnet=Cedula(diccionario_ocr)
+    carnet.mrz['datosMRZ']['textoGeneral_MRZ']=diccionario_ocr['mrz_linea1']+" "+diccionario_ocr['mrz_linea2']+" "+diccionario_ocr['mrz_linea3']
+    carnet.actualizar_desde_dicionario(dicmrz)
+   
+    print('###############################')
+    print(carnet.__str__())
 
-    diccionario_ocr =Ocr.obtenerTexto(diccionario_img,clave_omitida)
+
+
+
     datos_respuesta={
-        'ocr_data': diccionario_ocr,
+        'ocr_data': vars(carnet),
         'resp_Anverso': resp_Anverso,
         'resp_reverso': resp_reverso
     }
