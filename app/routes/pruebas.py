@@ -59,32 +59,8 @@ def upload_json():
 
     diccionario_ocr = Ocr.obtenerTexto(diccionario_img,*clave_omitida)
 
-    #hacer diccionario MRZ
-    dicmrz = {
-            "textoGeneral_MRZ": "123",
-            "codigoPais_MRZ": "chi", 
-                "nombres_MRZ": "juan",
-                "RUN_MRZ": "1893",
-                "numeroDocumento_MRZ": "5345",
-                "apellidos_MRZ": "noi,mbre",
-                "nacionalidad_MRZ": "per",
-                "sexo_MRZ": "hsudf",
-                "fechaNacimiento_MRZ": "1223",
-                "fechaVencimiento_MRZ": "23123",
-        }
-
-
-    print('////////////////////////////////')
     carnet=Cedula(diccionario_ocr)
-    #esta linea se va
-    carnet.mrz['datosMRZ']['textoGeneral_MRZ']=diccionario_ocr['mrz_linea1']+" "+diccionario_ocr['mrz_linea2']+" "+diccionario_ocr['mrz_linea3']
-    carnet.actualizar_desde_dicionario(dicmrz)
-   
-    print('###############################')
-    print(carnet.__str__())
-
-
-
+    
 
     datos_respuesta={
         'ocr_data': vars(carnet),
