@@ -1,3 +1,4 @@
+import re
 class Cedula:
     def __init__(self, datos_iniciales=None):
         # Define la estructura inicial con valores por defecto
@@ -15,6 +16,7 @@ class Cedula:
         self.mrz = {
             "tieneMRZ": False,
             "datosMRZ": {
+                "mrz_raw":[],
                 "textoGeneral_MRZ": "",#separados por espacios
                 "codigoPais_MRZ": "", 
                 "nombres_MRZ": "",
@@ -51,10 +53,27 @@ class Cedula:
     def actualizar_desde_dicionario(self, data, keys_to_update=None):
         # Verifica si las claves MRZ específicas están en el diccionario y tienen contenido
         claves_mrz = ['mrz_linea1', 'mrz_linea2', 'mrz_linea3']
+        claves_mrz_raw=['linea1','linea2','linea3']
         if all(clave in data and data[clave].strip() for clave in claves_mrz):
             # Construye el texto general MRZ y lo asigna
             self.mrz['datosMRZ']['textoGeneral_MRZ'] = " ".join(data[clave] for clave in claves_mrz)
             self.mrz['tieneMRZ'] = True
+
+            
+
+            self.mrz['datosMRZ']['mrz_raw'] = [data[clave].replace('\n', '') for clave in claves_mrz_raw]
+            # Procesa las líneas MRZ
+            lineas_raw=self.mrz['datosMRZ']['mrz_raw']
+
+            self.mrz['datosMRZ']['numeroDocumento_MRZ'] = ''.join(c for c in lineas_raw[0] if c.isdigit())
+            apellido_nombre_mrz=self.procesar_linea_MRZ(lineas_raw[2])
+
+            self.mrz['datosMRZ']['apellidos_MRZ'] = apellido_nombre_mrz[0]+' '+apellido_nombre_mrz[1]
+            self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
+            
+            self.obtener_nacionalidad_mrz()
+            #convertir nacional
+            self.obtener_sexo_mrz()
         
         # Si se proporciona keys_to_update, solo se actualizan esas claves.
         if keys_to_update is not None:
@@ -72,6 +91,37 @@ class Cedula:
                 self.mrz["datosMRZ"][clave] = valor
         self.mrz["tieneMRZ"] = True
 
+    def obtener_sexo_mrz(self):
+        linea2MRZ=self.mrz["datosMRZ"]["textoGeneral_MRZ"].split()[1]
+        sexo_salida=''
+        if (len(linea2MRZ)==28):
+            sexo = linea2MRZ[7:8]
+            sexo_salida = sexo
+        self.mrz["datosMRZ"]["sexo_MRZ"]=sexo_salida
+    
+
+    def obtener_nacionalidad_mrz(self): 
+        #sequiere modificar la nacionalidad del diccionarioMRZ
+        nacionalidad=''
+        linea1MRZ=self.mrz["datosMRZ"]["textoGeneral_MRZ"].split()[0]
+
+        if (len(linea1MRZ)==18):
+            tmp = linea1MRZ[2:5]
+            nacionalidad = tmp
+
+        self.mrz["datosMRZ"]["nacionalidad_MRZ"]= nacionalidad
+
+    def procesar_linea_MRZ(self,input_string):
+        # Dividir el string en partes usando '<' como separador
+        partes = input_string.split('<')
+        
+        # Eliminar strings vacíos
+        partes = [parte for parte in partes if parte]
+        
+        # Eliminar cualquier carácter que no esté en el rango a-z y A-Z
+        partes = [re.sub('[^a-zA-Z]', '', parte) for parte in partes]
+        
+        return partes
 
 """declarar una funcion que realize validaciones de los datos de la cedula
 def validar_datos(self): la funcion me retorna un diccionari con una estructura que muestte los datos 

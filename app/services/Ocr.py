@@ -22,6 +22,10 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
             if nombre=="qr":
                 resultado[nombre]=tool.leerQR(imagen)
                 continue
+            elif nombre=="linea1" or nombre=="linea2" or nombre=="linea3":
+                    resultado[nombre]=pytesseract.image_to_string(imagen)
+                    print(resultado[nombre])
+                    continue
             continue
                 #se agregua elif para otros casos...
 

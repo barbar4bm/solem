@@ -184,3 +184,16 @@ def recortar_qr(imagen):
     # Recortar la imagen
     qr_recortado = imagen[y:y+h, x:x+w]
     return qr_recortado    
+
+def b64_imagen(imagen):
+    # Decodificar la cadena base64 a bytes
+    img_bytes = b64.b64decode(imagen)
+
+    # Convertir los bytes a una matriz numpy
+    img_array = np.frombuffer(img_bytes, dtype=np.uint8)
+
+    # Decodificar la matriz a una imagen
+    img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+
+    # Guardar la imagen como un archivo jpg
+    cv2.imwrite('imagen.jpg', img)

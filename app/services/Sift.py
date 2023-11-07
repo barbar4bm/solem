@@ -185,15 +185,6 @@ def identificador_lados(anverso,reverso):
     esAnverso=matches(desc_lado_anverso,des1)
     esReverso=matches(desc_lado_reverso,des2)
 
-    if(esAnverso and esReverso):
-        print('se Reconoce anverso y reverso')
-    elif(esAnverso and not esReverso):
-        print('Solo se reconoce Anverso')
-    elif(not esAnverso and esReverso):
-        print('Solo se reconoce Reverso')
-    else:
-        print('No se reconoce como carnet')
-
     return esAnverso,esReverso
 
 

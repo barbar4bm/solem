@@ -14,6 +14,7 @@ def obtenerRecorteImagen(imagenbaseEq,imgEq,M):
   return warped
 
 def recorte(rut_bin, rut_bin2):
+
     estado_inicial = locals().copy()
     # 530x840
     rut_bin=escalar_imagen(rut_bin,530,840)
@@ -22,6 +23,7 @@ def recorte(rut_bin, rut_bin2):
     #anverso
     nombres = rut_bin[171:211 , 291:806]
     apellidos = rut_bin[88:152 , 292:520]
+    
     RUN = rut_bin[460:496 , 98:273]
     nacionalidad = rut_bin[220:265, 291:425]
     sexo = rut_bin[222:263, 450:600]
@@ -33,13 +35,20 @@ def recorte(rut_bin, rut_bin2):
     #reverso
     ciudad = rut_bin2[211:247 , 182:600]
     profesion = rut_bin2[242:274,182:403]
+    fechaNacimiento_MRZ =rut_bin2[211:247 , 182:600]
+    profesion=rut_bin2[242:274 , 182:403]
 
-    #recortar la tres
-    
+    #recortar la tres lineas MRZ
     mrz_linea1=rut_bin2[343:398 , 37:800]
     mrz_linea2=rut_bin2[390:436 , 37:800]
     mrz_linea3=rut_bin2[432:482 , 37:800]
+
+    linea1=mrz_linea1
+    linea2=mrz_linea2
+    linea3=mrz_linea3
+
     textoGeneral_MRZ = None
+    mrz_raw=None
 
     nombres_MRZ = rut_bin2[440:482, 418:800]
     apellidos_MRZ = rut_bin2[440:478, 44:375]
