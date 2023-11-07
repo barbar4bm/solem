@@ -59,8 +59,6 @@ class Cedula:
             self.mrz['datosMRZ']['textoGeneral_MRZ'] = " ".join(data[clave] for clave in claves_mrz)
             self.mrz['tieneMRZ'] = True
 
-            
-
             self.mrz['datosMRZ']['mrz_raw'] = [data[clave].replace('\n', '') for clave in claves_mrz_raw]
             # Procesa las líneas MRZ
             lineas_raw=self.mrz['datosMRZ']['mrz_raw']
@@ -74,6 +72,9 @@ class Cedula:
             self.obtener_nacionalidad_mrz()
             #convertir nacional
             self.obtener_sexo_mrz()
+
+            #OBTENER EL RUT DE LINEA
+            self.mrz['datosMRZ']['RUN_MRZ'] = self.extraer_run_mrz(lineas_raw[1])
         
         # Si se proporciona keys_to_update, solo se actualizan esas claves.
         if keys_to_update is not None:
@@ -122,6 +123,21 @@ class Cedula:
         partes = [re.sub('[^a-zA-Z]', '', parte) for parte in partes]
         
         return partes
+  
+
+    def extraer_run_mrz(self, mrz_raw_1):
+        # Buscar los patrones en la cadena
+        chl_match = re.search('[A-Z]{3}(\d{8})', mrz_raw_1)
+        k_match = re.search('<(\w)', mrz_raw_1)
+
+        # Extraer los caracteres
+        chl_chars = chl_match.group(1) if chl_match else ''
+        k_char = k_match.group(1) if k_match else ''
+
+        # Combinar los caracteres
+        result = (chl_chars + k_char)
+
+        return result
 
 """declarar una funcion que realize validaciones de los datos de la cedula
 def validar_datos(self): la funcion me retorna un diccionari con una estructura que muestte los datos 

@@ -53,3 +53,16 @@ def Asignar_Valores_Objeto(obj, attributes_dict):
 def limpiar_datos(ocr_result):
     cleaned_data = str(ocr_result).replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
     return ' '.join(cleaned_data)
+
+def aplicarOCR(imagen):
+    # Verificar que la imagen sea un ndarray de numpy
+    if not isinstance(imagen, np.ndarray):
+        return {"error": "Imagen ilegible"}
+
+    # Aplicar OCR a la imagen
+    texto = pytesseract.image_to_string(imagen)
+
+    # Devolver el resultado
+    return {"resultado": texto}
+
+

@@ -37,7 +37,7 @@ def upload_json():
 
     # Verificar que las claves 'anverso' y 'reverso' estén presentes
     if 'anverso' not in data or 'reverso' not in data:
-        return jsonify({'error': 'El archivo JSON no tiene la estructura esperada'}), 400
+        return jsonify({'error': 'El archivo JSON no contiene clave anverso o reverso'}), 400
 
     # Convertir las imágenes de base64 a objetos de imagen
     anverso=tools.b64_openCV(data['anverso'])
@@ -60,6 +60,7 @@ def upload_json():
         return jsonify({'ocr_data': 'Solo se reconoce Reverso'})
     elif not resp_Anverso and not resp_reverso:
         return jsonify({'ocr_data': 'No se reconoce como Cedula'})
+
 
     resp_Anverso=str(resp_Anverso)
     resp_reverso=str(resp_reverso)
@@ -96,8 +97,7 @@ def procesar_ocr():
     # Convertir la imagen recibida a un formato utilizable para el OCR
     image_data = image_file.read()
     image_data=tools.imagen_a_matriz(image_data)
-    dicionario={"imagen":image_data}
-    textoCap=Ocr.obtenerTexto(dicionario)
+    textoCap=Ocr.aplicarOCR(image_data)
     # Procesar la imagen con la función OCR
     # Asumo que la función Ocr.process() es la que se encarga de esto, si no, reemplázalo por la función adecuada.
   
