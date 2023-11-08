@@ -29,7 +29,7 @@ def guardarDescriptores():
         with open(SAVE_PATH, 'wb') as f:
             pkl.dump(dic, f)
         
-        SAVE_PATH = os.path.join(BASE_DIR, c'data', f'otros_{name}.pkl')
+        SAVE_PATH = os.path.join(BASE_DIR, 'data', f'otros_{name}.pkl')
         with open(SAVE_PATH, 'wb') as f:
             pkl.dump(dic, f)
 
