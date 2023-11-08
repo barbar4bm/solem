@@ -10,9 +10,6 @@ app.register_blueprint(pruebas.pruebas)
 
 @app.route('/')
 def index():
-    #crear objeto cedula
-    cedula = Cedula()
-    print(cedula)
     return render_template('subir.html')
 
 

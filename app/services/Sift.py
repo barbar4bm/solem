@@ -26,12 +26,12 @@ def guardarDescriptores():
         
         dic = {name: descriptores}
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'descriptores_{name}.pkl')
-        with open(SAVE_PATH, 'wb') as f:
-            pkl.dump(dic, f)
-        
-        SAVE_PATH = os.path.join(BASE_DIR, 'data', f'otros_{name}.pkl')
-        with open(SAVE_PATH, 'wb') as f:
-            pkl.dump(dic, f)
+        try:
+            with open(SAVE_PATH, 'wb') as f:
+                pkl.dump(dic, f)
+        except Exception as e:
+            print(f"Error al guardar descriptores: {e}")
+
 
 
 def puntos_descriptores(image):
