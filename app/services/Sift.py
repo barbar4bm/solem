@@ -28,7 +28,10 @@ def guardarDescriptores():
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'descriptores_{name}.pkl')
         with open(SAVE_PATH, 'wb') as f:
             pkl.dump(dic, f)
-        print(descriptores)
+        
+        SAVE_PATH = os.path.join(BASE_DIR, c'data', f'otros_{name}.pkl')
+        with open(SAVE_PATH, 'wb') as f:
+            pkl.dump(dic, f)
 
 
 def puntos_descriptores(image):
