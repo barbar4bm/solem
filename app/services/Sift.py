@@ -190,21 +190,4 @@ def identificador_lados(anverso,reverso):
 
     return esAnverso,esReverso
 
-
-
-
-def is_screen_image(img):
-    coeffs2 = pywt.dwt2(img, 'bior1.3')
-    LL, (LH, HL, HH) = coeffs2
-    
-    # Calcula la varianza o energía de las componentes de detalle
-    energy_LH = np.sum(np.square(LH))
-    energy_HL = np.sum(np.square(HL))
-    energy_HH = np.sum(np.square(HH))
-    
-    threshold = 1e5  # Establecer un umbral adecuado basado en tu conjunto de datos
-    if energy_LH > threshold or energy_HL > threshold or energy_HH > threshold:
-        return True  # La imagen posiblemente fue tomada desde una pantalla
-    return False
-
    
