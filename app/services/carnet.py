@@ -18,7 +18,6 @@ class Cedula:
             "datosMRZ": {
                 "mrz_raw":[],
                 "textoGeneral_MRZ": "",#separados por espacios
-                "codigoPais_MRZ": "", 
                 "nombres_MRZ": "",
                 "RUN_MRZ": "",
                 "numeroDocumento_MRZ": "",
@@ -64,17 +63,22 @@ class Cedula:
             lineas_raw=self.mrz['datosMRZ']['mrz_raw']
 
             self.mrz['datosMRZ']['numeroDocumento_MRZ'] = ''.join(c for c in lineas_raw[0] if c.isdigit())
+
+            self.mrz['datosMRZ']['fechaNacimiento_MRZ']=lineas_raw[1][:6]
+            self.mrz['datosMRZ']['fechaVencimiento_MRZ']=lineas_raw[1][8:14]
             apellido_nombre_mrz=self.procesar_linea_MRZ(lineas_raw[2])
 
             self.mrz['datosMRZ']['apellidos_MRZ'] = apellido_nombre_mrz[0]+' '+apellido_nombre_mrz[1]
             self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
-            
-            self.obtener_nacionalidad_mrz()
+
+            self.mrz['datosMRZ']['nacionalidad_MRZ'] = self.extraer_abreviatura_pais(lineas_raw[1])
             #convertir nacional
+            
             self.obtener_sexo_mrz()
 
             #OBTENER EL RUT DE LINEA
             self.mrz['datosMRZ']['RUN_MRZ'] = self.extraer_run_mrz(lineas_raw[1])
+
         
         # Si se proporciona keys_to_update, solo se actualizan esas claves.
         if keys_to_update is not None:
@@ -84,6 +88,10 @@ class Cedula:
         for key, value in data.items():
             if hasattr(self, key) and key not in claves_mrz:  # Ignora las claves MRZ ya que ya se han procesado
                 setattr(self, key, value)
+        
+        self.fecha_nacimiento=self.transformar_fecha_front(self.fecha_nacimiento)
+        self.fecha_vencimiento=self.transformar_fecha_front(self.fecha_vencimiento)
+        self.fecha_emision=self.transformar_fecha_front(self.fecha_emision)
                 
 
     def actualizar_datos_mrz(self, datos_actualizacion):
@@ -138,6 +146,58 @@ class Cedula:
         result = (chl_chars + k_char)
 
         return result
+    
+
+
+    def extraer_abreviatura_pais(self, cadena):
+        # Buscar el patrón en la cadena
+        pais_match = re.search('[A-Z]{3}', cadena)
+
+        # Extraer los caracteres
+        pais_chars = pais_match.group(0) if pais_match else ''
+
+        return pais_chars
+    def transformar_fecha_front(self,fecha): #check
+
+        meses_abreviados = {
+        "ENER": "01",
+        "FEBR": "02",
+        "MAR": "03",
+        "ABR": "04",
+        "MAYO": "05",
+        "JUN": "06",
+        "JUL": "07",
+        "AGO": "08",
+        "SEPT": "09",
+        "OCT": "10",
+        "NOV": "11",
+        "DIC": "12"
+    }
+        fecha_formato=''
+        if (len(fecha) == 9):
+            dia = fecha[0:2]
+            mes = fecha[2:5]
+            #condicionar mes para pasarlo al numero
+            if mes in meses_abreviados:
+                valor_numerico = meses_abreviados[mes]
+            else:
+                return fecha_formato
+            año = fecha[7:]
+            fecha_formato= año+valor_numerico+dia
+            return fecha_formato
+        elif (len(fecha) == 10):
+            dia = fecha[0:2]
+            mes = fecha[2:6]
+            #condicionar mes para pasarlo al numero
+            if mes in meses_abreviados:
+                valor_numerico = meses_abreviados[mes]
+            else:
+                return fecha_formato
+            año = fecha[8:]
+            fecha_formato= año+valor_numerico+dia
+            return fecha_formato
+        else:
+            return fecha_formato #si la fecha no tiene esos tamaños 
 
 """declarar una funcion que realize validaciones de los datos de la cedula
 def validar_datos(self): la funcion me retorna un diccionari con una estructura que muestte los datos 

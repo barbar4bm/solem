@@ -50,9 +50,11 @@ def Asignar_Valores_Objeto(obj, attributes_dict):
             print(f"Advertencia: El objeto no tiene el atributo '{key}'. El valor no fue asignado.")
 
 
+import re
+
 def limpiar_datos(ocr_result):
-    cleaned_data = str(ocr_result).replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
-    return ' '.join(cleaned_data)
+    cleaned_data = re.sub('[^a-zA-Z0-9]', '', str(ocr_result))
+    return cleaned_data
 
 def aplicarOCR(imagen):
     # Verificar que la imagen sea un ndarray de numpy
