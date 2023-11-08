@@ -7,5 +7,5 @@ app = Flask(__name__)
 app.register_blueprint(pruebas.pruebas)
 
 if __name__ == "__main__":
-    sift.guardarDescriptores()
+    sift.almacenar_descriptores()
     app.run(debug=True)

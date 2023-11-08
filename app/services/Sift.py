@@ -4,18 +4,22 @@ import numpy as np
 import os
 import glob
 
-def guardarDescriptores():
+
+def retornoPrueba():
+    return 'return prueba'
+
+def almacenar_descriptores():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     image_names = ["anverso", "reverso"]
+    kp_anverso = None
+    kp_reverso = None
 
     for name in image_names:
-        # Buscando la imagen independientemente del formato
         found_images = glob.glob(os.path.join(BASE_DIR, 'data', f'{name}.*'))
         if not found_images:
             print(f"Imagen {name} no encontrada.")
             continue
 
-        # Tomando la primera imagen encontrada (en caso de múltiples formatos, considera ajustar)
         IMAGE_PATH = found_images[0]
         image = cv2.imread(IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
         if image is None:
@@ -23,7 +27,18 @@ def guardarDescriptores():
 
         sift = cv2.SIFT_create()
         kp, descriptores = sift.detectAndCompute(image, None)
-        
+        # Convertir keypoints a una lista de tuplas
+        kp = [(point.pt, point.size, point.angle, point.response, point.octave, point.class_id) for point in kp]
+        dic = {name: kp}
+        SAVE_PATH = os.path.join(BASE_DIR, 'data', f'keypoints_{name}.pkl')
+
+        try:
+            with open(SAVE_PATH, 'wb') as f:
+                pkl.dump(dic, f)
+        except Exception as e:
+            print(f"Error al guardar keypoints: {e}")
+
+
         dic = {name: descriptores}
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'descriptores_{name}.pkl')
         try:
@@ -32,7 +47,37 @@ def guardarDescriptores():
         except Exception as e:
             print(f"Error al guardar descriptores: {e}")
 
+    return kp_anverso, kp_reverso
 
+
+def guardarKeypoints(kp, filename):
+    # Convertir keypoints a una lista de tuplas
+    kp = [(point.pt, point.size, point.angle, point.response, point.octave, point.class_id) for point in kp]
+
+    # Crear el nombre del archivo
+    filename = f"keypoints_{filename}.pkl"
+
+    # Crear el directorio si no existe
+    directory = os.path.join('services', 'data')
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    # Crear la ruta completa al archivo
+    filepath = os.path.join(directory, filename)
+
+    # Guardar los keypoints en un archivo pickle
+    with open(filepath, 'wb') as f:
+        pkl.dump(kp, f)
+
+def cargarKeypoints(filename):
+    # Cargar los keypoints de un archivo pickle
+    with open(filename, 'rb') as f:
+        kp = pkl.load(f)
+
+    # Convertir la lista de tuplas de nuevo a keypoints
+    kp = [cv2.KeyPoint(x[0][0], x[0][1], x[1], x[2], x[3], x[4], x[5]) for x in kp]
+
+    return kp
 
 def puntos_descriptores(image):
   sift = cv2.xfeatures2d.SIFT_create(0, 3, 0.04, 0, 2)
