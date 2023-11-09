@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import base64 as b64
 import os
+import json
 
     
 def obtenerRecorteImagen(imagenbaseEq,imgEq,M):
@@ -197,3 +198,48 @@ def b64_imagen(imagen):
 
     # Guardar la imagen como un archivo jpg
     cv2.imwrite('imagen.jpg', img)
+
+def cargar_diccionario_paises():
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DICT_FILE_PATH = os.path.join(BASE_DIR, 'data', 'dic_paises.json')
+
+    # Verificar si el archivo existe
+    if not os.path.exists(DICT_FILE_PATH):
+        raise ValueError("Archivo dic_paises.json no encontrado.")
+
+    # Cargar el diccionario desde el archivo
+    with open(DICT_FILE_PATH, 'r') as f:
+        dic_paises = json.load(f)
+
+    return dic_paises
+
+def cargarPaises():
+    # Este es un ejemplo de cómo podrías definir las rutas de archivo si __file__ no está disponible
+    # En un script real, deberías usar __file__ para obtener la ruta base
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    FILE_PATH = os.path.join(BASE_DIR, 'data', 'paises_procesados.txt')
+    DICT_FILE_PATH = os.path.join(BASE_DIR, 'data', 'dic_paises.json')
+
+    # Verificar si el archivo existe
+    if not os.path.exists(FILE_PATH):
+        raise ValueError("Archivo paises_procesados.txt no encontrado.")
+
+    with open(FILE_PATH, 'r', encoding='utf-8') as f:
+        lineas = f.readlines()
+
+    # Crear el diccionario
+    dic_paises = {}
+    for linea in lineas:
+        # Dividir la línea en el nombre del país y la abreviatura
+        try:
+            nombre_pais, abreviatura_pais = linea.strip().split('/')
+            dic_paises[abreviatura_pais] = nombre_pais
+        except ValueError:
+            print(f"Error al procesar la línea: {linea.strip()}")
+            continue  # Omitir esta línea y continuar con la siguiente
+
+    # Guardar el diccionario en un archivo
+    with open(DICT_FILE_PATH, 'w', encoding='utf-8') as f:
+        json.dump(dic_paises, f, ensure_ascii=False, indent=4)
+
+    return dic_paises

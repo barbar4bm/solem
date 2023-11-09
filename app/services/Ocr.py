@@ -2,6 +2,7 @@ import cv2 as cv2
 import pytesseract
 import numpy as np
 from . import tools as tool
+import re
 
 #recibe un diccionario con imagenes
 def obtenerTexto(dicc_imagenes, *claves_omitidas):
@@ -50,11 +51,14 @@ def Asignar_Valores_Objeto(obj, attributes_dict):
             print(f"Advertencia: El objeto no tiene el atributo '{key}'. El valor no fue asignado.")
 
 
-import re
+
 
 def limpiar_datos(ocr_result):
     cleaned_data = re.sub('[^a-zA-Z0-9]', '', str(ocr_result))
     return cleaned_data
+
+
+
 
 def aplicarOCR(imagen):
     # Verificar que la imagen sea un ndarray de numpy

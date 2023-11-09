@@ -46,14 +46,11 @@ def upload_json():
     anverso=sift.preparacionInicial(anverso)
     reverso=sift.preparacionInicial(reverso)
 
-    #sift.encuadre(anverso,'anverso')
-
-
-
     #aqui se usa SIFT para ver si coinciden los descriptores
     #retorna booleano
     resp_Anverso,resp_reverso=sift.identificador_lados(anverso,reverso)
 
+    #sift.encuadre(anverso,'anverso')
 
     #atratapar cuando alguno es falso y generar jSON respuesta
     #aqui se llama a alguna funcion de codeJSON
@@ -70,13 +67,19 @@ def upload_json():
     resp_Anverso=str(resp_Anverso)
     resp_reverso=str(resp_reverso)
 
-    diccionario_img=cropper.recorte(anverso,reverso)
+    #aplicar binarizacion de otsu al reverso par amejorar lectura con ocr
+    ret, img_otsu=sift.binarizacion(reverso,1)
+
+    diccionario_img=cropper.recorte(anverso,img_otsu)
     
     clave_omitida=('qr','textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
 
     diccionario_ocr = Ocr.obtenerTexto(diccionario_img,*clave_omitida)
 
     carnet=Cedula(diccionario_ocr)
+
+    qrdic=carnet.extraer_datos_qr()
+    print(qrdic)
     
 
     datos_respuesta={

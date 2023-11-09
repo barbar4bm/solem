@@ -62,7 +62,7 @@ class Cedula:
             # Procesa las líneas MRZ
             lineas_raw=self.mrz['datosMRZ']['mrz_raw']
 
-            self.mrz['datosMRZ']['numeroDocumento_MRZ'] = ''.join(c for c in lineas_raw[0] if c.isdigit())
+            self.mrz['datosMRZ']['numeroDocumento_MRZ'] = self.extraer_numerodoc_MRZ(lineas_raw[0])
 
             self.mrz['datosMRZ']['fechaNacimiento_MRZ']=lineas_raw[1][:6]
             self.mrz['datosMRZ']['fechaVencimiento_MRZ']=lineas_raw[1][8:14]
@@ -73,6 +73,7 @@ class Cedula:
 
             self.mrz['datosMRZ']['nacionalidad_MRZ'] = self.extraer_abreviatura_pais(lineas_raw[1])
             #convertir nacional
+
             
             self.obtener_sexo_mrz()
 
@@ -99,6 +100,15 @@ class Cedula:
             if clave in self.mrz["datosMRZ"]:
                 self.mrz["datosMRZ"][clave] = valor
         self.mrz["tieneMRZ"] = True
+    
+
+    def extraer_numerodoc_MRZ(self, linea_raw0):
+        # Extraer todos los dígitos de la cadena
+        digitos = re.findall('\d', linea_raw0)
+
+        # Unir los dígitos en una sola cadena y obtener los primeros 9
+        return ''.join(digitos)[:9]
+
 
     def obtener_sexo_mrz(self):
         linea2MRZ=self.mrz["datosMRZ"]["textoGeneral_MRZ"].split()[1]
@@ -119,6 +129,8 @@ class Cedula:
             nacionalidad = tmp
 
         self.mrz["datosMRZ"]["nacionalidad_MRZ"]= nacionalidad
+    
+
 
     def procesar_linea_MRZ(self,input_string):
         # Dividir el string en partes usando '<' como separador
@@ -146,6 +158,35 @@ class Cedula:
         result = (chl_chars + k_char)
 
         return result
+    
+    def extraer_datos_qr(self):
+        # Verificar que self.string_qr es un string
+        qr=self.qr
+        if not qr or not isinstance(qr, str):
+            return False
+
+        # Inicializar el diccionario que contendrá los datos extraídos
+        datos_qr = {}
+
+        # Separar la URL en la base y los parámetros
+        try:
+            base, parametros = qr.split('?', 1)
+        except ValueError:
+            raise ValueError("Formato de URL inválido.")
+
+        # Dividir los parámetros en pares clave-valor
+        pares = parametros.split('&')
+
+        # Extraer los valores para cada par clave-valor deseado
+        for par in pares:
+            clave, valor = par.split('=')
+            if clave in ['RUN', 'serial', 'mrz']:
+                # Quitar cualquier posible guión en el valor de RUN
+                if clave == 'RUN':
+                    valor = valor.replace('-', '')
+                datos_qr[clave] = valor
+
+        return datos_qr
     
 
 

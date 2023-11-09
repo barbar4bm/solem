@@ -75,6 +75,7 @@ def binarizacion(imagen, otsu=0):
     if otsu not in [0, 1]:raise ValueError("El valor de otsu debe ser 0 o 1.")
 
     if otsu == 1:
+       
        return cv2.threshold(imagen, 127,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
        
     else:
