@@ -79,7 +79,6 @@ def upload_json():
     carnet=Cedula(diccionario_ocr)
 
     qrdic=carnet.extraer_datos_qr()
-    print(qrdic)
     
 
     datos_respuesta={

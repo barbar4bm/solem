@@ -28,7 +28,8 @@ class Cedula:
                 "fechaVencimiento_MRZ": "",
             }
         }
-        self.qr = ""
+        self.qr = "",
+        self.datos_qr=None
 
         # Si se proporciona un diccionario, actualiza los atributos con los valores correspondientes
         if isinstance(datos_iniciales, dict):
@@ -53,6 +54,7 @@ class Cedula:
         # Verifica si las claves MRZ específicas están en el diccionario y tienen contenido
         claves_mrz = ['mrz_linea1', 'mrz_linea2', 'mrz_linea3']
         claves_mrz_raw=['linea1','linea2','linea3']
+
         if all(clave in data and data[clave].strip() for clave in claves_mrz):
             # Construye el texto general MRZ y lo asigna
             self.mrz['datosMRZ']['textoGeneral_MRZ'] = " ".join(data[clave] for clave in claves_mrz)
@@ -61,22 +63,16 @@ class Cedula:
             self.mrz['datosMRZ']['mrz_raw'] = [data[clave].replace('\n', '') for clave in claves_mrz_raw]
             # Procesa las líneas MRZ
             lineas_raw=self.mrz['datosMRZ']['mrz_raw']
-
             self.mrz['datosMRZ']['numeroDocumento_MRZ'] = self.extraer_numerodoc_MRZ(lineas_raw[0])
-
             self.mrz['datosMRZ']['fechaNacimiento_MRZ']=lineas_raw[1][:6]
             self.mrz['datosMRZ']['fechaVencimiento_MRZ']=lineas_raw[1][8:14]
             apellido_nombre_mrz=self.procesar_linea_MRZ(lineas_raw[2])
-
             self.mrz['datosMRZ']['apellidos_MRZ'] = apellido_nombre_mrz[0]+' '+apellido_nombre_mrz[1]
             self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
-
             self.mrz['datosMRZ']['nacionalidad_MRZ'] = self.extraer_abreviatura_pais(lineas_raw[1])
             #convertir nacional
-
-            
+            abrev_pais=self.mrz['datosMRZ']['nacionalidad_MRZ']
             self.obtener_sexo_mrz()
-
             #OBTENER EL RUT DE LINEA
             self.mrz['datosMRZ']['RUN_MRZ'] = self.extraer_run_mrz(lineas_raw[1])
 
@@ -158,37 +154,6 @@ class Cedula:
         result = (chl_chars + k_char)
 
         return result
-    
-    def extraer_datos_qr(self):
-        # Verificar que self.string_qr es un string
-        qr=self.qr
-        if not qr or not isinstance(qr, str):
-            return False
-
-        # Inicializar el diccionario que contendrá los datos extraídos
-        datos_qr = {}
-
-        # Separar la URL en la base y los parámetros
-        try:
-            base, parametros = qr.split('?', 1)
-        except ValueError:
-            raise ValueError("Formato de URL inválido.")
-
-        # Dividir los parámetros en pares clave-valor
-        pares = parametros.split('&')
-
-        # Extraer los valores para cada par clave-valor deseado
-        for par in pares:
-            clave, valor = par.split('=')
-            if clave in ['RUN', 'serial', 'mrz']:
-                # Quitar cualquier posible guión en el valor de RUN
-                if clave == 'RUN':
-                    valor = valor.replace('-', '')
-                datos_qr[clave] = valor
-
-        return datos_qr
-    
-
 
     def extraer_abreviatura_pais(self, cadena):
         # Buscar el patrón en la cadena

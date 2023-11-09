@@ -243,3 +243,31 @@ def cargarPaises():
         json.dump(dic_paises, f, ensure_ascii=False, indent=4)
 
     return dic_paises
+
+def extraer_datos_qr(qr):
+    # Verificar que self.string_qr es un string
+    if not qr or not isinstance(qr, str):
+        return False
+
+    # Inicializar el diccionario que contendrá los datos extraídos
+    datos_qr = {}
+
+    # Separar la URL en la base y los parámetros
+    try:
+        base, parametros = qr.split('?', 1)
+    except ValueError:
+        raise ValueError("Formato de URL inválido.")
+
+    # Dividir los parámetros en pares clave-valor
+    pares = parametros.split('&')
+
+    # Extraer los valores para cada par clave-valor deseado
+    for par in pares:
+        clave, valor = par.split('=')
+        if clave in ['RUN', 'serial', 'mrz']:
+            # Quitar cualquier posible guión en el valor de RUN
+            if clave == 'RUN':
+                valor = valor.replace('-', '')
+            datos_qr[clave] = valor
+
+    return datos_qr
