@@ -1,5 +1,6 @@
 import pickle as pkl
 import cv2 as cv2
+from matplotlib import pyplot as plt
 import numpy as np
 import os
 import glob
@@ -28,8 +29,9 @@ def almacenar_descriptores():
         sift = cv2.SIFT_create()
         kp, descriptores = sift.detectAndCompute(image, None)
         # Convertir keypoints a una lista de tuplas
-        kp = [(point.pt, point.size, point.angle, point.response, point.octave, point.class_id) for point in kp]
-        dic = {name: kp}
+        # Almacenar keypoints
+        kp_data = [[point.pt[0], point.pt[1], point.size, point.angle, point.response, point.octave, point.class_id] for point in kp]
+        dic = {name: kp_data}
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'keypoints_{name}.pkl')
 
         try:
@@ -49,35 +51,6 @@ def almacenar_descriptores():
 
     return kp_anverso, kp_reverso
 
-
-def guardarKeypoints(kp, filename):
-    # Convertir keypoints a una lista de tuplas
-    kp = [(point.pt, point.size, point.angle, point.response, point.octave, point.class_id) for point in kp]
-
-    # Crear el nombre del archivo
-    filename = f"keypoints_{filename}.pkl"
-
-    # Crear el directorio si no existe
-    directory = os.path.join('services', 'data')
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    # Crear la ruta completa al archivo
-    filepath = os.path.join(directory, filename)
-
-    # Guardar los keypoints en un archivo pickle
-    with open(filepath, 'wb') as f:
-        pkl.dump(kp, f)
-
-def cargarKeypoints(filename):
-    # Cargar los keypoints de un archivo pickle
-    with open(filename, 'rb') as f:
-        kp = pkl.load(f)
-
-    # Convertir la lista de tuplas de nuevo a keypoints
-    kp = [cv2.KeyPoint(x[0][0], x[0][1], x[1], x[2], x[3], x[4], x[5]) for x in kp]
-
-    return kp
 
 def puntos_descriptores(image):
   sift = cv2.xfeatures2d.SIFT_create(0, 3, 0.04, 0, 2)
@@ -147,6 +120,7 @@ def calcHomografia(good,MIN_MATCH_COUNT,img_ref,kp_obj,kp_ref,imgEq):
     else:
         print( "Not enough matches are found - {}/{}".format(len(good), MIN_MATCH_COUNT) )
         matchesMask = None
+
         return None
 
 
@@ -164,6 +138,22 @@ def cargarDescriptores(nombre):
     
     return data[nombre]    
 
+def cargarKeypoints(filename):
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    FILE_PATH = os.path.join(BASE_DIR, 'data', f'keypoints_{filename}.pkl')
+
+    # Verificar si el archivo existe
+    if not os.path.exists(FILE_PATH):
+        raise ValueError(f"Archivo keypoints_{filename}.pkl no encontrado.")
+
+    # Cargar los keypoints de un archivo pickle
+    with open(FILE_PATH, 'rb') as f:
+        kp_list = pkl.load(f)
+
+    # Convertir la lista de tuplas de nuevo a keypoints
+    kp = [cv2.KeyPoint(x[0], x[1], x[2], x[3], x[4], int(x[5]), int(x[6])) for x in kp_list]
+
+    return kp
         
 def guardarDescriptores():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -235,4 +225,47 @@ def identificador_lados(anverso,reverso):
 
     return esAnverso,esReverso
 
-   
+def keypoints_descriptores(image):
+  
+  sift = cv2.SIFT_create(0, 3, 0.04, 0, 2)
+  keypoints, descriptors = sift.detectAndCompute(image,None)
+  return keypoints, descriptors
+
+def abrir_Imagen(lado):
+    imagen_numpy=None
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    image_names = [lado]
+    for name in image_names:
+        found_images = glob.glob(os.path.join(BASE_DIR, 'data', f'{name}.*'))
+        if not found_images:
+            print(f"Imagen {name} no encontrada.")
+            continue
+
+        IMAGE_PATH = found_images[0]
+        image = cv2.imread(IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            raise ValueError(f"La imagen {IMAGE_PATH} no se cargó correctamente.")
+        try:
+            imagen_numpy=preparacionInicial(cv2.imread(IMAGE_PATH))
+        except Exception as e:
+            print(f"Error al abrir imagen: {e}")
+
+    return imagen_numpy
+
+def encuadre(imagen,lado):
+    MIN_MATCH_COUNT=10
+    kp_carnet, des_carnet = keypoints_descriptores(imagen)
+    descriptores_lado= cargarDescriptores(lado)
+    good=findMatches(des_carnet,descriptores_lado)
+    imagen_ref=abrir_Imagen(lado)
+    keypoints_ref=cargarKeypoints(lado)
+    dst, M, matchesMask=calcHomografia(good,MIN_MATCH_COUNT,imagen_ref,kp_carnet,keypoints_ref,imagen)
+    h,w=imagen_ref.shape
+    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+    warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
+    plt.imshow(warped_img, cmap='gray')
+    plt.axis('off')
+    plt.show()
+
+
+
