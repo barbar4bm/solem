@@ -21,8 +21,6 @@ def retornoPrueba():
 def almacenar_descriptores():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     image_names = ["anverso", "reverso"]
-    kp_anverso = None
-    kp_reverso = None
 
     for name in image_names:
         found_images = glob.glob(os.path.join(BASE_DIR, 'data', f'{name}.*'))
@@ -37,7 +35,7 @@ def almacenar_descriptores():
 
         sift = cv2.SIFT_create()
         kp, descriptores = sift.detectAndCompute(image, None)
-        # Convertir keypoints a una lista de tuplas
+
         # Almacenar keypoints
         # Convertir los keypoints a una estructura serializable
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'keypoints_{name}.pkl')
@@ -56,7 +54,7 @@ def almacenar_descriptores():
         except Exception as e:
             print(f"Error al guardar descriptores: {e}")
 
-    return kp_anverso, kp_reverso
+    return True
 
 
 def puntos_descriptores(image):
@@ -278,33 +276,35 @@ def guardar_keypoints(keypoints, name):
 def encuadre(imagen,lado):
     descriptores_lado= cargarDescriptores(lado)
     MIN_MATCH_COUNT=20
-    porc_calc_homografia=necesita_homografia(imagen, lado,descriptores_lado)
+    porc_calc_homografia=necesita_homografia(imagen,descriptores_lado)
+
     if not porc_calc_homografia:
         print("No se necesita homografía."+str(porc_calc_homografia))
         return imagen
+    else:
+        print("Si se necesita homografía."+str(porc_calc_homografia))
     
-    kp_carnet, des_carnet = keypoints_descriptores(imagen)
-    good=findMatches(des_carnet,descriptores_lado)
-    imagen_ref=abrir_Imagen(lado)
-    keypoints_ref=cargarKeypoints(lado)
-    dst, M, matchesMask=calcHomografia(good,MIN_MATCH_COUNT,imagen_ref,kp_carnet,keypoints_ref,imagen)
-    h,w=imagen_ref.shape
-    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
-    warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
+        kp_carnet, des_carnet = keypoints_descriptores(imagen)
+        good=findMatches(des_carnet,descriptores_lado)
+        imagen_ref=abrir_Imagen(lado)
+        keypoints_ref=cargarKeypoints(lado)
+        dst, M, matchesMask=calcHomografia(good,MIN_MATCH_COUNT,imagen_ref,kp_carnet,keypoints_ref,imagen)
+        h,w=imagen_ref.shape
+        pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+        warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
 
-    return warped_img
+        return warped_img
 
 
-def necesita_homografia(imagen, lado, descriptores_lado,umbral=0.2):
-    # Asumiendo que la función cargarKeypoints carga los keypoints pre-almacenados para el lado dado
-    # y la función puntos_descriptores calcula los keypoints para la imagen actual
-    keypoints_lado = cargarKeypoints(lado)
+def necesita_homografia(imagen, descriptores_lado,umbral=50):
     kp_imagen, descriptores = puntos_descriptores(imagen)
     
     # Aquí podrías usar la función findMatches o cualquier otra lógica para comparar los keypoints
     good_matches = findMatches(descriptores, descriptores_lado)
     
     # Si el porcentaje de buenos matches es menor que el umbral, se calcula la homografía
-    return len(good_matches) / len(kp_imagen) < umbral
+    print(f"Porcentaje de buenos matches: {len(good_matches) / len(kp_imagen)}")
+    print(len(good_matches),' ',len(kp_imagen))
+    return len(good_matches)< umbral
 
 

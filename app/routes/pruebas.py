@@ -46,13 +46,12 @@ def upload_json():
     anverso=sift.preparacionInicial(anverso)
     reverso=sift.preparacionInicial(reverso)
 
-    #aqui se usa SIFT para ver si coinciden los descriptores
-    #retorna booleano
     resp_Anverso,resp_reverso=sift.identificador_lados(anverso,reverso)
 
     tools.mostrar_imagen(anverso)
     anverso=sift.encuadre(anverso,'anverso')
     tools.mostrar_imagen(anverso)
+    
     reverso=sift.encuadre(reverso,'reverso')
     tools.mostrar_imagen(reverso)
 
