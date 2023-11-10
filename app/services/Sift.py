@@ -30,13 +30,13 @@ def almacenar_descriptores():
         kp, descriptores = sift.detectAndCompute(image, None)
         # Convertir keypoints a una lista de tuplas
         # Almacenar keypoints
-        kp_data = [[point.pt[0], point.pt[1], point.size, point.angle, point.response, point.octave, point.class_id] for point in kp]
-        dic = {name: kp_data}
+        # Convertir los keypoints a una estructura serializable
+        kp_serializable = [(k.pt, k.size, k.angle, k.response, k.octave, k.class_id) for k in kp]
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'keypoints_{name}.pkl')
 
         try:
             with open(SAVE_PATH, 'wb') as f:
-                pkl.dump(dic, f)
+                pkl.dump(kp_serializable, f)
         except Exception as e:
             print(f"Error al guardar keypoints: {e}")
 
@@ -139,20 +139,20 @@ def cargarDescriptores(nombre):
     
     return data[nombre]    
 
-def cargarKeypoints(filename):
+def cargarKeypoints(lado):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    FILE_PATH = os.path.join(BASE_DIR, 'data', f'keypoints_{filename}.pkl')
+    FILE_PATH = os.path.join(BASE_DIR, 'data', f'keypoints_{lado}.pkl')
 
     # Verificar si el archivo existe
     if not os.path.exists(FILE_PATH):
-        raise ValueError(f"Archivo keypoints_{filename}.pkl no encontrado.")
+        raise ValueError(f"Archivo keypoints_{lado}.pkl no encontrado.")
 
     # Cargar los keypoints de un archivo pickle
-    with open(FILE_PATH, 'rb') as f:
-        kp_list = pkl.load(f)
+    with open(FILE_PATH, 'rb') as file:
+        kp_list = pkl.load(file)
 
-    # Convertir la lista de tuplas de nuevo a keypoints
-    kp = [cv2.KeyPoint(x[0], x[1], x[2], x[3], x[4], int(x[5]), int(x[6])) for x in kp_list]
+    # Convertir la lista de tuplas de nuevo a objetos Keypoint
+    kp = [cv2.KeyPoint(x=point[0][0], y=point[0][1], _size=point[1], _angle=point[2], _response=point[3], _octave=point[4], _class_id=point[5]) for point in kp_list]
 
     return kp
         
@@ -253,7 +253,7 @@ def abrir_Imagen(lado):
 
     return imagen_numpy
 
-def encuadre(imagen,lado):
+def hola(imagen,lado):
     MIN_MATCH_COUNT=10
     kp_carnet, des_carnet = keypoints_descriptores(imagen)
     descriptores_lado= cargarDescriptores(lado)
@@ -264,9 +264,7 @@ def encuadre(imagen,lado):
     h,w=imagen_ref.shape
     pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
     warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
-    plt.imshow(warped_img, cmap='gray')
-    plt.axis('off')
-    plt.show()
+    print('encuadre')
 
 
 

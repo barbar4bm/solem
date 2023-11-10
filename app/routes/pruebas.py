@@ -50,7 +50,7 @@ def upload_json():
     #retorna booleano
     resp_Anverso,resp_reverso=sift.identificador_lados(anverso,reverso)
 
-    #sift.encuadre(anverso,'anverso')
+    sift.hola(reverso,'anverso')
 
     #atratapar cuando alguno es falso y generar jSON respuesta
     #aqui se llama a alguna funcion de codeJSON
