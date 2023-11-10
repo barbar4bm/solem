@@ -289,3 +289,7 @@ def extraer_datos_qr(qr):
             datos_qr[clave] = valor
 
     return datos_qr
+
+def mostrar_imagen(imagen):
+    cv2.imshow('Imagen', imagen)
+    cv2.waitKey(0)

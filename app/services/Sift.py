@@ -268,8 +268,9 @@ def guardar_keypoints(keypoints, name):
     except Exception as e:
         print(f"Error al guardar keypoints: {e}")
 
-def hola(imagen,lado):
-    MIN_MATCH_COUNT=10
+#usar metodo de matriz dde homografia para encuadrar la imagen
+def encuadre(imagen,lado):
+    MIN_MATCH_COUNT=20
     kp_carnet, des_carnet = keypoints_descriptores(imagen)
     descriptores_lado= cargarDescriptores(lado)
     good=findMatches(des_carnet,descriptores_lado)
@@ -279,9 +280,7 @@ def hola(imagen,lado):
     h,w=imagen_ref.shape
     pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
     warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
-    cv2.imwrite('imagen_guardada.jpg', warped_img)
-    cv2.imshow('Warped Image', warped_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+
+    return warped_img
 
 
