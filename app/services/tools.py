@@ -290,6 +290,6 @@ def extraer_datos_qr(qr):
 
     return datos_qr
 
-def mostrar_imagen(imagen):
-    cv2.imshow('Imagen', imagen)
+def mostrar_imagen(imagen, titulo='Imagen'):
+    cv2.imshow(titulo, imagen)
     cv2.waitKey(0)

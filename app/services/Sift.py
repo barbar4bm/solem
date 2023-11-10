@@ -206,7 +206,7 @@ def identificador_lados(anverso,reverso):
         print(f'Número de coincidencia de descriptores: {coincidencias}')
 
 
-        if (coincidencias > 15):
+        if (coincidencias > 10):
             return True
         else:
             return False
@@ -278,7 +278,7 @@ def encuadre(imagen,lado):
 
     if not porc_calc_homografia:
         print("No se necesita homografía."+str(porc_calc_homografia))
-        return imagen
+        return imagen,False
     else:
         print("Si se necesita homografía."+str(porc_calc_homografia))
     
@@ -291,7 +291,7 @@ def encuadre(imagen,lado):
         pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
         warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
 
-        return warped_img
+        return warped_img,True
 
 
 def necesita_homografia1(imagen, descriptores_lado,lado,umbral=0.2):
