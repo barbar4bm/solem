@@ -71,8 +71,6 @@ class Cedula:
             self.mrz['datosMRZ']['apellidos_MRZ'] = apellido_nombre_mrz[0]+' '+apellido_nombre_mrz[1]
             self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
             self.mrz['datosMRZ']['nacionalidad_MRZ'] = self.extraer_abreviatura_pais(lineas_raw[1])
-            #convertir nacional
-            self.transformar_nombre_pais()
 
             self.obtener_sexo_mrz()
             #OBTENER EL RUT DE LINEA
@@ -91,6 +89,7 @@ class Cedula:
         self.fecha_nacimiento=self.transformar_fecha_front(self.fecha_nacimiento)
         self.fecha_vencimiento=self.transformar_fecha_front(self.fecha_vencimiento)
         self.fecha_emision=self.transformar_fecha_front(self.fecha_emision)
+        self.transformar_nombre_pais()
                 
 
     def actualizar_datos_mrz(self, datos_actualizacion):
@@ -209,6 +208,7 @@ class Cedula:
 
     def transformar_nombre_pais(self):
         trat_nacional = tools.cargar_trat_nacionalidades()
+        print(self.nacionalidad)
 
         # Comprobar si dic_paises es un diccionario
         if not isinstance(trat_nacional, dict):
@@ -219,8 +219,10 @@ class Cedula:
             raise ValueError("dic_paises no puede ser None.")
         #QUE SUSCEDE SI NO EXISTE LA CLAVE???. CONTROLAR ESO..
 
-        if hasattr(self, 'nacionalidad') and self.nacionalidad !='' and self.nacionalidad in trat_nacional:
-            self.nacionalidad = trat_nacional[self.nacionalidad]
+
+        if  self.nacionalidad!='' and self.nacionalidad in trat_nacional:
+            abreviatura=trat_nacional[self.nacionalidad]
+            self.nacionalidad = abreviatura
 
 
 

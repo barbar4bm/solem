@@ -203,10 +203,10 @@ def identificador_lados(anverso,reverso):
                 good.append([m])
 
         coincidencias = len(good)
-        #print(f'Número de coincidencia de descriptores: {coincidencias}')
+        print(f'Número de coincidencia de descriptores: {coincidencias}')
 
 
-        if (coincidencias > 20):
+        if (coincidencias > 15):
             return True
         else:
             return False
@@ -217,7 +217,6 @@ def identificador_lados(anverso,reverso):
     desc_lado_anverso = cargarDescriptores('anverso')
     desc_lado_reverso = cargarDescriptores('reverso')
 
-
     # Calculo los descriptores de la imagen nueva
     # Inicializo el detector SIFT
     # Query Image
@@ -227,7 +226,6 @@ def identificador_lados(anverso,reverso):
     # Encuentro los descriptores de la imagen a revisar
     kp1, des1 = sift.detectAndCompute(anverso,None)
     kp2, des2= sift.detectAndCompute(reverso,None)
-
 
     esAnverso=matches(desc_lado_anverso,des1)
     esReverso=matches(desc_lado_reverso,des2)
@@ -276,7 +274,7 @@ def guardar_keypoints(keypoints, name):
 def encuadre(imagen,lado):
     descriptores_lado= cargarDescriptores(lado)
     MIN_MATCH_COUNT=20
-    porc_calc_homografia=necesita_homografia(imagen,descriptores_lado)
+    porc_calc_homografia=necesita_homografia1(imagen,descriptores_lado,lado)
 
     if not porc_calc_homografia:
         print("No se necesita homografía."+str(porc_calc_homografia))
@@ -296,15 +294,19 @@ def encuadre(imagen,lado):
         return warped_img
 
 
-def necesita_homografia(imagen, descriptores_lado,umbral=50):
+def necesita_homografia1(imagen, descriptores_lado,lado,umbral=0.2):
     kp_imagen, descriptores = puntos_descriptores(imagen)
     
     # Aquí podrías usar la función findMatches o cualquier otra lógica para comparar los keypoints
     good_matches = findMatches(descriptores, descriptores_lado)
     
     # Si el porcentaje de buenos matches es menor que el umbral, se calcula la homografía
-    print(f"Porcentaje de buenos matches: {len(good_matches) / len(kp_imagen)}")
+    print(f"Porcentaje de buenos matches: {len(good_matches) / len(descriptores_lado)}")
     print(len(good_matches),' ',len(kp_imagen))
-    return len(good_matches)< umbral
+
+    if(lado=='anverso'):
+        return len(good_matches)/len(descriptores_lado)< umbral
+    else:
+        return len(good_matches)/len(descriptores_lado)< 0.1
 
 
