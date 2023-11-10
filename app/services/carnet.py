@@ -1,4 +1,5 @@
 import re
+from services import tools
 class Cedula:
     def __init__(self, datos_iniciales=None):
         # Define la estructura inicial con valores por defecto
@@ -71,7 +72,8 @@ class Cedula:
             self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
             self.mrz['datosMRZ']['nacionalidad_MRZ'] = self.extraer_abreviatura_pais(lineas_raw[1])
             #convertir nacional
-            abrev_pais=self.mrz['datosMRZ']['nacionalidad_MRZ']
+            self.transformar_nombre_pais()
+
             self.obtener_sexo_mrz()
             #OBTENER EL RUT DE LINEA
             self.mrz['datosMRZ']['RUN_MRZ'] = self.extraer_run_mrz(lineas_raw[1])
@@ -204,6 +206,24 @@ class Cedula:
             return fecha_formato
         else:
             return fecha_formato #si la fecha no tiene esos tamaños 
+
+    def transformar_nombre_pais(self):
+        trat_nacional = tools.cargar_trat_nacionalidades()
+        print(trat_nacional)
+
+        # Comprobar si dic_paises es un diccionario
+        if not isinstance(trat_nacional, dict):
+            raise ValueError("dic_paises debe ser un diccionario.")
+
+        # Comprobar si dic_paises es None
+        if trat_nacional is None:
+            raise ValueError("dic_paises no puede ser None.")
+        #QUE SUSCEDE SI NO EXISTE LA CLAVE???. CONTROLAR ESO..
+
+        if hasattr(self, 'nacionalidad') and self.nacionalidad !='' and self.nacionalidad in trat_nacional:
+            self.nacionalidad = trat_nacional[self.nacionalidad]
+
+
 
 """declarar una funcion que realize validaciones de los datos de la cedula
 def validar_datos(self): la funcion me retorna un diccionari con una estructura que muestte los datos 

@@ -213,6 +213,24 @@ def cargar_diccionario_paises():
 
     return dic_paises
 
+
+
+
+def cargar_trat_nacionalidades():
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DICT_FILE_PATH = os.path.join(BASE_DIR, 'data', 'dic_trat_nacional.json')
+
+    # Verificar si el archivo existe
+    if not os.path.exists(DICT_FILE_PATH):
+        raise ValueError("Archivo dic_trat_nacional.json no encontrado.")
+
+    # Cargar el diccionario desde el archivo
+    with open(DICT_FILE_PATH, 'r') as f:
+        dic_trat_nacional = json.load(f)
+
+    return dic_trat_nacional
+
+
 def cargarPaises():
     # Este es un ejemplo de cómo podrías definir las rutas de archivo si __file__ no está disponible
     # En un script real, deberías usar __file__ para obtener la ruta base

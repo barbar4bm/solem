@@ -9,5 +9,4 @@ app.register_blueprint(pruebas.pruebas)
 
 if __name__ == "__main__":
     sift.almacenar_descriptores()
-    tools.cargarPaises()
     app.run(debug=True)
