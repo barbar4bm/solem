@@ -209,7 +209,6 @@ class Cedula:
 
     def transformar_nombre_pais(self):
         trat_nacional = tools.cargar_trat_nacionalidades()
-        print(trat_nacional)
 
         # Comprobar si dic_paises es un diccionario
         if not isinstance(trat_nacional, dict):

@@ -50,6 +50,7 @@ def upload_json():
     #retorna booleano
     resp_Anverso,resp_reverso=sift.identificador_lados(anverso,reverso)
 
+    tools.mostrar_imagen(anverso)
     anverso=sift.encuadre(anverso,'anverso')
     tools.mostrar_imagen(anverso)
     reverso=sift.encuadre(reverso,'reverso')

@@ -60,7 +60,7 @@ def almacenar_descriptores():
 
 
 def puntos_descriptores(image):
-  sift = cv2.xfeatures2d.SIFT_create(0, 3, 0.04, 0, 2)
+  sift = cv2.SIFT_create(0, 3, 0.04, 0, 2)
   puntos,descriptores=sift.detectAndCompute(image,None)
   return puntos,descriptores
 
@@ -91,7 +91,13 @@ def binarizacion(imagen, otsu=0):
 def findMatches(descriptoresObjeto,descriptoresBase):
   """Idealmente tener una base de datos de entrenamiento de los descripores base,
      para luego simplemente consultar estos datos y buscar coincidencias,"""   
-   
+    # Verificar que descriptoresObjeto y descriptoresBase son arreglos de NumPy y del tipo float32
+    
+  if not isinstance(descriptoresObjeto, np.ndarray) or not isinstance(descriptoresBase, np.ndarray):
+    raise ValueError("Los descriptores deben ser arreglos de NumPy.")
+  if descriptoresObjeto.dtype != np.float32 or descriptoresBase.dtype != np.float32:
+    raise ValueError("Los descriptores deben ser del tipo np.float32.")
+  
   FLANN_INDEX_KDTREE = 1
   index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
   search_params = dict(checks = 50)
@@ -270,9 +276,14 @@ def guardar_keypoints(keypoints, name):
 
 #usar metodo de matriz dde homografia para encuadrar la imagen
 def encuadre(imagen,lado):
-    MIN_MATCH_COUNT=20
-    kp_carnet, des_carnet = keypoints_descriptores(imagen)
     descriptores_lado= cargarDescriptores(lado)
+    MIN_MATCH_COUNT=20
+    porc_calc_homografia=necesita_homografia(imagen, lado,descriptores_lado)
+    if not porc_calc_homografia:
+        print("No se necesita homografía."+str(porc_calc_homografia))
+        return imagen
+    
+    kp_carnet, des_carnet = keypoints_descriptores(imagen)
     good=findMatches(des_carnet,descriptores_lado)
     imagen_ref=abrir_Imagen(lado)
     keypoints_ref=cargarKeypoints(lado)
@@ -282,5 +293,18 @@ def encuadre(imagen,lado):
     warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
 
     return warped_img
+
+
+def necesita_homografia(imagen, lado, descriptores_lado,umbral=0.2):
+    # Asumiendo que la función cargarKeypoints carga los keypoints pre-almacenados para el lado dado
+    # y la función puntos_descriptores calcula los keypoints para la imagen actual
+    keypoints_lado = cargarKeypoints(lado)
+    kp_imagen, descriptores = puntos_descriptores(imagen)
+    
+    # Aquí podrías usar la función findMatches o cualquier otra lógica para comparar los keypoints
+    good_matches = findMatches(descriptores, descriptores_lado)
+    
+    # Si el porcentaje de buenos matches es menor que el umbral, se calcula la homografía
+    return len(good_matches) / len(kp_imagen) < umbral
 
 
