@@ -1,8 +1,26 @@
 import cv2 as cv2
+import difflib
 import pytesseract
 import numpy as np
 from . import tools as tool
 import re
+
+
+def encontrar_coincidencia_aproximada(texto_ocr):
+    diccionario = tool.cargar_trat_nacionalidades()
+    # Usar get_close_matches para encontrar la coincidencia más cercana
+    coincidencias = difflib.get_close_matches(texto_ocr, diccionario.keys(), n=1, cutoff=0.6)
+
+    if coincidencias:
+        # Retornar la primera coincidencia y su valor correspondiente en el diccionario
+        clave_aproximada = coincidencias[0]
+        return clave_aproximada, diccionario[clave_aproximada]
+    else:
+        # Si no se encuentra ninguna coincidencia, retornar None
+        return None, None
+
+
+
 
 #recibe un diccionario con imagenes
 def obtenerTexto(dicc_imagenes, *claves_omitidas):
@@ -27,7 +45,6 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
                 continue
             elif nombre=="linea1" or nombre=="linea2" or nombre=="linea3":
                     resultado[nombre]=pytesseract.image_to_string(imagen)
-                    print(resultado[nombre])
                     continue
             continue
                 #se agregua elif para otros casos...
@@ -39,7 +56,7 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
         
         texto = pytesseract.image_to_string(imagen)
     
-        texto=limpiar_datos(texto)
+        texto=limpiar_datos(texto,nombre)
         resultado[nombre] = texto
 
     return resultado
@@ -55,11 +72,14 @@ def Asignar_Valores_Objeto(obj, attributes_dict):
 
 
 
-def limpiar_datos(ocr_result):
+def limpiar_datos(ocr_result,atributo=''):
     cleaned_data = re.sub('[^a-zA-Z0-9]', '', str(ocr_result))
+
+    if atributo=='nacionalidad':
+        cleaned_data = re.sub('[^A-Z]', '', str(cleaned_data))
+        _,cleaned_data=encontrar_coincidencia_aproximada(cleaned_data)
+
     return cleaned_data
-
-
 
 
 def aplicarOCR(imagen):

@@ -214,8 +214,6 @@ def cargar_diccionario_paises():
     return dic_paises
 
 
-
-
 def cargar_trat_nacionalidades():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     DICT_FILE_PATH = os.path.join(BASE_DIR, 'data', 'dic_trat_nacional.json')

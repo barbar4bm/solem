@@ -3,6 +3,7 @@ from services import Ocr,tools
 from services import Sift as sift
 from services import cropper
 from services.carnet import Cedula
+from services import validacion as validar
 
 pruebas = Blueprint('pruebas', __name__)
 
@@ -52,9 +53,6 @@ def upload_json():
     
     reverso,rep_rev=sift.encuadre(reverso,'reverso')
 
-  
-
-
     #atratapar cuando alguno es falso y generar jSON respuesta
     #aqui se llama a alguna funcion de codeJSON
 
@@ -80,6 +78,9 @@ def upload_json():
     diccionario_ocr = Ocr.obtenerTexto(diccionario_img,*clave_omitida)
 
     carnet=Cedula(diccionario_ocr)
+
+    #verificaciones
+    dic_validaciones=validar.procesar_validaciones1(carnet)
 
 
     datos_respuesta={
