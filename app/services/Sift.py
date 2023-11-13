@@ -189,9 +189,65 @@ def guardarDescriptores():
         with open(SAVE_PATH, 'wb') as f:
             pkl.dump(dic, f)     
 
-def identificador_lados(anverso,reverso):
+
+def identificador_lado(img_side,tipo=''):
+    
+    #se define la cantidad minimas de coincidencias para cada lado
+    if tipo=='anverso':
+        min_matches=20
+    elif tipo=='reverso':
+        min_matches=8
+    else:
+        raise ValueError(f"Tipo de lado {tipo} no válido.")
 
     def matches(descriptorBase,descriptorObjetivo):
+        if descriptorBase is None or descriptorObjetivo is None:
+            return False
+
+        # Busco los descriptores que están más cerca (brute force matcher)
+        bf = cv2.BFMatcher()
+        matches = bf.knnMatch(descriptorBase, descriptorObjetivo, k=2)
+
+        # Aplico test de cercanía
+        good = []
+        for m,n in matches:
+            if m.distance < 0.5*n.distance:
+                good.append([m])
+
+        coincidencias = len(good)
+        print(f'Número de coincidencia de descriptores {tipo}: {coincidencias}')
+
+        if (coincidencias > 7):
+            return True
+        else:
+            return False
+    
+    ##########################################
+
+    #cargar descriotires
+    try:
+        descriptores_base = cargarDescriptores(tipo)
+    except ValueError as e:
+        print(e)
+        return False
+
+    # Calculo los descriptores de la imagen nueva
+    # Inicializo el detector SIFT
+    # Query Image
+
+    sift = cv2.SIFT_create()
+
+    # Encuentro los descriptores de la imagen a revisar
+    kp1, des1 = sift.detectAndCompute(img_side,None)
+
+    suficientes_matches=matches(descriptores_base,des1)
+
+    return suficientes_matches
+
+
+def identificador_lados(anverso,reverso,matches_anverso=20,matches_reverso=8):
+
+    def matches(descriptorBase,descriptorObjetivo,lado=''):
             # Busco los descriptores que están más cerca (brute force matcher)
         bf = cv2.BFMatcher()
         matches = bf.knnMatch(descriptorBase, descriptorObjetivo, k=2)
@@ -203,7 +259,7 @@ def identificador_lados(anverso,reverso):
                 good.append([m])
 
         coincidencias = len(good)
-        print(f'Número de coincidencia de descriptores: {coincidencias}')
+        print(f'Número de coincidencia de descriptores {lado}: {coincidencias}')
 
 
         if (coincidencias > 10):
@@ -227,8 +283,8 @@ def identificador_lados(anverso,reverso):
     kp1, des1 = sift.detectAndCompute(anverso,None)
     kp2, des2= sift.detectAndCompute(reverso,None)
 
-    esAnverso=matches(desc_lado_anverso,des1)
-    esReverso=matches(desc_lado_reverso,des2)
+    esAnverso=matches(desc_lado_anverso,des1,'anverso')
+    esReverso=matches(desc_lado_reverso,des2,'reverso')
 
     return esAnverso,esReverso
 
@@ -294,7 +350,7 @@ def encuadre(imagen,lado):
         return warped_img,True
 
 
-def necesita_homografia1(imagen, descriptores_lado,lado,umbral=0.2):
+def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.1,umbral_reverso=0.03):
     kp_imagen, descriptores = puntos_descriptores(imagen)
     
     # Aquí podrías usar la función findMatches o cualquier otra lógica para comparar los keypoints
@@ -305,8 +361,8 @@ def necesita_homografia1(imagen, descriptores_lado,lado,umbral=0.2):
     print(len(good_matches),' ',len(kp_imagen))
 
     if(lado=='anverso'):
-        return len(good_matches)/len(descriptores_lado)< umbral
+        return len(good_matches)/len(descriptores_lado)< umbral_anverso
     else:
-        return len(good_matches)/len(descriptores_lado)< 0.1
+        return len(good_matches)/len(descriptores_lado)< umbral_reverso
 
 

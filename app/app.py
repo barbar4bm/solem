@@ -9,4 +9,4 @@ app.register_blueprint(pruebas.pruebas)
 
 if __name__ == "__main__":
     sift.almacenar_descriptores()
-    app.run(debug=True)
+    app.run(port=5002, debug=True)

@@ -46,19 +46,13 @@ def upload_json():
     anverso=sift.preparacionInicial(anverso)
     reverso=sift.preparacionInicial(reverso)
 
-    resp_Anverso,resp_reverso=sift.identificador_lados(anverso,reverso)
+    resp_Anverso,resp_reverso=sift.identificador_lado(anverso,'anverso'),sift.identificador_lado(reverso,'reverso')
     
     anverso,resp=sift.encuadre(anverso,'anverso')
-    if(resp):
-        tools.mostrar_imagen(anverso,'Imagen Anverso con Homografia')
-    else:
-        tools.mostrar_imagen(anverso,'Imagen Anverso sin Homografia')
     
     reverso,rep_rev=sift.encuadre(reverso,'reverso')
-    if(rep_rev):
-        tools.mostrar_imagen(reverso, 'Imagen Reverso con Homografia')
-    else:
-        tools.mostrar_imagen(reverso,'Imagen Reverso sin Homografia')
+
+  
 
 
     #atratapar cuando alguno es falso y generar jSON respuesta

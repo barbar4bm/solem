@@ -1,5 +1,7 @@
 from services.carnet import Cedula
 
+#aqui par idetificar que datos del carnet se usaran
+#para llevar a cabo las validaciones
 def procesar_validaciones(carnet):
     #datos anverso
     nacionalidad_anverso=carnet.nacionalidad
@@ -14,8 +16,9 @@ def procesar_validaciones(carnet):
 
 
 
-
-def comparar_nacionalidad(nacionalidad_front,nacionalidad_back,porcentaje_de_aprobar):
+def comparar_nacionalidad(carnet,porcentaje_de_aprobar):
+    nacionalidad_back=carnet.mrz['datosMRZ']['nacionalidad_MRZ']
+    nacionalidad_front=carnet.nacionalidad
     calcular = 0
     contar = 0
     for i in range(len(nacionalidad_back)):
@@ -72,3 +75,6 @@ def comparar_documentos(front,back,porcentaje_de_aprobar):
         return True
     else:
         return False
+    
+def comparar_con_qr(carnet):
+    pass
