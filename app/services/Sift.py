@@ -62,17 +62,47 @@ def puntos_descriptores(image):
   puntos,descriptores=sift.detectAndCompute(image,None)
   return puntos,descriptores
 
-#cambio a RGB,conv a escala grises, 
-def preparacionInicial(imagenInicial):
-  #de BGR a RGB
-  imagenInicialRGB = cv2.cvtColor(imagenInicial, cv2.COLOR_BGR2RGB)
-  # Cambio de espacio de color BGR a GRAY
-  gray = cv2.cvtColor(imagenInicialRGB, cv2.COLOR_BGR2GRAY)
-  # Ecualización "Contrast Limited Adaptive Histogram Equalization,
-  clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-  eq=clahe.apply(gray)
+def preparacionInicial(imagenInicial, *claves_omitidas):
+    if isinstance(imagenInicial, dict):
+        for clave, imagen in imagenInicial.items():
+            if clave not in claves_omitidas:
+                imagenInicial[clave] = procesar_imagen(imagen)
+    else:
+        imagenInicial = procesar_imagen(imagenInicial)
+    return imagenInicial
 
-  return eq
+def procesar_imagen(imagen):
+    # de BGR a RGB
+    imagenRGB = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
+    # Cambio de espacio de color BGR a GRAY
+    gray = cv2.cvtColor(imagenRGB, cv2.COLOR_BGR2GRAY)
+    # Ecualización "Contrast Limited Adaptive Histogram Equalization,
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    eq = clahe.apply(gray)
+    return eq
+
+def mejorar_imagen_qr(imagen):
+    # Convertir a escala de grises si es necesario
+    if len(imagen.shape) > 2 and imagen.shape[2] == 3:
+        imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+    
+    # Filtrado bilateral
+    imagen = cv2.bilateralFilter(imagen, 9, 75, 75)
+    
+    # Escalar la imagen para mejorar detección de bordes
+    imagen = cv2.resize(imagen, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_LINEAR)
+    
+    # Binarización con Otsu
+    _, imagen = cv2.threshold(imagen, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    
+    # Filtro de medianas
+    imagen = cv2.medianBlur(imagen, 5)
+    
+    # Transformaciones morfológicas
+    kernel = np.ones((3,3),np.uint8)
+    imagen = cv2.morphologyEx(imagen, cv2.MORPH_OPEN, kernel, iterations=1)
+    
+    return imagen
 
 def bin_INV_OTSU(imagen):
     if len(imagen.shape) > 2 and imagen.shape[2] == 3:  # imagen en color

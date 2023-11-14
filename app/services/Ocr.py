@@ -43,8 +43,11 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
                 resultado[nombre]=tool.leerQR(imagen)
                 print('primero',resultado[nombre])
                 if resultado[nombre] =='':
+                    cv2.imwrite('nomr.jpg', imagen)
+
                     hola=Sift.bin_INV_OTSU(imagen)
-                    resultado[nombre] = tool.leerQR(Sift.bin_INV_OTSU(imagen))
+                    cv2.imwrite('imagen.jpg', hola)
+                    resultado[nombre] = tool.leerQR(hola)
                     print('con otsu:',resultado[nombre])
                 resultado['datos_qr']=tool.extraer_datos_qr(resultado[nombre])
 

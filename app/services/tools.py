@@ -293,7 +293,7 @@ def mostrar_imagen(imagen, titulo='Imagen'):
     cv2.waitKey(0)
 
 
-    def mostrar_imagen_plt(imagen):
-        plt.imshow(imagen, cmap='gray')
-        plt.title('imagen')
-        plt.show()
+def mostrar_imagen_plt(imagen):
+    plt.imshow(imagen, cmap='gray')
+    plt.title('imagen')
+    plt.show()
