@@ -3,6 +3,7 @@ import difflib
 import pytesseract
 import numpy as np
 from . import tools as tool
+from services import Sift
 import re
 
 
@@ -40,6 +41,11 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
         if nombre in claves_omitidas:
             if nombre=="qr":
                 resultado[nombre]=tool.leerQR(imagen)
+                print('primero',resultado[nombre])
+                if resultado[nombre] =='':
+                    hola=Sift.bin_INV_OTSU(imagen)
+                    resultado[nombre] = tool.leerQR(Sift.bin_INV_OTSU(imagen))
+                    print('con otsu:',resultado[nombre])
                 resultado['datos_qr']=tool.extraer_datos_qr(resultado[nombre])
 
                 continue
@@ -55,7 +61,13 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
             continue
         
         texto = pytesseract.image_to_string(imagen)
-    
+       
+
+        if(texto==''):
+            texto=Sift.bin_INV_OTSU(imagen)
+            texto=pytesseract.image_to_string(texto)
+            print('con otsu:',texto)
+
         texto=limpiar_datos(texto,nombre)
         resultado[nombre] = texto
 

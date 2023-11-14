@@ -74,6 +74,26 @@ def preparacionInicial(imagenInicial):
 
   return eq
 
+def bin_INV_OTSU(imagen):
+    if len(imagen.shape) > 2 and imagen.shape[2] == 3:  # imagen en color
+        if not np.array_equal(imagen[:,:,0], imagen[:,:,1], imagen[:,:,2]):  # canales de color no son iguales
+            imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+    elif len(imagen.shape) == 2 or imagen.shape[2] == 1:  # imagen en escala de grises
+        thresh_img = cv2.threshold(imagen, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
+        # op. morfologica
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(1,2))
+        imagen = cv2.morphologyEx(thresh_img, cv2.MORPH_OPEN, kernel, iterations=1)
+
+        # Invertir Imagen
+        imagen = 255 - imagen
+        return imagen
+    else:
+        raise ValueError("Formato de imagen no soportado")
+    
+    
+
+    
 #realiza dos binarizaciones, escoger una entre 0 y 1
 def binarizacion(imagen, otsu=0):
     # Verificamos si otsu tiene valores válidos
