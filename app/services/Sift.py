@@ -414,19 +414,21 @@ def encuadre(imagen,lado):
         h,w=imagen_ref.shape
         pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
         warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
+        cv2.imwrite('warped_img.jpg', warped_img)
+
 
         return warped_img,True
 
 
-def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.1,umbral_reverso=0.03):
+def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.2,umbral_reverso=0.1):
     kp_imagen, descriptores = puntos_descriptores(imagen)
     
     # Aquí podrías usar la función findMatches o cualquier otra lógica para comparar los keypoints
     good_matches = findMatches(descriptores, descriptores_lado)
     
     # Si el porcentaje de buenos matches es menor que el umbral, se calcula la homografía
-    #print(f"Porcentaje de buenos matches: {len(good_matches) / len(descriptores_lado)}")
-    #print(len(good_matches),' ',len(kp_imagen))
+    print(f"Porcentaje de buenos matches: {len(good_matches) / len(descriptores_lado)}")
+    print(len(good_matches),' ',len(kp_imagen))
 
     if(lado=='anverso'):
         return len(good_matches)/len(descriptores_lado)< umbral_anverso

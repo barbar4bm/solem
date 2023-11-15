@@ -48,10 +48,21 @@ def upload_json():
     reverso_filtr=sift.preparacionInicial(reverso)
 
     resp_Anverso,resp_reverso=sift.identificador_lado(anverso_filtr,'anverso'),sift.identificador_lado(reverso_filtr,'reverso')
-    
-    _,resp=sift.encuadre(anverso_filtr,'anverso')
-    
-    _,rep_rev=sift.encuadre(reverso_filtr,'reverso')
+    _=None
+    resp_anv=None
+    resp_rev=None
+    if resp_Anverso and resp_reverso:
+        pic_anv,resp_anv=sift.encuadre(anverso_filtr,'anverso')
+        anverso=pic_anv
+        pic_rev,resp_rev=sift.encuadre(reverso_filtr,'reverso')
+        reverso=pic_rev
+    elif not resp_Anverso and resp_reverso:
+        pic_anv,resp_anv=sift.encuadre(anverso_filtr,'anverso')
+        anverso=pic_anv
+    elif resp_Anverso and not resp_reverso:
+        pic_rev,resp_rev=sift.encuadre(reverso_filtr,'reverso')
+        reverso=pic_rev
+
 
     #atratapar cuando alguno es falso y generar jSON respuesta
     #aqui se llama a alguna funcion de codeJSON
@@ -70,6 +81,8 @@ def upload_json():
 
     #aplicar binarizacion de otsu al reverso par amejorar lectura con ocr
     #ret, img_otsu=sift.binarizacion(reverso,1)
+
+
 
     diccionario_img=cropper.recorte(anverso,reverso)
     diccionario_img_prep1=sift.preparacionInicial(diccionario_img,'qr')
