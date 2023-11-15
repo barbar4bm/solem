@@ -1,18 +1,20 @@
 from services.carnet import Cedula
 
-def procesar_validaciones1(carnet, porcentaje_de_aprobar=0.8):
+def procesar_validaciones(carnet, porcentaje_de_aprobar=0.8):
     nacionalidad = comparar_nacionalidad(carnet, porcentaje_de_aprobar)
     nombre_completo = comparar_nombre_completo(carnet, porcentaje_de_aprobar)
     fecha_nacimiento = comparar_fecha(carnet, 'nacimiento', porcentaje_de_aprobar)
     fecha_vencimiento = comparar_fecha(carnet, 'vencimiento', porcentaje_de_aprobar)
-    """
-    
+    numero_documento = comparar_num_documento(carnet, porcentaje_de_aprobar)
 
-    numero_documento = comparar_num_documento(carnet, porcentaje_de_aprobar)  
+    return {
+        'comparar_nacionalidad': nacionalidad,
+        'comparar_nombre_completo': nombre_completo,
+        'comparar_fecha_nacimiento': fecha_nacimiento,
+        'comparar_fecha_vencimiento': fecha_vencimiento,
+        'comparar_numero_documento': numero_documento
+    }
 
-    """
-
-    print(nacionalidad,nombre_completo,fecha_nacimiento,fecha_vencimiento)
 
 def comparar_nacionalidad(carnet, porcentaje_de_aprobar=0.8):
     if 'nacionalidad_MRZ' not in carnet.mrz['datosMRZ'] or not hasattr(carnet, 'nacionalidad'):
@@ -26,7 +28,6 @@ def comparar_nombre_completo(carnet, porcentaje_de_aprobar=0.8):
         return False
     nombre = (carnet.apellidos + carnet.nombres).replace(" ", "")
     nombre_mrz = (carnet.mrz['datosMRZ']['apellidos_MRZ']+carnet.mrz['datosMRZ']['nombres_MRZ']).replace(" ", "")
-    print(nombre,' ',nombre_mrz)
     return calcular_coincidencia(nombre, nombre_mrz, porcentaje_de_aprobar)
 
 def comparar_fecha(carnet, tipo_fecha, porcentaje_de_aprobar=0.8):
@@ -50,13 +51,10 @@ def comparar_fecha(carnet, tipo_fecha, porcentaje_de_aprobar=0.8):
                 return False
         return calcular_coincidencia(fecha_front, fecha_back, porcentaje_de_aprobar)
 
-    
-
-
 def comparar_num_documento(carnet, porcentaje_de_aprobar=0.8):
-    if 'numero_documento' not in carnet or 'numeroDocumento_MRZ' not in carnet.mrz['datosMRZ']:
+    if not hasattr(carnet,'numero_documento') or 'numeroDocumento_MRZ' not in carnet.mrz['datosMRZ']:
         return False
-    numero_documento_front = carnet['numero_documento']
+    numero_documento_front = carnet.numero_documento
     numero_documento_back = carnet.mrz['datosMRZ']['numeroDocumento_MRZ']
     return calcular_coincidencia(numero_documento_front, numero_documento_back, porcentaje_de_aprobar)
 

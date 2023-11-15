@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import os
 import glob
+from services import tools
 
 
 def _pickle_keypoints(point):
@@ -62,14 +63,33 @@ def puntos_descriptores(image):
   puntos,descriptores=sift.detectAndCompute(image,None)
   return puntos,descriptores
 
-def preparacionInicial(imagenInicial, *claves_omitidas):
+def preparacionInicial(imagenInicial, *claves_omitidas, tipo_procesamiento='procesar_imagen'):
     if isinstance(imagenInicial, dict):
-        for clave, imagen in imagenInicial.items():
-            if clave not in claves_omitidas:
-                imagenInicial[clave] = procesar_imagen(imagen)
+        # Si claves_omitidas está vacío, se procesan todas las imágenes sin comprobar
+        if not claves_omitidas:
+            for clave, imagen in imagenInicial.items():
+                imagenInicial[clave] = procesar_tipo(imagen, tipo_procesamiento)
+        else:
+            # Si claves_omitidas no está vacío, se realiza la comprobación
+            for clave, imagen in imagenInicial.items():
+                if clave not in claves_omitidas and imagen is not None:
+                    imagenInicial[clave] = procesar_tipo(imagen, tipo_procesamiento)
+                elif clave == 'qr':
+                    imagenInicial[clave] = imagen
     else:
         imagenInicial = procesar_imagen(imagenInicial)
+
     return imagenInicial
+
+def procesar_tipo(imagen, tipo_procesamiento):
+    if tipo_procesamiento == 'procesar_imagen':
+        return procesar_imagen(imagen)
+    elif tipo_procesamiento == 'bin_INV_OTSU':
+        return bin_INV_OTSU(imagen)
+    elif tipo_procesamiento == 'bin_OTSU':
+        return binarizacion(imagen, 1)[1]
+    else:
+        return imagen  
 
 def procesar_imagen(imagen):
     # de BGR a RGB
@@ -106,7 +126,7 @@ def mejorar_imagen_qr(imagen):
 
 def bin_INV_OTSU(imagen):
     if len(imagen.shape) > 2 and imagen.shape[2] == 3:  # imagen en color
-        if not np.array_equal(imagen[:,:,0], imagen[:,:,1], imagen[:,:,2]):  # canales de color no son iguales
+        if not (np.array_equal(imagen[:,:,0], imagen[:,:,1]) and np.array_equal(imagen[:,:,1], imagen[:,:,2])): # canales de color no son iguales
             imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
     elif len(imagen.shape) == 2 or imagen.shape[2] == 1:  # imagen en escala de grises
         thresh_img = cv2.threshold(imagen, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
@@ -121,9 +141,7 @@ def bin_INV_OTSU(imagen):
     else:
         raise ValueError("Formato de imagen no soportado")
     
-    
-
-    
+  
 #realiza dos binarizaciones, escoger una entre 0 y 1
 def binarizacion(imagen, otsu=0):
     # Verificamos si otsu tiene valores válidos
@@ -265,7 +283,7 @@ def identificador_lado(img_side,tipo=''):
                 good.append([m])
 
         coincidencias = len(good)
-        print(f'Número de coincidencia de descriptores {tipo}: {coincidencias}')
+        #print(f'Número de coincidencia de descriptores {tipo}: {coincidencias}')
 
         if (coincidencias > 7):
             return True
@@ -407,8 +425,8 @@ def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.1,umbra
     good_matches = findMatches(descriptores, descriptores_lado)
     
     # Si el porcentaje de buenos matches es menor que el umbral, se calcula la homografía
-    print(f"Porcentaje de buenos matches: {len(good_matches) / len(descriptores_lado)}")
-    print(len(good_matches),' ',len(kp_imagen))
+    #print(f"Porcentaje de buenos matches: {len(good_matches) / len(descriptores_lado)}")
+    #print(len(good_matches),' ',len(kp_imagen))
 
     if(lado=='anverso'):
         return len(good_matches)/len(descriptores_lado)< umbral_anverso

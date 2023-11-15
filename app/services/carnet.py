@@ -1,5 +1,6 @@
 import re
 from services import tools
+from services import Ocr as ocr
 class Cedula:
     def __init__(self, datos_iniciales=None):
         # Define la estructura inicial con valores por defecto
@@ -60,7 +61,6 @@ class Cedula:
             # Construye el texto general MRZ y lo asigna
             self.mrz['datosMRZ']['textoGeneral_MRZ'] = " ".join(data[clave] for clave in claves_mrz)
             self.mrz['tieneMRZ'] = True
-
             self.mrz['datosMRZ']['mrz_raw'] = [data[clave].replace('\n', '') for clave in claves_mrz_raw]
             # Procesa las líneas MRZ
             lineas_raw=self.mrz['datosMRZ']['mrz_raw']
@@ -71,12 +71,10 @@ class Cedula:
             self.mrz['datosMRZ']['apellidos_MRZ'] = apellido_nombre_mrz[0]+' '+apellido_nombre_mrz[1]
             self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
             self.mrz['datosMRZ']['nacionalidad_MRZ'] = self.extraer_abreviatura_pais(lineas_raw[1])
-
-            self.obtener_sexo_mrz()
+            self.set_obtener_sexo_mrz()
+            
             #OBTENER EL RUT DE LINEA
             self.mrz['datosMRZ']['RUN_MRZ'] = self.extraer_run_mrz(lineas_raw[1])
-
-        
         # Si se proporciona keys_to_update, solo se actualizan esas claves.
         if keys_to_update is not None:
             data = {key: data[key] for key in keys_to_update if key in data}
@@ -90,6 +88,8 @@ class Cedula:
         self.fecha_vencimiento=self.transformar_fecha_front(self.fecha_vencimiento)
         self.fecha_emision=self.transformar_fecha_front(self.fecha_emision)
         self.transformar_nombre_pais()
+        hola=ocr.limpiar_datos(self.sexo,'sexo')
+        print(hola)
                 
 
     def actualizar_datos_mrz(self, datos_actualizacion):
@@ -97,6 +97,8 @@ class Cedula:
             if clave in self.mrz["datosMRZ"]:
                 self.mrz["datosMRZ"][clave] = valor
         self.mrz["tieneMRZ"] = True
+    
+
     
 
     def extraer_numerodoc_MRZ(self, linea_raw0):
@@ -107,7 +109,7 @@ class Cedula:
         return ''.join(digitos)[:9]
 
 
-    def obtener_sexo_mrz(self):
+    def set_obtener_sexo_mrz(self):
         linea2MRZ=self.mrz["datosMRZ"]["textoGeneral_MRZ"].split()[1]
         sexo_salida=''
         if (len(linea2MRZ)==28):
@@ -117,7 +119,7 @@ class Cedula:
     
 
     def obtener_nacionalidad_mrz(self): 
-        #sequiere modificar la nacionalidad del diccionarioMRZ
+        #se quiere modificar la nacionalidad del diccionarioMRZ
         nacionalidad=''
         linea1MRZ=self.mrz["datosMRZ"]["textoGeneral_MRZ"].split()[0]
 
@@ -208,7 +210,6 @@ class Cedula:
 
     def transformar_nombre_pais(self):
         trat_nacional = tools.cargar_trat_nacionalidades()
-        print(self.nacionalidad)
 
         # Comprobar si dic_paises es un diccionario
         if not isinstance(trat_nacional, dict):

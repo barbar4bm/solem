@@ -34,6 +34,8 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
     # Diccionario para almacenar los resultados
     resultado = {}
 
+    texto_no_reconocido=[]
+
     # Recorre las imágenes en el diccionario y extrae el texto
     for nombre, imagen in dicc_imagenes.items():
         # Si la clave actual está en claves_omitidas, añadimos la imagen al resultado y saltamos esta iteración
@@ -41,16 +43,8 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
         if nombre in claves_omitidas:
             if nombre=="qr":
                 resultado[nombre]=tool.leerQR(imagen)
-                print('primero',resultado[nombre])
-                if resultado[nombre] =='':
-                    cv2.imwrite('nomr.jpg', imagen)
-
-                    hola=Sift.bin_INV_OTSU(imagen)
-                    cv2.imwrite('imagen.jpg', hola)
-                    resultado[nombre] = tool.leerQR(hola)
-                    print('con otsu:',resultado[nombre])
-                resultado['datos_qr']=tool.extraer_datos_qr(resultado[nombre])
-
+                if resultado[nombre] !='':
+                    resultado['datos_qr']=tool.extraer_datos_qr(resultado[nombre])
                 continue
             elif nombre=="linea1" or nombre=="linea2" or nombre=="linea3":
                     resultado[nombre]=pytesseract.image_to_string(imagen)
@@ -64,17 +58,18 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
             continue
         
         texto = pytesseract.image_to_string(imagen)
+        
        
-
+        
         if(texto==''):
-            texto=Sift.bin_INV_OTSU(imagen)
-            texto=pytesseract.image_to_string(texto)
-            print('con otsu:',texto)
+            texto_no_reconocido.append(nombre)
+        else:
+            texto=limpiar_datos(texto,nombre)  
 
-        texto=limpiar_datos(texto,nombre)
         resultado[nombre] = texto
 
-    return resultado
+    return resultado,texto_no_reconocido
+
 
 def Asignar_Valores_Objeto(obj, attributes_dict):
     # Asignar valores desde el diccionario a los atributos del objeto si el atributo existe en el objeto
@@ -89,10 +84,17 @@ def Asignar_Valores_Objeto(obj, attributes_dict):
 
 def limpiar_datos(ocr_result,atributo=''):
     cleaned_data = re.sub('[^a-zA-Z0-9]', '', str(ocr_result))
-
     if atributo=='nacionalidad':
         cleaned_data = re.sub('[^A-Z]', '', str(cleaned_data))
         _,cleaned_data=encontrar_coincidencia_aproximada(cleaned_data)
+    elif atributo=='sexo':
+        if any(caracter.isupper() for caracter in ocr_result):
+            # Encuentra el primer carácter en mayúscula y lo reasigna 
+            cleaned_data = next(caracter for caracter in ocr_result if caracter.isupper())
+            print(ocr_result)
+        else:
+            cleaned_data= ocr_result 
+
 
     return cleaned_data
 

@@ -44,14 +44,14 @@ def upload_json():
     anverso=tools.b64_openCV(data['anverso'])
     reverso=tools.b64_openCV(data['reverso'])
 
-    anverso=sift.preparacionInicial(anverso)
-    reverso=sift.preparacionInicial(reverso)
+    anverso_filtr=sift.preparacionInicial(anverso)
+    reverso_filtr=sift.preparacionInicial(reverso)
 
-    resp_Anverso,resp_reverso=sift.identificador_lado(anverso,'anverso'),sift.identificador_lado(reverso,'reverso')
+    resp_Anverso,resp_reverso=sift.identificador_lado(anverso_filtr,'anverso'),sift.identificador_lado(reverso_filtr,'reverso')
     
-    anverso,resp=sift.encuadre(anverso,'anverso')
+    _,resp=sift.encuadre(anverso_filtr,'anverso')
     
-    reverso,rep_rev=sift.encuadre(reverso,'reverso')
+    _,rep_rev=sift.encuadre(reverso_filtr,'reverso')
 
     #atratapar cuando alguno es falso y generar jSON respuesta
     #aqui se llama a alguna funcion de codeJSON
@@ -69,27 +69,30 @@ def upload_json():
     resp_reverso=str(resp_reverso)
 
     #aplicar binarizacion de otsu al reverso par amejorar lectura con ocr
-    ret, img_otsu=sift.binarizacion(reverso,1)
+    #ret, img_otsu=sift.binarizacion(reverso,1)
 
-    diccionario_img=cropper.recorte(anverso,img_otsu)
-    
+    diccionario_img=cropper.recorte(anverso,reverso)
+    diccionario_img_prep1=sift.preparacionInicial(diccionario_img,'qr')
+    tools.guardar_recortes(diccionario_img_prep1,'prepInicial')
     clave_omitida=('qr','textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
+    diccionario_ocr, no_rec = Ocr.obtenerTexto(diccionario_img_prep1, *clave_omitida)
+    dic_text_no_rec= {clave: diccionario_img[clave] for clave in no_rec if clave in diccionario_img}
+    dic_text_no_rec=sift.preparacionInicial(dic_text_no_rec,'','bin_OTSU')
+    rec=Ocr.obtenerTexto(dic_text_no_rec)[0]
+    print(rec)
 
-    diccionario_ocr = Ocr.obtenerTexto(diccionario_img,*clave_omitida)
+    tools.guardar_recortes(dic_text_no_rec,'bin_OTSU')
 
     carnet=Cedula(diccionario_ocr)
+    ocr_data=vars(carnet)
+    
 
     #verificaciones
-    dic_validaciones=validar.procesar_validaciones1(carnet)
+    dic_validaciones=validar.procesar_validaciones(carnet)
 
+    datos_respuesta = {'dic_validaciones': dic_validaciones,'ocr_data':ocr_data, 'reconoce_Anverso': resp_Anverso, 'reconoce_Reverso': resp_reverso}
 
-    datos_respuesta={
-        'ocr_data': vars(carnet),
-        'resp_Anverso': resp_Anverso,
-        'resp_reverso': resp_reverso
-    }
-    
-    return  jsonify(datos_respuesta)
+    return jsonify(datos_respuesta)
 
 @pruebas.route('/ocr', methods=['POST'])
 def procesar_ocr():

@@ -158,22 +158,26 @@ def escalar_imagen(img, altura, anchura):
     
     return cv2.resize(img, (anchura, altura))
 
-def guardar_recortes(diccionario):
+def guardar_recortes(diccionario, categoria):
     """
     Toma un diccionario donde cada clave-valor corresponde a un nombre y una imagen, respectivamente.
-    Guarda cada imagen en una carpeta llamada "recortes" con un nombre correspondiente a su clave en formato PNG.
-    
+    Guarda cada imagen en una carpeta llamada "recortes" con un nombre correspondiente a su clave en formato PNG,
+    omitiendo claves con valores vacíos o nulos.
+
     Parámetros:
     - diccionario (dict): Diccionario de imágenes.
     """
-    
+
     # Crear la carpeta "recortes" si no existe
-    if not os.path.exists('recortes'):
-        os.makedirs('recortes')
-        
+    ruta_carpeta = os.path.join(categoria, 'recortes')
+    if not os.path.exists(ruta_carpeta):
+        os.makedirs(ruta_carpeta)
+
     for clave, imagen in diccionario.items():
-        ruta = os.path.join('recortes', f'{clave}.png')
-        cv2.imwrite(ruta, imagen)
+        # Verificar si el valor (imagen) no está vacío
+        if imagen is not None and imagen.size != 0:
+            ruta = os.path.join(ruta_carpeta, f'{clave}.png')
+            cv2.imwrite(ruta, imagen)
 
 def recortar_qr(imagen):
     # Coordenadas del rectángulo donde se encuentra el QR
@@ -213,7 +217,6 @@ def cargar_diccionario_paises():
 
     return dic_paises
 
-
 def cargar_trat_nacionalidades():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     DICT_FILE_PATH = os.path.join(BASE_DIR, 'data', 'dic_trat_nacional.json')
@@ -226,8 +229,7 @@ def cargar_trat_nacionalidades():
     with open(DICT_FILE_PATH, 'r') as f:
         dic_trat_nacional = json.load(f)
 
-    return dic_trat_nacional
-
+    return '' if dic_trat_nacional is None else dic_trat_nacional
 
 def cargarPaises():
     # Este es un ejemplo de cómo podrías definir las rutas de archivo si __file__ no está disponible
@@ -291,7 +293,6 @@ def extraer_datos_qr(qr):
 def mostrar_imagen(imagen, titulo='Imagen'):
     cv2.imshow(titulo, imagen)
     cv2.waitKey(0)
-
 
 def mostrar_imagen_plt(imagen):
     plt.imshow(imagen, cmap='gray')
