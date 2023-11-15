@@ -91,9 +91,12 @@ def limpiar_datos(ocr_result,atributo=''):
         if any(caracter.isupper() for caracter in ocr_result):
             # Encuentra el primer carácter en mayúscula y lo reasigna 
             cleaned_data = next(caracter for caracter in ocr_result if caracter.isupper())
-            print(ocr_result)
         else:
             cleaned_data= ocr_result 
+    elif atributo=='nombres' or atributo=='apellidos':
+        extracted_data = re.findall(r'[A-Z]', cleaned_data)
+        cleaned_data = ''.join(extracted_data)
+
 
 
     return cleaned_data

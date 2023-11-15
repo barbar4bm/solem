@@ -28,6 +28,8 @@ def comparar_nombre_completo(carnet, porcentaje_de_aprobar=0.8):
         return False
     nombre = (carnet.apellidos + carnet.nombres).replace(" ", "")
     nombre_mrz = (carnet.mrz['datosMRZ']['apellidos_MRZ']+carnet.mrz['datosMRZ']['nombres_MRZ']).replace(" ", "")
+
+    print(nombre,'',nombre_mrz)
     return calcular_coincidencia(nombre, nombre_mrz, porcentaje_de_aprobar)
 
 def comparar_fecha(carnet, tipo_fecha, porcentaje_de_aprobar=0.8):

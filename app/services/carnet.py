@@ -88,8 +88,9 @@ class Cedula:
         self.fecha_vencimiento=self.transformar_fecha_front(self.fecha_vencimiento)
         self.fecha_emision=self.transformar_fecha_front(self.fecha_emision)
         self.transformar_nombre_pais()
-        hola=ocr.limpiar_datos(self.sexo,'sexo')
-        print(hola)
+        ocr.limpiar_datos(self.sexo,'sexo')
+        ocr.limpiar_datos(self.nombres,'nombres')
+        ocr.limpiar_datos(self.apellidos,'apellidos')
                 
 
     def actualizar_datos_mrz(self, datos_actualizacion):
