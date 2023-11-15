@@ -54,17 +54,16 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
         const jsonResponse = await response.json();
 
-        // Crear una nueva respuesta sin 'ocr_data'
-        const verificaciones=jsonResponse;
+        const verificaciones = jsonResponse;
 
         serverResponse.style.display = "block";
         serverResponse.textContent = JSON.stringify(verificaciones, null, 2);
 
         // Mostrar resultados
-        if (jsonResponse.resp_Anverso) {
+        if (jsonResponse.reconoce_Anverso) {
           resultAnverso.textContent = jsonResponse.reconoce_Anverso;
         }
-        if (jsonResponse.resp_reverso) {
+        if (jsonResponse.reconoce_Reverso) {
           resultReverso.textContent = jsonResponse.reconoce_Reverso;
         }
 
