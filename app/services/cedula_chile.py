@@ -54,21 +54,22 @@ def procesar_imgenes_cedula(data):
     #unir los diccioanrios para inserten al objeto 
     diccionario_img=cropper.recorte(anverso,reverso)
 
+    #Se recortan por separado anverso y reverso
     dic_img_anverso=cropper.recortes_anverso(anverso)
     dic_img_reverso=cropper.recortes_reverso(reverso)
 
     dic_img_anverso=sift.preparacionInicial(dic_img_anverso)
-    dic_img_reverso=sift.preparacionInicial(dic_img_reverso,'qr','bin_OTSU')
+    dic_img_reverso=sift.preparacionInicial(dic_img_reverso,'qr','bin_OTSU') #al reverso se le aplica binarizacion de otsu
+
     tools.guardar_recortes(dic_img_anverso,'anverso')
     tools.guardar_recortes(dic_img_reverso,'reverso-otsu')
 
     clave_omitida=('qr','textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
-
+    #se retornan tupla, [0]: textos reconocidos, [1]: claves de texto no reconocidass
     dic_ocr_anverso=Ocr.obtenerTexto(dic_img_anverso,*clave_omitida)[0]
     dic_ocr_reverso=Ocr.obtenerTexto(dic_img_reverso,*clave_omitida)[0]
-    dic_ocr_carnet = {**dic_ocr_anverso, **dic_ocr_reverso}
-    
 
+    dic_ocr_carnet = {**dic_ocr_anverso, **dic_ocr_reverso}#se juntan los diccionarios en uno solo
     carnet=Cedula(dic_ocr_carnet)
     ocr_data=vars(carnet)
         
