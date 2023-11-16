@@ -74,7 +74,6 @@ def preparacionInicial(imagenInicial,claves_omitidas=None, tipo_procesamiento='p
             for clave, imagen in imagenInicial.items():
                 if clave not in claves_omitidas and imagen is not None:
                     imagenInicial[clave] = procesar_tipo(imagen, tipo_procesamiento)
-                    print(tipo_procesamiento,'',clave)
                 elif clave == 'qr':
                     imagenInicial[clave] = imagen
     else:
@@ -89,7 +88,6 @@ def procesar_tipo(imagen, tipo_procesamiento):
     elif tipo_procesamiento == 'bin_INV_OTSU':
         return bin_INV_OTSU(imagen)
     elif tipo_procesamiento == 'bin_OTSU':
-        print("bin_OTSU")
         return binarizacion(imagen, 1)[1]
     else:
         return imagen  
@@ -404,10 +402,8 @@ def encuadre(imagen,lado):
     porc_calc_homografia=necesita_homografia1(imagen,descriptores_lado,lado)
 
     if not porc_calc_homografia:
-        print("No se necesita homografía."+str(porc_calc_homografia))
         return imagen,False
     else:
-        print("Si se necesita homografía."+str(porc_calc_homografia))
     
         kp_carnet, des_carnet = keypoints_descriptores(imagen)
         good=findMatches(des_carnet,descriptores_lado)
@@ -431,7 +427,6 @@ def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.2,umbra
     
     # Si el porcentaje de buenos matches es menor que el umbral, se calcula la homografía
     print(f"Porcentaje de buenos matches: {len(good_matches) / len(descriptores_lado)}")
-    print(len(good_matches),' ',len(kp_imagen))
 
     if(lado=='anverso'):
         return len(good_matches)/len(descriptores_lado)< umbral_anverso
