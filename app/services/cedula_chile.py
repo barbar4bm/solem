@@ -1,4 +1,3 @@
-from flask import Blueprint, render_template, request, jsonify,json
 from services import Ocr,tools
 from services import Sift as sift
 from services import cropper
