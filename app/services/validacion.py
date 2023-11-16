@@ -6,13 +6,15 @@ def procesar_validaciones(carnet, porcentaje_de_aprobar=0.8):
     fecha_nacimiento = comparar_fecha(carnet, 'nacimiento', porcentaje_de_aprobar)
     fecha_vencimiento = comparar_fecha(carnet, 'vencimiento', porcentaje_de_aprobar)
     numero_documento = comparar_num_documento(carnet, porcentaje_de_aprobar)
+    run=comparar_RUN(carnet, porcentaje_de_aprobar)
 
     return {
         'comparar_nacionalidad': nacionalidad,
         'comparar_nombre_completo': nombre_completo,
         'comparar_fecha_nacimiento': fecha_nacimiento,
         'comparar_fecha_vencimiento': fecha_vencimiento,
-        'comparar_numero_documento': numero_documento
+        'comparar_numero_documento': numero_documento,
+        'comparar_RUN':run
     }
 
 
@@ -67,5 +69,11 @@ def calcular_coincidencia(dato1, dato2, porcentaje_de_aprobar):
     calcular = contar / len(dato1)
     return calcular >= porcentaje_de_aprobar
 
-def comparar_con_qr(carnet):
-    pass
+def comparar_RUN(carnet, porcentaje_de_aprobar):
+    if not hasattr(carnet,'RUN') or 'RUN_MRZ' not in carnet.mrz['datosMRZ']:
+        return False
+    RUN_front = carnet.RUN
+    RUN_back = carnet.mrz['datosMRZ']['RUN_MRZ']
+    return calcular_coincidencia(RUN_front, RUN_back, porcentaje_de_aprobar)
+
+

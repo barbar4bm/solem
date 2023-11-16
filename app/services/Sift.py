@@ -63,7 +63,7 @@ def puntos_descriptores(image):
   puntos,descriptores=sift.detectAndCompute(image,None)
   return puntos,descriptores
 
-def preparacionInicial(imagenInicial, *claves_omitidas, tipo_procesamiento='procesar_imagen'):
+def preparacionInicial(imagenInicial,claves_omitidas=None, tipo_procesamiento='procesar_imagen'):
     if isinstance(imagenInicial, dict):
         # Si claves_omitidas está vacío, se procesan todas las imágenes sin comprobar
         if not claves_omitidas:
@@ -74,19 +74,22 @@ def preparacionInicial(imagenInicial, *claves_omitidas, tipo_procesamiento='proc
             for clave, imagen in imagenInicial.items():
                 if clave not in claves_omitidas and imagen is not None:
                     imagenInicial[clave] = procesar_tipo(imagen, tipo_procesamiento)
+                    print(tipo_procesamiento,'',clave)
                 elif clave == 'qr':
                     imagenInicial[clave] = imagen
     else:
-        imagenInicial = procesar_imagen(imagenInicial)
+        imagenInicial = procesar_tipo(imagenInicial,tipo_procesamiento)
 
     return imagenInicial
 
 def procesar_tipo(imagen, tipo_procesamiento):
     if tipo_procesamiento == 'procesar_imagen':
+        #return bin_INV_OTSU(imagen)
         return procesar_imagen(imagen)
     elif tipo_procesamiento == 'bin_INV_OTSU':
         return bin_INV_OTSU(imagen)
     elif tipo_procesamiento == 'bin_OTSU':
+        print("bin_OTSU")
         return binarizacion(imagen, 1)[1]
     else:
         return imagen  

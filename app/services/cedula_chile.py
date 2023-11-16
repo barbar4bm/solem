@@ -3,11 +3,14 @@ from services import Sift as sift
 from services import cropper
 from services.carnet import Cedula
 from services import validacion as validar
+from services import graficos
 
 def procesar_imgenes_cedula(data):
     # Convertir las imágenes de base64 a objetos de imagen
     anverso=tools.b64_openCV(data['anverso'])
     reverso=tools.b64_openCV(data['reverso'])
+
+
     anverso_filtr=sift.preparacionInicial(anverso)
     reverso_filtr=sift.preparacionInicial(reverso)
     resp_Anverso,resp_reverso=sift.identificador_lado(anverso_filtr,'anverso'),sift.identificador_lado(reverso_filtr,'reverso')
@@ -47,13 +50,26 @@ def procesar_imgenes_cedula(data):
 
 
 
+    #SEPAR LOS RECORTES, EN CROPER LA FUNCION RECORTES SE DIVIDE EN DOS
+    #unir los diccioanrios para inserten al objeto 
     diccionario_img=cropper.recorte(anverso,reverso)
-    diccionario_img_prep1=sift.preparacionInicial(diccionario_img,'qr')
-    tools.guardar_recortes(diccionario_img_prep1,'prepInicial')
-    clave_omitida=('qr','textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
-    diccionario_ocr, no_rec = Ocr.obtenerTexto(diccionario_img_prep1, *clave_omitida)
 
-    carnet=Cedula(diccionario_ocr)
+    dic_img_anverso=cropper.recortes_anverso(anverso)
+    dic_img_reverso=cropper.recortes_reverso(reverso)
+
+    dic_img_anverso=sift.preparacionInicial(dic_img_anverso)
+    dic_img_reverso=sift.preparacionInicial(dic_img_reverso,'qr','bin_OTSU')
+    tools.guardar_recortes(dic_img_anverso,'anverso')
+    tools.guardar_recortes(dic_img_reverso,'reverso-otsu')
+
+    clave_omitida=('qr','textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
+
+    dic_ocr_anverso=Ocr.obtenerTexto(dic_img_anverso,*clave_omitida)[0]
+    dic_ocr_reverso=Ocr.obtenerTexto(dic_img_reverso,*clave_omitida)[0]
+    dic_ocr_carnet = {**dic_ocr_anverso, **dic_ocr_reverso}
+    
+
+    carnet=Cedula(dic_ocr_carnet)
     ocr_data=vars(carnet)
         
 
