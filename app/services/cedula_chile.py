@@ -9,6 +9,7 @@ import json
 import os
 
 def procesamiento_gvision(diccionario_img):
+    print('gvision')
 
     #convertir a b64 cada imagen
 
