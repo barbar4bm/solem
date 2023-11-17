@@ -4,6 +4,7 @@ from services import cropper
 from services.carnet import Cedula
 from services import validacion as validar
 from services import graficos
+from services import gvision
 import json
 import os
 
