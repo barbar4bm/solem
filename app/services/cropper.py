@@ -70,21 +70,19 @@ def recorte(rut_bin, rut_bin2):
 def recortes_anverso(rut_bin):
     # 530x840
     rut_bin=escalar_imagen(rut_bin,530,840)
-    
-    # 530x840
-    rut_bin=escalar_imagen(rut_bin,530,840)
     estado_inicial = locals().copy()
+
     #anverso
-    nombres = rut_bin[171:211 , 291:806]
-    apellidos = rut_bin[86:152 , 283:520]
+    nombres = rut_bin[171:211 , 285:806]
+    apellidos = rut_bin[93:157 , 283:806]
     
-    RUN = rut_bin[460:496 , 98:273]
-    nacionalidad = rut_bin[220:265, 291:425]
+    RUN = rut_bin[456:496 , 98:273]
+    nacionalidad = rut_bin[220:265, 285:425]
     sexo = rut_bin[222:263, 450:600]
-    fecha_nacimiento = rut_bin[276:311 , 250:480]
-    numero_documento = rut_bin[275:310, 487:663]
-    fecha_emision = rut_bin[330:369 , 292:463]
-    fecha_vencimiento = rut_bin[335:367 , 477:667]
+    fecha_nacimiento = rut_bin[276:311 , 270:470]
+    numero_documento = rut_bin[275:310, 472:663]
+    fecha_emision = rut_bin[328:363 , 270:470]
+    fecha_vencimiento = rut_bin[328:363 , 472:663]
 
     estado_final = locals().copy()
     resultado_recortes = {k: estado_final[k] for k in estado_final if k not in estado_inicial and k not in ['estado_inicial', 'estado_final']}
@@ -93,15 +91,17 @@ def recortes_anverso(rut_bin):
 
 def recortes_reverso(rut_bin2):
     rut_bin2=escalar_imagen(rut_bin2,530,840)
+    
     #reverso
     estado_inicial = locals().copy()
+
     ciudad = rut_bin2[211:247 , 182:600]
     profesion = rut_bin2[242:274,182:403]
     fechaNacimiento_MRZ =rut_bin2[211:247 , 182:600]
     profesion=rut_bin2[242:274 , 182:403]
 
     #recortar la tres lineas MRZ
-    mrz_linea1=rut_bin2[343:398 , 37:800]
+    mrz_linea1=rut_bin2[343:398 , 37:495]
     mrz_linea2=rut_bin2[390:436 , 37:800]
     mrz_linea3=rut_bin2[432:482 , 37:800]
 
@@ -112,7 +112,7 @@ def recortes_reverso(rut_bin2):
     textoGeneral_MRZ = None
     mrz_raw=None
 
-    nombres_MRZ = rut_bin2[440:482, 418:800]
+    nombres_MRZ = rut_bin2[440:482, 418:806]
     apellidos_MRZ = rut_bin2[440:478, 44:375]
     RUN_MRZ = rut_bin2[395:440,495:747]
     numeroDocumento_MRZ = rut_bin2[354:398,170:400]

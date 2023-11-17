@@ -87,7 +87,7 @@ def Asignar_Valores_Objeto(obj, attributes_dict):
 def limpiar_datos(ocr_result,atributo=''):
     cleaned_data = re.sub('[^a-zA-Z0-9]', '', str(ocr_result))
     if atributo=='nacionalidad':
-        cleaned_data = re.sub('[^A-Z]', '', str(cleaned_data))
+        cleaned_data = re.sub('[^A-Z]:', '', str(cleaned_data))
         _,cleaned_data=encontrar_coincidencia_aproximada(cleaned_data)
     elif atributo=='sexo':
         if any(caracter.isupper() for caracter in ocr_result):
