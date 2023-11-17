@@ -6,6 +6,8 @@ from . import tools as tool
 from services import Sift
 import re
 
+#para windows
+pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 def encontrar_coincidencia_aproximada(texto_ocr):
     diccionario = tool.cargar_trat_nacionalidades()
