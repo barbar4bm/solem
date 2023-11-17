@@ -89,6 +89,8 @@ def procesar_tipo(imagen, tipo_procesamiento):
         return bin_INV_OTSU(imagen)
     elif tipo_procesamiento == 'bin_OTSU':
         return binarizacion(imagen, 1)[1]
+    elif tipo_procesamiento == 'bin':
+        return binarizacion(imagen, 0)[1]
     else:
         return imagen  
 
@@ -153,7 +155,7 @@ def binarizacion(imagen, otsu=0):
        return cv2.threshold(imagen, 127,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
        
     else:
-       return cv2.threshold(imagen,127,255,cv2.THRESH_BINARY)
+       return cv2.threshold(imagen,100,255,cv2.THRESH_BINARY)
 
 def findMatches(descriptoresObjeto,descriptoresBase):
   """Idealmente tener una base de datos de entrenamiento de los descripores base,

@@ -68,12 +68,16 @@ class Cedula:
             self.mrz['datosMRZ']['fechaNacimiento_MRZ']=lineas_raw[1][:6]
             self.mrz['datosMRZ']['fechaVencimiento_MRZ']=lineas_raw[1][8:14]
             apellido_nombre_mrz=self.procesar_linea_MRZ(lineas_raw[2])
+            print(apellido_nombre_mrz,' ',len(apellido_nombre_mrz))
             self.mrz['datosMRZ']['apellidos_MRZ'] = apellido_nombre_mrz[0]+' '+apellido_nombre_mrz[1]
+
+            #si los nombres al leer los datos son menos a 4, realizar correcciones
             self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
             self.mrz['datosMRZ']['nacionalidad_MRZ'] = self.extraer_abreviatura_pais(lineas_raw[1])
             self.set_obtener_sexo_mrz()
             
             #OBTENER EL RUT DE LINEA
+            print(lineas_raw[1])
             self.mrz['datosMRZ']['RUN_MRZ'] = self.extraer_run_mrz(lineas_raw[1])
         # Si se proporciona keys_to_update, solo se actualizan esas claves.
         if keys_to_update is not None:
@@ -146,9 +150,11 @@ class Cedula:
   
 
     def extraer_run_mrz(self, mrz_raw_1):
+
         # Buscar los patrones en la cadena
-        chl_match = re.search('[A-Z]{3}(\d{8})', mrz_raw_1)
-        k_match = re.search('<(\w)', mrz_raw_1)
+        modificada=mrz_raw_1.replace(' ', '')
+        chl_match = re.search('[A-Z]{3}(\d{8})', modificada)
+        k_match = re.search('<(\w)', modificada)
 
         # Extraer los caracteres
         chl_chars = chl_match.group(1) if chl_match else ''

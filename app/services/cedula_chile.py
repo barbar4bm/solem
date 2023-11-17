@@ -58,8 +58,8 @@ def procesar_imgenes_cedula(data):
     dic_img_anverso=cropper.recortes_anverso(anverso)
     dic_img_reverso=cropper.recortes_reverso(reverso)
 
-    dic_img_anverso=sift.preparacionInicial(dic_img_anverso)
-    dic_img_reverso=sift.preparacionInicial(dic_img_reverso,'qr','bin_OTSU') #al reverso se le aplica binarizacion de otsu
+    dic_img_anverso=sift.preparacionInicial(dic_img_anverso,None,'bin')
+    dic_img_reverso=sift.preparacionInicial(dic_img_reverso,'qr','bin') #al reverso se le aplica binarizacion de otsu
 
     tools.guardar_recortes(dic_img_anverso,'anverso')
     tools.guardar_recortes(dic_img_reverso,'reverso-otsu')
