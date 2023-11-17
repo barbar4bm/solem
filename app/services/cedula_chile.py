@@ -81,6 +81,7 @@ def procesar_imgenes_cedula(data):
     #SEPAR LOS RECORTES, EN CROPER LA FUNCION RECORTES SE DIVIDE EN DOS
     #unir los diccioanrios para inserten al objeto 
     diccionario_img=cropper.recorte(anverso,reverso)
+    procesamiento_gvision(diccionario_img)
 
     #Se recortan por separado anverso y reverso
     dic_img_anverso=cropper.recortes_anverso(anverso)

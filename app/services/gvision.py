@@ -43,7 +43,7 @@ def procesar_respuestas_vision(respuestas, claves_imagenes):
 
     return texto_reconocido
 
-def enviar_a_google_vision(diccionario_img, archivo_credenciales, max_images_per_request=10):
+def enviar_a_google_vision(diccionario_img, archivo_credenciales, max_images_per_request=20):
     # ... (código de carga de credenciales)
 
     url = "https://vision.googleapis.com/v1/images:annotate"
