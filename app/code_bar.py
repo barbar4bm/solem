@@ -43,7 +43,7 @@ clahe2 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
 rut_eq2 = clahe2.apply(gray2)
 equ2 = cv2.equalizeHist(rut_eq2)
  # Binarización
-ret,rut_bin2 = cv2.threshold(rut_eq2,100,255,cv2.THRESH_BINARY)
+ret,rut_bin2 = cv2.threshold(rut_eq2,85,255,cv2.THRESH_BINARY)
 # Binarización otsu
 ret2,rut_otsu2 = cv2.threshold(rut_eq2,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
 
@@ -63,12 +63,14 @@ fechaV_texto = rut_bin[328:370 , 473:670] #fecha vencimiento check
 #lectura trasera
 nacio_en = rut_bin2[211:247 , 182:600] 
 profesion = rut_bin2[242:274 , 182:403]
-mrz = rut_otsu2[354:492 , 42:800]
-nacionalidad_doc_mrz = rut_otsu2[343:398 , 37:800]
-fechas_rut_mrz =rut_otsu2[390:436 , 37:800]
-nombre_full_mrz = rut_otsu2[432:482 , 37:800]
-
+mrz = rut_bin2[354:492 , 42:800]
+nacionalidad_doc_mrz = rut_bin2[343:398 , 37:500]
+fechas_rut_mrz =rut_bin2[390:436 , 37:800]
+nombre_full_mrz = rut_bin2[432:482 , 37:800]
+plt.imshow(rut_eq2)
+plt.show()
 #print("la cantidad de elementos de primera linea es: ",len(OCR(nombre_full_mrz)))
+
 
 
 def limpiar_datos(ocr_result):
@@ -87,7 +89,7 @@ paises_abreviados = {
 }
 meses_abreviados = {
     "ENER": "01",
-    "FEBR": "02",
+    "FEB": "02",
     "MAR": "03",
     "ABR": "04",
     "MAYO": "05",
@@ -113,6 +115,8 @@ data_numero_doc = limpiar_datos(OCR(doc_texto))
 # data String Back
 data_nacionalidad_doc_mrz = limpiar_datos(OCR(nacionalidad_doc_mrz))
 data_fechas_rut_mrz = limpiar_datos(OCR(fechas_rut_mrz))
+
+print(data_fechas_rut_mrz)
 data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
 #union y/o separacion de datos 
 data_apellido_nombre = data_apellido[0] + data_nombre[0]
