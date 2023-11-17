@@ -4,6 +4,33 @@ from services import cropper
 from services.carnet import Cedula
 from services import validacion as validar
 from services import graficos
+import json
+import os
+
+def procesamiento_gvision(diccionario_img):
+
+    #convertir a b64 cada imagen
+
+    dic_b64=tools.convertir_diccionario_a_base64(diccionario_img)
+    diccionario=json.dumps(dic_b64,indent=4)
+    with open('diccionario_base64.txt', 'w') as file:
+        file.write(diccionario)
+
+    
+    # Obtener el directorio base (donde se encuentra el archivo Python actual)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # Construir la ruta hacia ocr-gv.json
+    archivo_credenciales = os.path.join(BASE_DIR, 'data', 'ocr-gv.json')
+    # Verificar si el archivo existe
+    existe_archivo = os.path.exists(archivo_credenciales)
+    print(f"La ruta del archivo de credenciales es: {archivo_credenciales}")
+    print(f"¿Existe el archivo de credenciales? {existe_archivo}")
+
+
+    dic_respuesta=gvision.enviar_a_google_vision(dic_b64,archivo_credenciales)
+    dic_text_rec=gvision.procesar_respuestas_vision(dic_respuesta,dic_b64.keys())
+    print(dic_text_rec)
 
 def procesar_imgenes_cedula(data):
     # Convertir las imágenes de base64 a objetos de imagen
