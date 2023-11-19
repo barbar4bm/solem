@@ -1,8 +1,48 @@
-import base64
 import json
 import requests
+import os
 from google.oauth2 import service_account
 from google.auth.transport.requests import Request
+from services import tools
+
+def guardar_json(diccionario, nombre_archivo):
+    with open(f'{nombre_archivo}.json', 'w') as file:
+        file.write(json.dumps(diccionario,indent=4))
+    return
+
+def procesamiento_gvision(diccionario_img,nombre_persona):
+    print('gvision')
+
+    #convertir a b64 cada imagen
+
+    dic_b64=tools.convertir_diccionario_a_base64(diccionario_img)
+    
+
+    """with open('diccionario_base64.txt', 'w') as file:
+        file.write(diccionario)
+    """
+
+
+    # Obtener el directorio base (donde se encuentra el archivo Python actual)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # Construir la ruta hacia ocr-gv.json
+    archivo_credenciales = os.path.join(BASE_DIR, 'data', 'ocr-gv.json')
+    # Verificar si el archivo existe
+    existe_archivo = os.path.exists(archivo_credenciales)
+    print(f"La ruta del archivo de credenciales es: {archivo_credenciales}")
+    print(f"¿Existe el archivo de credenciales? {existe_archivo}")
+
+
+    dic_respuesta=enviar_a_google_vision(dic_b64,archivo_credenciales)
+    lista_text=extraer_texto_reconocido(dic_respuesta)
+    
+    with open(f'{nombre_persona}.txt', 'w', encoding='utf-8') as f:
+        for item in lista_text:
+            f.write("%s\n" % item)
+
+    return lista_text
+
 
 def cargar_credenciales(archivo_json):
     
@@ -18,40 +58,44 @@ def cargar_credenciales(archivo_json):
 def enviar_solicitud(url, headers, body):
     response = requests.post(url, headers=headers, data=json.dumps(body))
     if response.status_code == 200:
+        print('200')
         return response.json()
     else:
         return {"Error": response.status_code, "Message": response.text}
     
 
-def procesar_respuestas_vision(respuestas, claves_imagenes):
+def extraer_texto_reconocido(respuesta_json):
     """
-    Procesa las respuestas de la API de Google Vision y extrae el texto reconocido.
-    
-    :param respuestas: Lista de respuestas de la API de Google Vision.
-    :param claves_imagenes: Lista de claves de las imágenes enviadas.
-    :return: Diccionario con las claves de las imágenes y el texto reconocido.
+    Extrae todos los textos reconocidos de la respuesta de la API de Google Vision.
+
+    :param respuesta_json: Respuesta JSON de la API de Google Vision.
+    :return: Lista de textos reconocidos.
     """
-    texto_reconocido = {}
+    # Cargar el JSON
+    datos = json.loads(respuesta_json)
 
-    for clave, respuesta in zip(claves_imagenes, respuestas):
-        # Asumimos que cada respuesta corresponde a una imagen en claves_imagenes
-        if respuesta['responses']:
-            # Extraemos el texto completo (el primer elemento de textAnnotations contiene el texto completo)
-            texto = respuesta['responses'][0].get('fullTextAnnotation', {}).get('text', '')
-            texto_reconocido[clave] = texto
-            print(clave, ' ',texto)
+    # Lista para almacenar todos los textos reconocidos
+    textos_reconocidos = []
 
-    return texto_reconocido
+    # Recorrer cada respuesta y extraer el texto reconocido
+    for respuesta in datos['responses']:
+        if 'fullTextAnnotation' in respuesta:
+            textos_reconocidos.append(respuesta['fullTextAnnotation']['text'])
 
-def enviar_a_google_vision(diccionario_img, archivo_credenciales, max_images_per_request=20):
-    # ... (código de carga de credenciales)
+    return textos_reconocidos
+
+def enviar_a_google_vision(diccionario_img, archivo_credenciales):
+    # Valor predeterminado para el máximo de imágenes por solicitud
+    max_images_per_request = 16
+
+    # Cargar credenciales
+    token_acceso = cargar_credenciales(archivo_credenciales)
 
     url = "https://vision.googleapis.com/v1/images:annotate"
-    token_acceso = cargar_credenciales(archivo_credenciales)
     headers = {"Authorization": f"Bearer {token_acceso}"}
 
     # Dividir las solicitudes
-    responses = []
+    all_responses = []  # Lista para almacenar las respuestas de todas las solicitudes
     partial_request = {"requests": []}
     count = 0
     for clave, imagen_base64 in diccionario_img.items():
@@ -64,17 +108,40 @@ def enviar_a_google_vision(diccionario_img, archivo_credenciales, max_images_per
         # Enviar solicitud si se alcanza el límite máximo por solicitud
         if count >= max_images_per_request:
             response = enviar_solicitud(url, headers, partial_request)
-            responses.append(response)
+            all_responses.extend(response.get('responses', []))
             partial_request = {"requests": []}
             count = 0
 
     # Enviar cualquier solicitud restante
     if count > 0:
         response = enviar_solicitud(url, headers, partial_request)
-        responses.append(response)
+        all_responses.extend(response.get('responses', []))
 
-    return responses
-# Ejemplo de uso
-# archivo_credenciales = "path_to_your_credentials.json"
-# diccionario_img = {"clave1": imagen1_base64, "clave2": imagen2_base64, ...}
-# resultado = enviar_a_google_vision(diccionario_img, archivo_credenciales)
+    # Devolver las respuestas en formato JSON
+    return json.dumps({"responses": all_responses})
+
+def extraer_texto_reconocido(respuesta_json):
+    """
+    Extrae todos los textos reconocidos de la respuesta de la API de Google Vision.
+
+    :param respuesta_json: Respuesta JSON de la API de Google Vision.
+    :return: Lista de textos reconocidos.
+    """
+    # Cargar el JSON
+    datos = json.loads(respuesta_json)
+
+    # Lista para almacenar todos los textos reconocidos
+    textos_reconocidos = []
+
+    # Recorrer cada respuesta y extraer el texto reconocido
+    for respuesta in datos['responses']:
+        if 'fullTextAnnotation' in respuesta:
+            textos_reconocidos.append(respuesta['fullTextAnnotation']['text'])
+
+    return textos_reconocidos
+
+# Uso de la función
+# respuesta_json = 'Aqui va tu JSON de respuesta de la API'
+# textos = extraer_texto_reconocido(respuesta_json)
+# for texto in textos:
+#     print(texto)

@@ -298,3 +298,12 @@ def mostrar_imagen_plt(imagen):
     plt.imshow(imagen, cmap='gray')
     plt.title('imagen')
     plt.show()
+
+
+def convertir_diccionario_a_base64(diccionario_img, claves_omitidas=None):
+    diccionario_base64 = {}
+    for clave, imagenOpenCV in diccionario_img.items():
+        # Comprobar si la clave está en la lista de claves omitidas y si la imagen no está vacía
+        if (claves_omitidas is None or clave not in claves_omitidas) and (imagenOpenCV is not None and imagenOpenCV.size > 0):
+            diccionario_base64[clave] = openCV_b64(imagenOpenCV)
+    return diccionario_base64

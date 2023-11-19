@@ -1,38 +1,29 @@
+import os
+import platform
+import pytesseract
+from services import gvision
+from services import cropper
 from services import Ocr,tools
 from services import Sift as sift
-from services import cropper
 from services.carnet import Cedula
 from services import validacion as validar
-from services import graficos
-from services import gvision
-import json
-import os
-
-def procesamiento_gvision(diccionario_img):
-    print('gvision')
-
-    #convertir a b64 cada imagen
-
-    dic_b64=tools.convertir_diccionario_a_base64(diccionario_img)
-    diccionario=json.dumps(dic_b64,indent=4)
-    with open('diccionario_base64.txt', 'w') as file:
-        file.write(diccionario)
-
-    
-    # Obtener el directorio base (donde se encuentra el archivo Python actual)
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-    # Construir la ruta hacia ocr-gv.json
-    archivo_credenciales = os.path.join(BASE_DIR, 'data', 'ocr-gv.json')
-    # Verificar si el archivo existe
-    existe_archivo = os.path.exists(archivo_credenciales)
-    print(f"La ruta del archivo de credenciales es: {archivo_credenciales}")
-    print(f"¿Existe el archivo de credenciales? {existe_archivo}")
 
 
-    dic_respuesta=gvision.enviar_a_google_vision(dic_b64,archivo_credenciales)
-    dic_text_rec=gvision.procesar_respuestas_vision(dic_respuesta,dic_b64.keys())
-    print(dic_text_rec)
+def esWin():
+    # Rutas posibles del ejecutable de Tesseract OCR en Windows
+    tesseract_paths = [
+        r'C:\Program Files\Tesseract-OCR\tesseract.exe',  # Ubicación común en Windows 64 bits
+        r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'  # Ubicación común en Windows 32 bits
+    ]
+
+    # Verificar si el sistema operativo es Windows
+    if platform.system() == 'Windows':
+        # Buscar el ejecutable en las rutas posibles
+        for path in tesseract_paths:
+            if os.path.exists(path):
+                pytesseract.pytesseract.tesseract_cmd = path
+                break
+
 
 def procesar_imgenes_cedula(data):
     # Convertir las imágenes de base64 a objetos de imagen
@@ -82,11 +73,13 @@ def procesar_imgenes_cedula(data):
     #SEPAR LOS RECORTES, EN CROPER LA FUNCION RECORTES SE DIVIDE EN DOS
     #unir los diccioanrios para inserten al objeto 
     diccionario_img=cropper.recorte(anverso,reverso)
-    procesamiento_gvision(diccionario_img)
+   
 
     #Se recortan por separado anverso y reverso
     dic_img_anverso=cropper.recortes_anverso(anverso)
     dic_img_reverso=cropper.recortes_reverso(reverso)
+
+    
 
     dic_img_anverso=sift.preparacionInicial(dic_img_anverso,None,'bin')
     dic_img_reverso=sift.preparacionInicial(dic_img_reverso,'qr','bin') #al reverso se le aplica binarizacion de otsu
@@ -101,6 +94,10 @@ def procesar_imgenes_cedula(data):
 
     dic_ocr_carnet = {**dic_ocr_anverso, **dic_ocr_reverso}#se juntan los diccionarios en uno solo
     carnet=Cedula(dic_ocr_carnet)
+
+    gvision.procesamiento_gvision(dic_img_anverso,carnet.mrz['datosMRZ']['nombres_MRZ']+'-anv')  
+    gvision.procesamiento_gvision(dic_img_reverso,carnet.mrz['datosMRZ']['nombres_MRZ']+'-rev')
+
     ocr_data=vars(carnet)
         
 
