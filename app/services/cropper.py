@@ -71,12 +71,13 @@ def recortes_anverso(rut_bin):
     # 530x840
     rut_bin=escalar_imagen(rut_bin,530,840)
     estado_inicial = locals().copy()
-
+    plt.imshow(rut_bin,'gray')
+    plt.show()
     #anverso
     nombres = rut_bin[171:211 , 285:806]
     apellidos = rut_bin[93:157 , 283:806]
     
-    RUN = rut_bin[456:496 , 98:273]
+    RUN = rut_bin[453:496 , 98:273]
     nacionalidad = rut_bin[220:265, 285:425]
     sexo = rut_bin[222:263, 450:600]
     fecha_nacimiento = rut_bin[276:311 , 270:470]
