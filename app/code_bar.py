@@ -49,7 +49,7 @@ ret2,rut_otsu2 = cv2.threshold(rut_eq2,127,255, cv2.THRESH_BINARY + cv2.THRESH_O
 
 #lectura delantera
 nombre_texto = rut_bin[171:211 , 291:806] #nombre check
-apellido_texto = rut_bin[88:152 , 292:520] #apellido check
+apellido_texto = rut_bin[96:155 , 285:520] #apellido check
 rut_grande = rut_bin[460:496 , 98:273] #rut grande check
 nacionalidad = rut_bin[220:265, 291:425] #nacionalidad check
 sexo = rut_bin[229:257, 486:509] #no detecta solo un caracter
@@ -67,7 +67,7 @@ mrz = rut_bin2[354:492 , 42:800]
 nacionalidad_doc_mrz = rut_bin2[343:398 , 37:500]
 fechas_rut_mrz =rut_bin2[390:436 , 37:800]
 nombre_full_mrz = rut_bin2[432:482 , 37:800]
-plt.imshow(rut_eq2)
+plt.imshow(apellido_texto)
 plt.show()
 #print("la cantidad de elementos de primera linea es: ",len(OCR(nombre_full_mrz)))
 
