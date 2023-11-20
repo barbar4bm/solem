@@ -7,8 +7,8 @@ import pytesseract
 import time
 
 inicio = time.time()
-image= cv2.imread('app/image/13.1.jpeg')#imagen frontal
-image2= cv2.imread('app/image/13.2.jpeg')#imagen reverso
+image= cv2.imread('app/image/a2.jpg')#imagen frontal
+image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
 
 #si se usa windows , esto es necesario
 pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
@@ -25,11 +25,11 @@ img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 # Cambio de espacio de color BGR a GRAY
 gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
 # Ecualización
-clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+clahe = cv2.createCLAHE(clipLimit=0.8, tileGridSize=(8,8))
 rut_eq = clahe.apply(gray)
 equ = cv2.equalizeHist(rut_eq)
  # Binarización
-ret,rut_bin = cv2.threshold(rut_eq,100,255,cv2.THRESH_BINARY)
+ret,rut_bin = cv2.threshold(rut_eq,98,255,cv2.THRESH_BINARY)
 # Binarización otsu
 ret2,rut_otsu = cv2.threshold(rut_eq,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
 
@@ -39,24 +39,24 @@ img_rgb2 = cv2.cvtColor(image2, cv2.COLOR_BGR2RGB)
 # Cambio de espacio de color BGR a GRAY
 gray2 = cv2.cvtColor(img_rgb2, cv2.COLOR_BGR2GRAY)
 # Ecualización
-clahe2 = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+clahe2 = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(8,8))
 rut_eq2 = clahe2.apply(gray2)
 equ2 = cv2.equalizeHist(rut_eq2)
  # Binarización
-ret,rut_bin2 = cv2.threshold(rut_eq2,85,255,cv2.THRESH_BINARY)
+ret,rut_bin2 = cv2.threshold(rut_eq2,89,255,cv2.THRESH_BINARY)
 # Binarización otsu
-ret2,rut_otsu2 = cv2.threshold(rut_eq2,127,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
+ret2,rut_otsu2 = cv2.threshold(rut_eq2,118,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)   
 
 #lectura delantera
 nombre_texto = rut_bin[171:211 , 291:806] #nombre check
-apellido_texto = rut_bin[96:155 , 285:520] #apellido check
+apellido_texto = rut_bin[92:155 , 280:520] #apellido check
 rut_grande = rut_bin[460:496 , 98:273] #rut grande check
 nacionalidad = rut_bin[220:265, 291:425] #nacionalidad check
 sexo = rut_bin[229:257, 486:509] #no detecta solo un caracter
 fecha_nacimiento = rut_bin[276:311 , 250:480] #fecha nacimiento check
-doc_texto = rut_bin[275:310, 487:663] #numero documento check
-fecha_emision = rut_bin[330:369 , 292:463] #fecha emision check
-fechaV_texto = rut_bin[328:370 , 473:670] #fecha vencimiento check 
+doc_texto = rut_bin[275:310, 484:666] #numero documento check
+fecha_emision = rut_bin[328:370 , 292:463] #fecha emision check
+fechaV_texto = rut_bin[328:370 , 465:670] #fecha vencimiento check 
 
 #rut_chico=rut_otsu[282:308,686:808] #rut en foto pequeña falta mejorar su visibilidad
 
@@ -64,17 +64,16 @@ fechaV_texto = rut_bin[328:370 , 473:670] #fecha vencimiento check
 nacio_en = rut_bin2[211:247 , 182:600] 
 profesion = rut_bin2[242:274 , 182:403]
 mrz = rut_bin2[354:492 , 42:800]
-nacionalidad_doc_mrz = rut_bin2[343:398 , 37:500]
-fechas_rut_mrz =rut_bin2[390:436 , 37:800]
-nombre_full_mrz = rut_bin2[432:482 , 37:800]
+nacionalidad_doc_mrz = rut_otsu2[343:398 , 37:500]
+fechas_rut_mrz =rut_otsu2[390:436 , 37:800]
+nombre_full_mrz = rut_otsu2[432:482 , 37:800]
+
+#print("la cantidad de elementos de primera linea es: ",len(OCR(nombre_full_mrz)))
 plt.imshow(apellido_texto)
 plt.show()
-#print("la cantidad de elementos de primera linea es: ",len(OCR(nombre_full_mrz)))
-
-
 
 def limpiar_datos(ocr_result):
-    cleaned_data = str(ocr_result).replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
+    cleaned_data = str(ocr_result).replace('§', '').replace('“', '').replace('&', '').replace('+', '').replace('_', '').replace(':', '').replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
     return cleaned_data
 
 paises_abreviados = {
@@ -111,12 +110,13 @@ data_nacionalidad = limpiar_datos(OCR(nacionalidad))
 data_fecha_emision = limpiar_datos(OCR(fecha_emision))  
 data_fechaV_texto = limpiar_datos(OCR(fechaV_texto)) 
 data_numero_doc = limpiar_datos(OCR(doc_texto))
-
+print(data_fecha_nacimiento)
+print(data_fechaV_texto)
 # data String Back
 data_nacionalidad_doc_mrz = limpiar_datos(OCR(nacionalidad_doc_mrz))
 data_fechas_rut_mrz = limpiar_datos(OCR(fechas_rut_mrz))
 
-print(data_fechas_rut_mrz)
+print(data_nacionalidad_doc_mrz)
 data_nombre_full_mrz = limpiar_datos(OCR(nombre_full_mrz))
 #union y/o separacion de datos 
 data_apellido_nombre = data_apellido[0] + data_nombre[0]
@@ -262,12 +262,11 @@ def comparar_documentos(front,back,umbral):
         return False
 
 #umbral de aprobacion
-porcentaje_de_aprobar= 0.85 
+porcentaje_de_aprobar= 0.8
  
 #print de informacion relevante
 print("_________________________________________________________________________")
 print("________Info captada en la parte de adelante del carnet:______________________")
-
 print("Nombre:",data_nombre)
 print("Apellido:",data_apellido)
 print("Fecha nacimiento:",data_fecha_nacimiento)
@@ -294,8 +293,8 @@ obtener_sexo = obtener_sexo_mrz(data_fechas_rut_mrz[0])
 print("El sexo de la persona en el MRZ es:", obtener_sexo)
 abreviatura_nac= transformar_pais_a_abreviatura(data_nacionalidad[0], paises_abreviados)
 obtener_nac = obtener_nacionalidad_mrz(data_nacionalidad_doc_mrz[0])
-comparar_nacionalidad = comparar_nacionalidad(abreviatura_nac,obtener_nac,porcentaje_de_aprobar)
-print("¿La nacionalidad es verídica?: ",comparar_nacionalidad)
+compar_nacionalidad = comparar_nacionalidad(abreviatura_nac,obtener_nac,porcentaje_de_aprobar)
+print("¿La nacionalidad es verídica?: ",compar_nacionalidad)
 compara_nombre = comparar_nombre_completo(data_apellido_nombre,data_nombre_full_mrz,porcentaje_de_aprobar)
 print('¿El primer y segundo nombre son veridicos?: ',compara_nombre)
 compara_fecha_vencimiento = comparar_fecha(transformar_fecha_front(data_fechaV_texto[0]),obtener_fecha_vencimiento_mrz(data_fechas_rut_mrz[0]),porcentaje_de_aprobar)
