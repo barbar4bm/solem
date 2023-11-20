@@ -69,8 +69,7 @@ fechas_rut_mrz =rut_otsu2[390:436 , 37:800]
 nombre_full_mrz = rut_otsu2[432:482 , 37:800]
 
 #print("la cantidad de elementos de primera linea es: ",len(OCR(nombre_full_mrz)))
-plt.imshow(apellido_texto)
-plt.show()
+
 
 def limpiar_datos(ocr_result):
     cleaned_data = str(ocr_result).replace('§', '').replace('“', '').replace('&', '').replace('+', '').replace('_', '').replace(':', '').replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
