@@ -71,8 +71,6 @@ def recortes_anverso(rut_bin):
     # 530x840
     rut_bin=escalar_imagen(rut_bin,530,840)
     estado_inicial = locals().copy()
-    plt.imshow(rut_bin,'gray')
-    plt.show()
     #anverso
     nombres = rut_bin[171:211 , 285:806]
     apellidos = rut_bin[93:157 , 283:806]
@@ -97,8 +95,8 @@ def recortes_reverso(rut_bin2):
     estado_inicial = locals().copy()
 
     ciudad = rut_bin2[211:247 , 182:600]
+    fechaNacimiento_MRZ =rut_bin2[276:311 , 250:480]
     profesion = rut_bin2[242:274,182:403]
-    fechaNacimiento_MRZ =rut_bin2[211:247 , 182:600]
     profesion=rut_bin2[242:274 , 182:403]
 
     #recortar la tres lineas MRZ

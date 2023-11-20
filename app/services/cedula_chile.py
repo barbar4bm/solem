@@ -28,6 +28,9 @@ def esWin():
 def procesar_imgenes_cedula(data):
     # Convertir las imágenes de base64 a objetos de imagen
     anverso=tools.b64_openCV(data['anverso'])
+
+    anverso_cp=anverso.copy()
+    anverso_cp=sift.preparacionInicial(anverso_cp)  
     reverso=tools.b64_openCV(data['reverso'])
 
 
@@ -97,6 +100,10 @@ def procesar_imgenes_cedula(data):
 
     gvision.procesamiento_gvision(dic_img_anverso,carnet.mrz['datosMRZ']['nombres_MRZ']+'-anv')  
     gvision.procesamiento_gvision(dic_img_reverso,carnet.mrz['datosMRZ']['nombres_MRZ']+'-rev')
+
+
+
+    gvision.procesamiento_gvision({'Front':anverso_cp},'frontal'+carnet.mrz['datosMRZ']['nombres_MRZ'])
 
     ocr_data=vars(carnet)
         

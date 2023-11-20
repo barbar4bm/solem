@@ -8,6 +8,9 @@ def procesar_validaciones(carnet, porcentaje_de_aprobar=0.8):
     numero_documento = comparar_num_documento(carnet, porcentaje_de_aprobar)
     run=comparar_RUN(carnet, porcentaje_de_aprobar)
 
+    #generar codigo para obtner una respeusta de validacion
+    #se agrega al Json 
+
     return {
         'comparar_nacionalidad': nacionalidad,
         'comparar_nombre_completo': nombre_completo,
