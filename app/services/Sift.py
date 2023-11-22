@@ -56,44 +56,49 @@ def almacenar_descriptores():
 
     return True
 
-def preparacionInicial(imagenInicial,claves_omitidas=None, tipo_procesamiento='procesar_imagen'):
+def preparacionInicial(imagenInicial,lado,claves_omitidas=None, tipo_procesamiento='procesar_imagen'):
     if isinstance(imagenInicial, dict):
         # Si claves_omitidas está vacío, se procesan todas las imágenes sin comprobar
         if not claves_omitidas:
             for clave, imagen in imagenInicial.items():
-                imagenInicial[clave] = procesar_tipo(imagen, tipo_procesamiento)
+                imagenInicial[clave] = procesar_tipo(imagen,lado, tipo_procesamiento)
         else:
             # Si claves_omitidas no está vacío, se realiza la comprobación
             for clave, imagen in imagenInicial.items():
                 if clave not in claves_omitidas and imagen is not None:
-                    imagenInicial[clave] = procesar_tipo(imagen, tipo_procesamiento)
+                    imagenInicial[clave] = procesar_tipo(imagen, lado, tipo_procesamiento)
                 elif clave == 'qr':
                     imagenInicial[clave] = imagen
     else:
-        imagenInicial = procesar_tipo(imagenInicial,tipo_procesamiento)
+        imagenInicial = procesar_tipo(imagenInicial,lado,tipo_procesamiento)
 
     return imagenInicial
 
-def procesar_tipo(imagen, tipo_procesamiento):
+def procesar_tipo(imagen,lado, tipo_procesamiento):
     if tipo_procesamiento == 'procesar_imagen':
         #return bin_INV_OTSU(imagen)
-        return procesar_imagen(imagen)
+        return procesar_imagen(imagen,lado)
     elif tipo_procesamiento == 'bin_INV_OTSU':
         return bin_INV_OTSU(imagen)
     elif tipo_procesamiento == 'bin_OTSU':
-        return binarizacion(imagen, 1)[1]
+        return binarizacion(procesar_imagen(imagen,lado), 1)[1]
     elif tipo_procesamiento == 'bin':
         return binarizacion(imagen, 0)[1]
     else:
         return imagen  
 
-def procesar_imagen(imagen):
+def procesar_imagen(imagen,tipo=''):
+    clipLimit=2.0
+    if(tipo=='anverso'):
+        clipLimit=0.8
+    elif(tipo=='reverso'):
+        clipLimit=1.5
     # de BGR a RGB
     imagenRGB = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
     # Cambio de espacio de color BGR a GRAY
     gray = cv2.cvtColor(imagenRGB, cv2.COLOR_BGR2GRAY)
     # Ecualización "Contrast Limited Adaptive Histogram Equalization,
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    clahe = cv2.createCLAHE(clipLimit, tileGridSize=(8,8))
     eq = clahe.apply(gray)
     return eq
 
@@ -101,6 +106,7 @@ def bin_INV_OTSU(imagen):
     if len(imagen.shape) > 2 and imagen.shape[2] == 3:  # imagen en color
         if not (np.array_equal(imagen[:,:,0], imagen[:,:,1]) and np.array_equal(imagen[:,:,1], imagen[:,:,2])): # canales de color no son iguales
             imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+            return imagen
     elif len(imagen.shape) == 2 or imagen.shape[2] == 1:  # imagen en escala de grises
         thresh_img = cv2.threshold(imagen, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
@@ -117,6 +123,9 @@ def bin_INV_OTSU(imagen):
 #realiza dos binarizaciones, escoger una entre 0 y 1
 def binarizacion(imagen, otsu=0):
     # Verificamos si otsu tiene valores válidos
+    #bin_anv: 98,127
+    #bin_otsu_rev:89:118
+
     if otsu not in [0, 1]:raise ValueError("El valor de otsu debe ser 0 o 1.")
 
     if otsu == 1:

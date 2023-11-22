@@ -1,16 +1,46 @@
 from services.carnet import Cedula
 
 def procesar_validaciones(carnet, porcentaje_de_aprobar=0.8):
+    cantidad_de_aprobados= 0
+
     nacionalidad = comparar_nacionalidad(carnet, porcentaje_de_aprobar)
     nombre_completo = comparar_nombre_completo(carnet, porcentaje_de_aprobar)
     fecha_nacimiento = comparar_fecha(carnet, 'nacimiento', porcentaje_de_aprobar)
     fecha_vencimiento = comparar_fecha(carnet, 'vencimiento', porcentaje_de_aprobar)
     numero_documento = comparar_num_documento(carnet, porcentaje_de_aprobar)
     run=comparar_RUN(carnet, porcentaje_de_aprobar)
+    
+    if(nacionalidad==True):
+        cantidad_de_aprobados= cantidad_de_aprobados + 1
+    else:
+        cantidad_de_aprobados= cantidad_de_aprobados 
+    
+    if(nombre_completo==True):
+        cantidad_de_aprobados= cantidad_de_aprobados + 1
+    else:
+        cantidad_de_aprobados= cantidad_de_aprobados 
+    
+    if(fecha_nacimiento==True):
+        cantidad_de_aprobados= cantidad_de_aprobados + 1
+    else:
+        cantidad_de_aprobados= cantidad_de_aprobados 
 
-    #generar codigo para obtner una respeusta de validacion
-    #se agrega al Json 
-    #con 5 true el carnet es valido, cualwuier otro caso entrega la respuesta de validacion final
+    if(fecha_vencimiento==True):
+        cantidad_de_aprobados= cantidad_de_aprobados + 1
+    else:
+        cantidad_de_aprobados= cantidad_de_aprobados 
+
+    if(numero_documento==True):
+        cantidad_de_aprobados= cantidad_de_aprobados + 1
+    else:
+        cantidad_de_aprobados= cantidad_de_aprobados 
+    
+    if(run==True):
+        cantidad_de_aprobados= cantidad_de_aprobados + 1
+    else:
+        cantidad_de_aprobados= cantidad_de_aprobados 
+
+    respuesta=funcion_de_aprobacion(cantidad_de_aprobados)
 
     return {
         'comparar_nacionalidad': nacionalidad,
@@ -18,10 +48,23 @@ def procesar_validaciones(carnet, porcentaje_de_aprobar=0.8):
         'comparar_fecha_nacimiento': fecha_nacimiento,
         'comparar_fecha_vencimiento': fecha_vencimiento,
         'comparar_numero_documento': numero_documento,
-        'comparar_RUN':run
+        'comparar_RUN':run,
+        'aprobado': respuesta
+        
     }
+    
 
-
+def funcion_de_aprobacion(cantidad_aprobados):
+     
+    if(cantidad_aprobados >=5):
+        return {
+            '¿Carnet aprobado?': True
+        }
+    else:
+        return {
+            '¿Carnet aprobado?': False
+        }
+    
 
 def comparar_nacionalidad(carnet, porcentaje_de_aprobar=0.8):
     if 'nacionalidad_MRZ' not in carnet.mrz['datosMRZ'] or not hasattr(carnet, 'nacionalidad'):

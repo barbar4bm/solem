@@ -29,55 +29,50 @@ def procesar_imgenes_cedula(data):
     anverso=tools.b64_openCV(data['anverso'])
     reverso=tools.b64_openCV(data['reverso'])
 
-    anverso_filtr=sift.preparacionInicial(anverso)
-    reverso_filtr=sift.preparacionInicial(reverso)
+    anverso_filtr=sift.preparacionInicial(anverso,'anverso',None)
+    reverso_filtr=sift.preparacionInicial(reverso,'reverso',None)
+    
 
     resp_Anverso=sift.identificador_lado(anverso_filtr,'anverso')
     resp_reverso=sift.identificador_lado(reverso_filtr,'reverso')
     _=None
 
+    #atratapar cuando alguno es falso y generar jSON respuesta
+    #aqui se llama a alguna funcion de codeJSON
+
+    if resp_Anverso and not resp_reverso:
+        return {'ocr_data': 'Solo se reconoce Anverso'}
+    elif not resp_Anverso and resp_reverso:
+        return {'ocr_data': 'Solo se reconoce Reverso'}
+    elif not resp_Anverso and not resp_reverso:
+        return {'ocr_data': 'No se reconoce como Cedula'}
+            
+    resp_Anverso=str(resp_Anverso)
+    resp_reverso=str(resp_reverso)
 
     resp_anv=None
     resp_rev=None
-    if resp_Anverso and resp_reverso:
-        pic_anv,resp_anv=sift.encuadre(anverso_filtr,'anverso')
-        anverso=pic_anv
-        pic_rev,resp_rev=sift.encuadre(reverso_filtr,'reverso')
-        reverso=pic_rev
-    elif not resp_Anverso and resp_reverso:
-        pic_anv,resp_anv=sift.encuadre(anverso_filtr,'anverso')
-        anverso=pic_anv
-    elif resp_Anverso and not resp_reverso:
-        pic_rev,resp_rev=sift.encuadre(reverso_filtr,'reverso')
-        reverso=pic_rev
+
+    
 
 
-        #atratapar cuando alguno es falso y generar jSON respuesta
-        #aqui se llama a alguna funcion de codeJSON
-    """
-        if resp_Anverso and not resp_reverso:
-            return {'ocr_data': 'Solo se reconoce Anverso'}
-        elif not resp_Anverso and resp_reverso:
-            return {'ocr_data': 'Solo se reconoce Reverso'}
-        elif not resp_Anverso and not resp_reverso:
-            return {'ocr_data': 'No se reconoce como Cedula'}
-            
-        resp_Anverso=str(resp_Anverso)
-        resp_reverso=str(resp_reverso)
 
-    """
+
 
     #SEPAR LOS RECORTES, EN CROPER LA FUNCION RECORTES SE DIVIDE EN DOS
     #unir los diccioanrios para inserten al objeto 
     diccionario_anverso=cropper.recortes_anverso(anverso)
     diccionario_reverso=cropper.recortes_reverso(reverso)
-
-    diccionario_anverso=sift.preparacionInicial(diccionario_anverso,None,'bin')
-    diccionario_reverso=sift.preparacionInicial(diccionario_reverso,None,'bin')
+    
+    clave_omitida=('textoGeneral_MRZ','mrz_raw')
+    diccionario_anverso=sift.preparacionInicial(diccionario_anverso,'anverso',clave_omitida,'bin')
+    diccionario_reverso=sift.preparacionInicial(diccionario_reverso,'reverso',clave_omitida,'bin_OTSU')
+    
 
 
     diccionario_img={**diccionario_anverso,**diccionario_reverso}
-    tools.guardar_recortes(diccionario_img,'anverso')
+    tools.guardar_recortes(diccionario_anverso,'anverso')
+    tools.guardar_recortes(diccionario_reverso,'reverso')
 
     clave_omitida=('textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
     #se retornan tupla, [0]: textos reconocidos, [1]: claves de texto no reconocidass
