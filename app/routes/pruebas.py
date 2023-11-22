@@ -16,8 +16,8 @@ def show_pruebas():
 @pruebas.route('/upload', methods=['POST'])
 def upload_json():
     # Verificar si se envió un archivo
-    if 'archivo_json' in request.files:
-        file = request.files['archivo_json']
+    if 'anverso_reverso_b64' in request.files:
+        file = request.files['anverso_reverso_b64']
 
         # Asegurarse de que el archivo tenga un nombre (es decir, que no esté vacío)
         if file.filename == '':

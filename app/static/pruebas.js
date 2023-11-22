@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const file = jsonFileInput.files[0];
     if (file) {
       const formData = new FormData();
-      formData.append("archivo_json", file);
+      formData.append("anverso_reverso_b64", file);
 
       try {
         const response = await fetch("/upload", {

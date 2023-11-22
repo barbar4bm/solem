@@ -77,14 +77,12 @@ def procesar_imgenes_cedula(data):
 
 
     diccionario_img={**diccionario_anverso,**diccionario_reverso}
-
     tools.guardar_recortes(diccionario_img,'anverso')
 
     clave_omitida=('textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
     #se retornan tupla, [0]: textos reconocidos, [1]: claves de texto no reconocidass
     dic_ocr=Ocr.obtenerTexto(diccionario_img,*clave_omitida)[0]
     carnet=Cedula(dic_ocr)
-
     ocr_data=vars(carnet)
     #verificaciones
     dic_validaciones=validar.procesar_validaciones(carnet)
