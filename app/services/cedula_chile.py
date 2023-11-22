@@ -1,7 +1,6 @@
 import os
 import platform
 import pytesseract
-from services import gvision
 from services import cropper
 from services import Ocr,tools
 from services import Sift as sift
@@ -28,10 +27,7 @@ def esWin():
 def procesar_imgenes_cedula(data):
     # Convertir las imágenes de base64 a objetos de imagen
     anverso=tools.b64_openCV(data['anverso'])
-    anver_gvision_b64=anverso.copy()
-
     reverso=tools.b64_openCV(data['reverso'])
-    rever_gvision_b64=reverso.copy()
 
     anverso_filtr=sift.preparacionInicial(anverso)
     reverso_filtr=sift.preparacionInicial(reverso)
@@ -71,54 +67,28 @@ def procesar_imgenes_cedula(data):
 
     """
 
-        #aplicar binarizacion de otsu al reverso par amejorar lectura con ocr
-        #ret, img_otsu=sift.binarizacion(reverso,1)
-
-
-
     #SEPAR LOS RECORTES, EN CROPER LA FUNCION RECORTES SE DIVIDE EN DOS
     #unir los diccioanrios para inserten al objeto 
-    diccionario_img=cropper.recorte(anverso,reverso)
-   
+    diccionario_anverso=cropper.recortes_anverso(anverso)
+    diccionario_reverso=cropper.recortes_reverso(reverso)
 
-    #Se recortan por separado anverso y reverso
-    dic_img_anverso=cropper.recortes_anverso(anverso)
-    dic_img_reverso=cropper.recortes_reverso(reverso)
+    diccionario_anverso=sift.preparacionInicial(diccionario_anverso,None,'bin')
+    diccionario_reverso=sift.preparacionInicial(diccionario_reverso,None,'bin')
 
-    
 
-    dic_img_anverso=sift.preparacionInicial(dic_img_anverso,None,'bin')
-    dic_img_reverso=sift.preparacionInicial(dic_img_reverso,None,'bin') #al reverso se le aplica binarizacion de otsu
+    diccionario_img={**diccionario_anverso,**diccionario_reverso}
 
-    tools.guardar_recortes(dic_img_anverso,'anverso')
-    tools.guardar_recortes(dic_img_reverso,'reverso-otsu')
+    tools.guardar_recortes(diccionario_img,'anverso')
 
-    clave_omitida=('qr','textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
+    clave_omitida=('textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
     #se retornan tupla, [0]: textos reconocidos, [1]: claves de texto no reconocidass
-    dic_ocr_anverso=Ocr.obtenerTexto(dic_img_anverso,*clave_omitida)[0]
-    dic_ocr_reverso=Ocr.obtenerTexto(dic_img_reverso,*clave_omitida)[0]
+    dic_ocr=Ocr.obtenerTexto(diccionario_img,*clave_omitida)[0]
+    carnet=Cedula(dic_ocr)
 
-    dic_ocr_carnet = {**dic_ocr_anverso, **dic_ocr_reverso}#se juntan los diccionarios en uno solo
-    carnet=Cedula(dic_ocr_carnet)
-
-
-#solo la foto completa
-#en un diccionario, una foto
-#el dicc a base 64
-    """
-
-        gvision.procesamiento_gvision({'Front':anver_gvision_b64},'anverso'+carnet.mrz['datosMRZ']['nombres_MRZ'])
-        gvision.procesamiento_gvision({'Back':rever_gvision_b64},'reverso'+carnet.mrz['datosMRZ']['nombres_MRZ'])
-
-    """
     ocr_data=vars(carnet)
     #verificaciones
     dic_validaciones=validar.procesar_validaciones(carnet)
 
     datos_respuesta = {'dic_validaciones': dic_validaciones,'ocr_data':ocr_data, 'reconoce_Anverso': resp_Anverso, 'reconoce_Reverso': resp_reverso}
-    import json
-
-    with open(f'datos_respuesta{carnet.nombres}.txt', 'w') as f:
-        f.write(json.dumps(datos_respuesta, indent=4))
 
     return datos_respuesta

@@ -6,9 +6,6 @@ from . import tools as tool
 from services import Sift
 import re
 
-#para windows
-pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
-
 def encontrar_coincidencia_aproximada(texto_ocr):
     diccionario = tool.cargar_trat_nacionalidades()
     # Usar get_close_matches para encontrar la coincidencia más cercana
@@ -21,9 +18,6 @@ def encontrar_coincidencia_aproximada(texto_ocr):
     else:
         # Si no se encuentra ninguna coincidencia, retornar None
         return None, None
-
-
-
 
 #recibe un diccionario con imagenes
 def obtenerTexto(dicc_imagenes, *claves_omitidas):
@@ -72,18 +66,6 @@ def obtenerTexto(dicc_imagenes, *claves_omitidas):
 
     return resultado,texto_no_reconocido
 
-
-def Asignar_Valores_Objeto(obj, attributes_dict):
-    # Asignar valores desde el diccionario a los atributos del objeto si el atributo existe en el objeto
-    for key, value in attributes_dict.items():
-        if hasattr(obj, key):
-            setattr(obj, key, value)
-        else:
-            print(f"Advertencia: El objeto no tiene el atributo '{key}'. El valor no fue asignado.")
-
-
-
-
 def limpiar_datos(ocr_result,atributo=''):
     cleaned_data = re.sub('[^a-zA-Z0-9]', '', str(ocr_result))
     if atributo=='nacionalidad':
@@ -103,7 +85,6 @@ def limpiar_datos(ocr_result,atributo=''):
 
     return cleaned_data
 
-
 def aplicarOCR(imagen):
     # Verificar que la imagen sea un ndarray de numpy
     if not isinstance(imagen, np.ndarray):
@@ -112,7 +93,7 @@ def aplicarOCR(imagen):
     # Aplicar OCR a la imagen
     texto = pytesseract.image_to_string(imagen)
 
-    # Devolver el resultado
+    # Devolver el resultado como diccionario
     return {"resultado": texto}
 
 

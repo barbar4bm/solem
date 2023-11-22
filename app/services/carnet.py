@@ -95,16 +95,7 @@ class Cedula:
         ocr.limpiar_datos(self.sexo,'sexo')
         ocr.limpiar_datos(self.nombres,'nombres')
         ocr.limpiar_datos(self.apellidos,'apellidos')
-                
 
-    def actualizar_datos_mrz(self, datos_actualizacion):
-        for clave, valor in datos_actualizacion.items():
-            if clave in self.mrz["datosMRZ"]:
-                self.mrz["datosMRZ"][clave] = valor
-        self.mrz["tieneMRZ"] = True
-    
-
-    
 
     def extraer_numerodoc_MRZ(self, linea_raw0):
         # Extraer todos los dígitos de la cadena
@@ -234,6 +225,3 @@ class Cedula:
 
 
 
-"""declarar una funcion que realize validaciones de los datos de la cedula
-def validar_datos(self): la funcion me retorna un diccionari con una estructura que muestte los datos 
-necesarios para saber si los campos coinciden..."""

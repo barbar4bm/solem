@@ -15,7 +15,6 @@ def _pickle_keypoints(point):
 # Registramos la función de ayuda para serializar objetos cv2.KeyPoint
 copyreg.pickle(cv2.KeyPoint().__class__, _pickle_keypoints)
 
-
 def retornoPrueba():
     return 'return prueba'
 
@@ -56,12 +55,6 @@ def almacenar_descriptores():
             print(f"Error al guardar descriptores: {e}")
 
     return True
-
-
-def puntos_descriptores(image):
-  sift = cv2.SIFT_create(0, 3, 0.04, 0, 2)
-  puntos,descriptores=sift.detectAndCompute(image,None)
-  return puntos,descriptores
 
 def preparacionInicial(imagenInicial,claves_omitidas=None, tipo_procesamiento='procesar_imagen'):
     if isinstance(imagenInicial, dict):
@@ -104,29 +97,6 @@ def procesar_imagen(imagen):
     eq = clahe.apply(gray)
     return eq
 
-def mejorar_imagen_qr(imagen):
-    # Convertir a escala de grises si es necesario
-    if len(imagen.shape) > 2 and imagen.shape[2] == 3:
-        imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
-    
-    # Filtrado bilateral
-    imagen = cv2.bilateralFilter(imagen, 9, 75, 75)
-    
-    # Escalar la imagen para mejorar detección de bordes
-    imagen = cv2.resize(imagen, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_LINEAR)
-    
-    # Binarización con Otsu
-    _, imagen = cv2.threshold(imagen, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    
-    # Filtro de medianas
-    imagen = cv2.medianBlur(imagen, 5)
-    
-    # Transformaciones morfológicas
-    kernel = np.ones((3,3),np.uint8)
-    imagen = cv2.morphologyEx(imagen, cv2.MORPH_OPEN, kernel, iterations=1)
-    
-    return imagen
-
 def bin_INV_OTSU(imagen):
     if len(imagen.shape) > 2 and imagen.shape[2] == 3:  # imagen en color
         if not (np.array_equal(imagen[:,:,0], imagen[:,:,1]) and np.array_equal(imagen[:,:,1], imagen[:,:,2])): # canales de color no son iguales
@@ -143,8 +113,7 @@ def bin_INV_OTSU(imagen):
         return imagen
     else:
         raise ValueError("Formato de imagen no soportado")
-    
-  
+      
 #realiza dos binarizaciones, escoger una entre 0 y 1
 def binarizacion(imagen, otsu=0):
     # Verificamos si otsu tiene valores válidos
@@ -192,7 +161,7 @@ def calcHomografia(good,MIN_MATCH_COUNT,img_ref,kp_obj,kp_ref,imgEq):
         M, mask = cv2.findHomography(dst_pts, src_pts, cv2.RANSAC,5.0)
         matchesMask = mask.ravel().tolist()
         h,w = img_ref.shape
-        #pts: puntos que forman un rectangulo en base a las medidas de img2
+        #pts: puntos que forman un rectangulo en base a las medidas h y w de la imagen de referencia
         pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
 
         #tomar el conjunto de puntos (pts) de img2 y aplicar la trasnformacion de perspectiva de puntos con la MAtriz de homografia M
@@ -201,11 +170,10 @@ def calcHomografia(good,MIN_MATCH_COUNT,img_ref,kp_obj,kp_ref,imgEq):
 
         return dst, M, matchesMask
     else:
-        print( "Not enough matches are found - {}/{}".format(len(good), MIN_MATCH_COUNT) )
+        print( "No se encuentran suficientes coincidencias- {}/{}".format(len(good), MIN_MATCH_COUNT) )
         matchesMask = None
 
         return None
-
 
 def cargarDescriptores(nombre):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -259,7 +227,6 @@ def guardarDescriptores():
         SAVE_PATH = os.path.join(BASE_DIR, 'data', f'descriptores_{name}.pkl')
         with open(SAVE_PATH, 'wb') as f:
             pkl.dump(dic, f)     
-
 
 def identificador_lado(img_side,tipo=''):
     min_matches=20
@@ -316,55 +283,6 @@ def identificador_lado(img_side,tipo=''):
 
     return suficientes_matches
 
-
-def identificador_lados1(anverso,reverso,matches_anverso=20,matches_reverso=8):
-    print('identificador_lados')
-
-    def matches(descriptorBase,descriptorObjetivo,lado=''):
-            # Busco los descriptores que están más cerca (brute force matcher)
-        bf = cv2.BFMatcher()
-        matches = bf.knnMatch(descriptorBase, descriptorObjetivo, k=2)
-
-        # Aplico test de cercanía
-        good = []
-        for m,n in matches:
-            if m.distance < 0.5*n.distance:
-                good.append([m])
-
-        coincidencias = len(good)
-        print('LAS COINCIDENCIAS')
-       
-
-        if lado=='anverso' and matches_anverso>20:
-            print(f'Número de coincidencia de descriptores {lado}: {coincidencias}')
-            return True
-        elif lado=='reverso' and matches_reverso>8:
-            print(f'Número de coincidencia de descriptores {lado}: {coincidencias}')
-            return True
-        else:
-            return False
-    
-    ##########################################
-
-    #cargar descriotires
-    desc_lado_anverso = cargarDescriptores('anverso')
-    desc_lado_reverso = cargarDescriptores('reverso')
-
-    # Calculo los descriptores de la imagen nueva
-    # Inicializo el detector SIFT
-    # Query Image
-
-    sift = cv2.SIFT_create()
-
-    # Encuentro los descriptores de la imagen a revisar
-    kp1, des1 = sift.detectAndCompute(anverso,None)
-    kp2, des2= sift.detectAndCompute(reverso,None)
-
-    esAnverso=matches(desc_lado_anverso,des1,'anverso')
-    esReverso=matches(desc_lado_reverso,des2,'reverso')
-
-    return esAnverso,esReverso
-
 def keypoints_descriptores(image):
   
   sift = cv2.SIFT_create(0, 3, 0.04, 0, 2)
@@ -392,7 +310,6 @@ def abrir_Imagen(lado):
 
     return imagen_numpy
 
-
 def guardar_keypoints(keypoints, name):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     SAVE_PATH = os.path.join(BASE_DIR, 'data', f'keypoints_{name}.pkl')
@@ -407,7 +324,7 @@ def guardar_keypoints(keypoints, name):
 def encuadre(imagen,lado):
     descriptores_lado= cargarDescriptores(lado)
     MIN_MATCH_COUNT=20
-    porc_calc_homografia=necesita_homografia1(imagen,descriptores_lado,lado)
+    porc_calc_homografia=necesita_homografia(imagen,descriptores_lado,lado)
 
     if not porc_calc_homografia:
         return imagen,False
@@ -421,22 +338,25 @@ def encuadre(imagen,lado):
         h,w=imagen_ref.shape
         pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
         warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
-        cv2.imwrite('warped_img.jpg', warped_img)
+        cv2.imwrite(f'warped_img{lado}.jpg', warped_img)
 
 
         return warped_img,True
 
-
-def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.2,umbral_reverso=0.1):
-    kp_imagen, descriptores = puntos_descriptores(imagen)
+def necesita_homografia(imagen, descriptores_lado,lado,umbral_anverso=0.3,umbral_reverso=0.1):
+    kp_imagen, descriptores = keypoints_descriptores(imagen)
     
     # Aquí podrías usar la función findMatches o cualquier otra lógica para comparar los keypoints
     good_matches = findMatches(descriptores, descriptores_lado)
     
     # Si el porcentaje de buenos matches es menor que el umbral, se calcula la homografía
-    print(f"Porcentaje de buenos matches: {len(good_matches) / len(descriptores_lado)}")
-
+    print(f'Buenos Matches: {len(good_matches)} entre descriptores')
+    print(f'{lado}, datos Img Objetivo: len(kps)={len(kp_imagen)}, len(descriptores)={len(descriptores)})')
+    print(f'Numero de descriptores Base: {len(descriptores_lado)}')
+    print(f'calculo: {len(good_matches)} / {len(descriptores_lado)}= {len(good_matches)/len(descriptores_lado)}')
+    print('')
     if(lado=='anverso'):
+        
         return len(good_matches)/len(descriptores_lado)< umbral_anverso
     else:
         return len(good_matches)/len(descriptores_lado)< umbral_reverso

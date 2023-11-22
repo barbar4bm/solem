@@ -5,17 +5,6 @@ import base64 as b64
 import os
 import json
 
-    
-def obtenerRecorteImagen(imagenbaseEq,imgEq,M):
-  # Definimos las dimensiones del rectángulo base (el original de la imagen de referencia)
-  h,w = imagenbaseEq.shape
-  pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
-  # Desenvolvemos la imagen utilizando la homografía inversa
-  warped = cv2.warpPerspective(imgEq, np.linalg.inv(M), (w, h))
-  if warped.dtype != np.uint8:
-    warped = (warped * 255).astype(np.uint8)
-  return warped
-
 def b64_openCV(imgenb64):
   im_bytes = b64.b64decode(imgenb64)
   im_arr = np.frombuffer(im_bytes, dtype=np.uint8) 
@@ -41,9 +30,6 @@ def imagen_a_matriz(imagen_data):
     imagen = cv2.imdecode(imagen_bytes, cv2.IMREAD_COLOR)
     return imagen
 
-def escalaGrises(imagen):
-    return cv2.cvtColor(imagen,cv2.COLOR_BGR2GRAY)
-
 def leerQR(image):
 
     # Inicializar el detector de códigos QR con OpenCV
@@ -57,99 +43,11 @@ def leerQR(image):
     value, pts, qr_code = qr_code_detector.detectAndDecode(image)
     return value
     
-
-def leer_base64_desde_archivo(ruta_archivo):
-    with open(ruta_archivo, 'r') as archivo:
-        contenido = archivo.read()
-    return contenido
-
-def guardar_base64_en_archivo(img, nombre_archivo):
-    """Guarda la representación base64 de una imagen de OpenCV en un archivo. 
-    Si hay un error, se devuelve False. Si tiene éxito, devuelve True."""
-    try:
-        img_base64 = openCV_b64(img)
-        
-        with open(nombre_archivo, 'w') as f:
-            f.write(img_base64)
-        
-        return True
-    except Exception as e:
-        print(f"Ocurrió un error al guardar la imagen en base64: {e}")
-        return False
-    
-def cargar_imagenes(nombres, formato, ruta):
-    """
-    Carga una lista de imágenes a partir de sus nombres, formato y ruta.
-    
-    Parámetros:
-    - nombres (list): Lista de nombres de archivos sin extensión.
-    - formato (str): Formato de los archivos, ej: '.png', '.jpg'.
-    - ruta (str): Ruta del directorio donde se encuentran las imágenes.
-
-    Retorna:
-    - list: Lista de imágenes cargadas.
-    """
-    # Crear lista completa de rutas a las imágenes
-    rutas_completas = [os.path.join(ruta, nombre + formato) for nombre in nombres]
-
-    # Leer las imágenes y almacenarlas en la lista
-    imagenes = [cv2.imread(ruta_completa) for ruta_completa in rutas_completas]
-
-    return imagenes
-
 def numpy_to_png(imagen_np):
     """Convierte una matriz numpy a bytes de imagen PNG."""
     retval, buffer_png = cv2.imencode('.png', imagen_np)
     png_bytes = buffer_png.tobytes()
     return png_bytes
-
-def recorte(rut_bin, rut_bin2):
-    
-    # 500x800
-    rut_bin=escalar_imagen(rut_bin,530,840)
-    rut_bin2=escalar_imagen(rut_bin2,530,840)
-
-    #anverso
-    nombres = rut_bin[171:211 , 291:806]
-    apellidos = rut_bin[88:152 , 292:520]
-    RUN = rut_bin[460:496 , 98:273]
-    nacionalidad = rut_bin[220:265, 291:425]
-    sexo = rut_bin[222:263, 450:600]
-    fecha_nacimiento = rut_bin[276:311 , 250:480]
-    numero_documento = rut_bin[275:310, 487:663]
-    fecha_emision = rut_bin[330:369 , 292:463]
-    fecha_vencimiento = rut_bin[335:367 , 477:667]
-
-    #reverso
-    ciudad = rut_bin2[211:247 , 182:600]
-    profesion = rut_bin2[242:274,182:403]
-    mrz = rut_bin2[354:492, 42:800]
-    nombre_mrz = rut_bin2[440:482, 418:800]
-    apellido_mrz = rut_bin2[440:478, 44:375]
-    rut_mrz = rut_bin2[395:440,495:747]
-    documento_mrz = rut_bin2[354:398,170:400]
-    qr=recortar_qr(rut_bin2)
-
-    return {
-        "nombres": nombres,
-        "apellidos": apellidos,
-        "RUN": RUN,
-        "nacionalidad": nacionalidad,
-        "sexo": sexo,
-        "fecha_nacimiento": fecha_nacimiento,
-        "numero_documento": numero_documento,
-        "fecha_emision": fecha_emision,
-        "fecha_vencimiento": fecha_vencimiento,
-        "ciudad": ciudad,
-        "profesion": profesion,
-        "mrz": mrz,
-        "nombre_mrz": nombre_mrz,
-        "apellido_mrz": apellido_mrz,
-        "rut_mrz": rut_mrz,
-        "documento_mrz": documento_mrz,
-        "qr":qr
-    }
-
 
 def escalar_imagen(img, altura, anchura):
     
@@ -178,17 +76,6 @@ def guardar_recortes(diccionario, categoria):
         if imagen is not None and imagen.size != 0:
             ruta = os.path.join(ruta_carpeta, f'{clave}.png')
             cv2.imwrite(ruta, imagen)
-
-def recortar_qr(imagen):
-    # Coordenadas del rectángulo donde se encuentra el QR
-    x = 23
-    y = 30
-    w = 170
-    h = 170
-
-    # Recortar la imagen
-    qr_recortado = imagen[y:y+h, x:x+w]
-    return qr_recortado    
 
 def b64_imagen(imagen):
     # Decodificar la cadena base64 a bytes
@@ -262,34 +149,6 @@ def cargarPaises():
 
     return dic_paises
 
-def extraer_datos_qr(qr):
-    # Verificar que self.string_qr es un string
-    if not qr or not isinstance(qr, str):
-        return False
-
-    # Inicializar el diccionario que contendrá los datos extraídos
-    datos_qr = {}
-
-    # Separar la URL en la base y los parámetros
-    try:
-        base, parametros = qr.split('?', 1)
-    except ValueError:
-        raise ValueError("Formato de URL inválido.")
-
-    # Dividir los parámetros en pares clave-valor
-    pares = parametros.split('&')
-
-    # Extraer los valores para cada par clave-valor deseado
-    for par in pares:
-        clave, valor = par.split('=')
-        if clave in ['RUN', 'serial', 'mrz']:
-            # Quitar cualquier posible guión en el valor de RUN
-            if clave == 'RUN':
-                valor = valor.replace('-', '')
-            datos_qr[clave] = valor
-
-    return datos_qr
-
 def mostrar_imagen(imagen, titulo='Imagen'):
     cv2.imshow(titulo, imagen)
     cv2.waitKey(0)
@@ -298,7 +157,6 @@ def mostrar_imagen_plt(imagen):
     plt.imshow(imagen, cmap='gray')
     plt.title('imagen')
     plt.show()
-
 
 def convertir_diccionario_a_base64(diccionario_img, claves_omitidas=None):
     diccionario_base64 = {}
