@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": true,
+        "comparar_nombre_completo": true,
+        "comparar_fecha_nacimiento": true,
+        "comparar_fecha_vencimiento": true,
+        "comparar_numero_documento": true,
+        "comparar_RUN": false
+    },
+    "ocr_data": {
+        "RUN": "30000666",
+        "apellidos": "CONTRERASGARCES",
+        "nombres": "CARLAANDREA",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "011025",
+        "fecha_emision": "211001",
+        "fecha_vencimiento": "311026",
+        "numero_documento": "525400347",
+        "ciudad": "LOSANGELES",
+        "profesion": "",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "INCHL5254063470J31",
+                    "9110258F3110256CHL18099066<6<&",
+                    "CONTRERAS<GARCES<<CARLA<ANDREA"
+                ],
+                "textoGeneral_MRZ": "INCHL5254063470J31 9110258F3110256CHL180990666 CONTRERASGARCESCARLAANDREA",
+                "nombres_MRZ": "CARLA ANDREA",
+                "RUN_MRZ": "180990666",
+                "numeroDocumento_MRZ": "525406347",
+                "apellidos_MRZ": "CONTRERAS GARCES",
+                "nacionalidad_MRZ": "CHL",
+                "sexo_MRZ": "",
+                "fechaNacimiento_MRZ": "911025",
+                "fechaVencimiento_MRZ": "311025"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": true
+}

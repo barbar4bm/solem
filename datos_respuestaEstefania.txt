@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": true,
+        "comparar_nombre_completo": false,
+        "comparar_fecha_nacimiento": false,
+        "comparar_fecha_vencimiento": false,
+        "comparar_numero_documento": false,
+        "comparar_RUN": false
+    },
+    "ocr_data": {
+        "RUN": "",
+        "apellidos": "",
+        "nombres": "",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "",
+        "fecha_emision": "",
+        "fecha_vencimiento": "",
+        "numero_documento": "17148",
+        "ciudad": "",
+        "profesion": "KINESSRRDA",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "-HL51708891430830",
+                    "835175F28605173CHL16751087 <6<2",
+                    "MENEZ<GUTIERREZ<<ESTEFANIA<E"
+                ],
+                "textoGeneral_MRZ": "HL51708891430830 835175F28605173CHL1675108762 MENEZGUTIERREZESTEFANIAE",
+                "nombres_MRZ": "ESTEFANIA E",
+                "RUN_MRZ": "167510876",
+                "numeroDocumento_MRZ": "517088914",
+                "apellidos_MRZ": "MENEZ GUTIERREZ",
+                "nacionalidad_MRZ": "CHL",
+                "sexo_MRZ": "2",
+                "fechaNacimiento_MRZ": "835175",
+                "fechaVencimiento_MRZ": "860517"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": true
+}

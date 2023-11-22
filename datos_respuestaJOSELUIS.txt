@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": false,
+        "comparar_nombre_completo": false,
+        "comparar_fecha_nacimiento": true,
+        "comparar_fecha_vencimiento": false,
+        "comparar_numero_documento": true,
+        "comparar_RUN": false
+    },
+    "ocr_data": {
+        "RUN": "211858281",
+        "apellidos": "",
+        "nombres": "JOSELUIS",
+        "nacionalidad": null,
+        "sexo": "",
+        "fecha_nacimiento": "950825",
+        "fecha_emision": "191010",
+        "fecha_vencimiento": "",
+        "numero_documento": "602155989",
+        "ciudad": "PERMANENCIADEFINITIVA",
+        "profesion": "Noinformada",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "TECHL6021559897CO3",
+                    "9508255M2409135B0L21185R2R<1 <",
+                    "VADILLO<VILLCA<<JOSE<LUISecec<"
+                ],
+                "textoGeneral_MRZ": "TECHL6021559897CO3 9508255M2409135B0L21185R2R1 VADILLOVILLCAJOSELUISecec",
+                "nombres_MRZ": "JOSE LUISecec",
+                "RUN_MRZ": "1",
+                "numeroDocumento_MRZ": "602155989",
+                "apellidos_MRZ": "VADILLO VILLCA",
+                "nacionalidad_MRZ": "",
+                "sexo_MRZ": "",
+                "fechaNacimiento_MRZ": "950825",
+                "fechaVencimiento_MRZ": "240913"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": true
+}

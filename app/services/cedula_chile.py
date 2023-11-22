@@ -28,16 +28,19 @@ def esWin():
 def procesar_imgenes_cedula(data):
     # Convertir las imágenes de base64 a objetos de imagen
     anverso=tools.b64_openCV(data['anverso'])
+    anver_gvision_b64=anverso.copy()
 
-    anverso_cp=anverso.copy()
-    anverso_cp=sift.preparacionInicial(anverso_cp)  
     reverso=tools.b64_openCV(data['reverso'])
-
+    rever_gvision_b64=reverso.copy()
 
     anverso_filtr=sift.preparacionInicial(anverso)
     reverso_filtr=sift.preparacionInicial(reverso)
-    resp_Anverso,resp_reverso=sift.identificador_lado(anverso_filtr,'anverso'),sift.identificador_lado(reverso_filtr,'reverso')
+
+    resp_Anverso=sift.identificador_lado(anverso_filtr,'anverso')
+    resp_reverso=sift.identificador_lado(reverso_filtr,'reverso')
     _=None
+
+
     resp_anv=None
     resp_rev=None
     if resp_Anverso and resp_reverso:
@@ -55,18 +58,18 @@ def procesar_imgenes_cedula(data):
 
         #atratapar cuando alguno es falso y generar jSON respuesta
         #aqui se llama a alguna funcion de codeJSON
+    """
+        if resp_Anverso and not resp_reverso:
+            return {'ocr_data': 'Solo se reconoce Anverso'}
+        elif not resp_Anverso and resp_reverso:
+            return {'ocr_data': 'Solo se reconoce Reverso'}
+        elif not resp_Anverso and not resp_reverso:
+            return {'ocr_data': 'No se reconoce como Cedula'}
+            
+        resp_Anverso=str(resp_Anverso)
+        resp_reverso=str(resp_reverso)
 
-
-    if resp_Anverso and not resp_reverso:
-        return {'ocr_data': 'Solo se reconoce Anverso'}
-    elif not resp_Anverso and resp_reverso:
-        return {'ocr_data': 'Solo se reconoce Reverso'}
-    elif not resp_Anverso and not resp_reverso:
-        return {'ocr_data': 'No se reconoce como Cedula'}
-
-
-    resp_Anverso=str(resp_Anverso)
-    resp_reverso=str(resp_reverso)
+    """
 
         #aplicar binarizacion de otsu al reverso par amejorar lectura con ocr
         #ret, img_otsu=sift.binarizacion(reverso,1)
@@ -85,7 +88,7 @@ def procesar_imgenes_cedula(data):
     
 
     dic_img_anverso=sift.preparacionInicial(dic_img_anverso,None,'bin')
-    dic_img_reverso=sift.preparacionInicial(dic_img_reverso,'qr','bin') #al reverso se le aplica binarizacion de otsu
+    dic_img_reverso=sift.preparacionInicial(dic_img_reverso,None,'bin') #al reverso se le aplica binarizacion de otsu
 
     tools.guardar_recortes(dic_img_anverso,'anverso')
     tools.guardar_recortes(dic_img_reverso,'reverso-otsu')
@@ -98,19 +101,24 @@ def procesar_imgenes_cedula(data):
     dic_ocr_carnet = {**dic_ocr_anverso, **dic_ocr_reverso}#se juntan los diccionarios en uno solo
     carnet=Cedula(dic_ocr_carnet)
 
-    gvision.procesamiento_gvision(dic_img_anverso,carnet.mrz['datosMRZ']['nombres_MRZ']+'-anv')  
-    gvision.procesamiento_gvision(dic_img_reverso,carnet.mrz['datosMRZ']['nombres_MRZ']+'-rev')
 
+#solo la foto completa
+#en un diccionario, una foto
+#el dicc a base 64
+    """
 
+        gvision.procesamiento_gvision({'Front':anver_gvision_b64},'anverso'+carnet.mrz['datosMRZ']['nombres_MRZ'])
+        gvision.procesamiento_gvision({'Back':rever_gvision_b64},'reverso'+carnet.mrz['datosMRZ']['nombres_MRZ'])
 
-    gvision.procesamiento_gvision({'Front':anverso_cp},'frontal'+carnet.mrz['datosMRZ']['nombres_MRZ'])
-
+    """
     ocr_data=vars(carnet)
-        
-
     #verificaciones
     dic_validaciones=validar.procesar_validaciones(carnet)
 
     datos_respuesta = {'dic_validaciones': dic_validaciones,'ocr_data':ocr_data, 'reconoce_Anverso': resp_Anverso, 'reconoce_Reverso': resp_reverso}
+    import json
+
+    with open(f'datos_respuesta{carnet.nombres}.txt', 'w') as f:
+        f.write(json.dumps(datos_respuesta, indent=4))
 
     return datos_respuesta

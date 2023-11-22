@@ -262,6 +262,7 @@ def guardarDescriptores():
 
 
 def identificador_lado(img_side,tipo=''):
+    min_matches=20
     
     #se define la cantidad minimas de coincidencias para cada lado
     if tipo=='anverso':
@@ -286,9 +287,9 @@ def identificador_lado(img_side,tipo=''):
                 good.append([m])
 
         coincidencias = len(good)
-        #print(f'Número de coincidencia de descriptores {tipo}: {coincidencias}')
 
-        if (coincidencias > 7):
+        if (coincidencias > min_matches):
+            print(f'Número de coincidencia de descriptores {tipo}: {coincidencias} > {min_matches}')
             return True
         else:
             return False
@@ -316,7 +317,8 @@ def identificador_lado(img_side,tipo=''):
     return suficientes_matches
 
 
-def identificador_lados(anverso,reverso,matches_anverso=20,matches_reverso=8):
+def identificador_lados1(anverso,reverso,matches_anverso=20,matches_reverso=8):
+    print('identificador_lados')
 
     def matches(descriptorBase,descriptorObjetivo,lado=''):
             # Busco los descriptores que están más cerca (brute force matcher)
@@ -330,10 +332,14 @@ def identificador_lados(anverso,reverso,matches_anverso=20,matches_reverso=8):
                 good.append([m])
 
         coincidencias = len(good)
-        print(f'Número de coincidencia de descriptores {lado}: {coincidencias}')
+        print('LAS COINCIDENCIAS')
+       
 
-
-        if (coincidencias > 10):
+        if lado=='anverso' and matches_anverso>20:
+            print(f'Número de coincidencia de descriptores {lado}: {coincidencias}')
+            return True
+        elif lado=='reverso' and matches_reverso>8:
+            print(f'Número de coincidencia de descriptores {lado}: {coincidencias}')
             return True
         else:
             return False

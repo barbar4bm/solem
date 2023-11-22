@@ -30,8 +30,6 @@ def procesamiento_gvision(diccionario_img,nombre_persona):
     archivo_credenciales = os.path.join(BASE_DIR, 'data', 'ocr-gv.json')
     # Verificar si el archivo existe
     existe_archivo = os.path.exists(archivo_credenciales)
-    print(f"La ruta del archivo de credenciales es: {archivo_credenciales}")
-    print(f"¿Existe el archivo de credenciales? {existe_archivo}")
 
 
     dic_respuesta=enviar_a_google_vision(dic_b64,archivo_credenciales)

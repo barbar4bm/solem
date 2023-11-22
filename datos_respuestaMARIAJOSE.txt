@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": true,
+        "comparar_nombre_completo": false,
+        "comparar_fecha_nacimiento": false,
+        "comparar_fecha_vencimiento": false,
+        "comparar_numero_documento": false,
+        "comparar_RUN": false
+    },
+    "ocr_data": {
+        "RUN": "171016169",
+        "apellidos": "CONSZALSEGONZALF",
+        "nombres": "MARIAJOSE",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "",
+        "fecha_emision": "",
+        "fecha_vencimiento": "",
+        "numero_documento": "",
+        "ciudad": "PROVIDENCIA",
+        "profesion": "INGENIEROCC",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "INCHL5211323861515ennrnrsan.r..",
+                    "Sv0e1 \u00bbee 199F2902197CHL171016 thee",
+                    "0 OEE ESGONZALEZ<<mMARTA K<SOS |!a"
+                ],
+                "textoGeneral_MRZ": "INCHL5211323861515ennrnrsanr Sv0e1ee199F2902197CHL171016thee 0OEEESGONZALEZmMARTAKSOSa",
+                "nombres_MRZ": "",
+                "RUN_MRZ": "",
+                "numeroDocumento_MRZ": "521132386",
+                "apellidos_MRZ": "OEEESGONZALEZ mMARTAK",
+                "nacionalidad_MRZ": "CHL",
+                "sexo_MRZ": "",
+                "fechaNacimiento_MRZ": "Sv0e1 ",
+                "fechaVencimiento_MRZ": "e 199F"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": false
+}

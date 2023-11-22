@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": true,
+        "comparar_nombre_completo": true,
+        "comparar_fecha_nacimiento": true,
+        "comparar_fecha_vencimiento": true,
+        "comparar_numero_documento": false,
+        "comparar_RUN": true
+    },
+    "ocr_data": {
+        "RUN": "202361455",
+        "apellidos": "LEGUAAGUNA",
+        "nombres": "IGNACIOALEJANDRO",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "980901",
+        "fecha_emision": "",
+        "fecha_vencimiento": "290901",
+        "numero_documento": "27353353",
+        "ciudad": "LOSVILOS",
+        "profesion": "Noinformada",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "INCHL5273533536D15",
+                    "9909014M2909015CHL20236145<5<1",
+                    "LEGUA<ACUNA<<IGNACIO<ALEJANDRO"
+                ],
+                "textoGeneral_MRZ": "INCHL5273533536D15 9909014M2909015CHL2023614551 LEGUAACUNAIGNACIOALEJANDRO",
+                "nombres_MRZ": "IGNACIO ALEJANDRO",
+                "RUN_MRZ": "202361455",
+                "numeroDocumento_MRZ": "527353353",
+                "apellidos_MRZ": "LEGUA ACUNA",
+                "nacionalidad_MRZ": "CHL",
+                "sexo_MRZ": "M",
+                "fechaNacimiento_MRZ": "990901",
+                "fechaVencimiento_MRZ": "290901"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": true
+}

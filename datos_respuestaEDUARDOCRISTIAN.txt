@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": true,
+        "comparar_nombre_completo": false,
+        "comparar_fecha_nacimiento": true,
+        "comparar_fecha_vencimiento": true,
+        "comparar_numero_documento": true,
+        "comparar_RUN": true
+    },
+    "ocr_data": {
+        "RUN": "128531033",
+        "apellidos": "SEPULVEDAJIMENEZ",
+        "nombres": "EDUARDOCRISTIAN",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "750508",
+        "fecha_emision": "150573",
+        "fecha_vencimiento": "250508",
+        "numero_documento": "105630991",
+        "ciudad": "RECOLETA",
+        "profesion": "Noinformada",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "INCHL1056309914S15",
+                    "7505087M2505082CHL12853103<3<4",
+                    "SEPULVEDA<JIMENEZ<<EDUARDOKXCRI"
+                ],
+                "textoGeneral_MRZ": "INCHL1056309914S15 7505087M2505082CHL1285310334 SEPULVEDAJIMENEZEDUARDOKXCRI",
+                "nombres_MRZ": "",
+                "RUN_MRZ": "128531033",
+                "numeroDocumento_MRZ": "105630991",
+                "apellidos_MRZ": "SEPULVEDA JIMENEZ",
+                "nacionalidad_MRZ": "CHL",
+                "sexo_MRZ": "M",
+                "fechaNacimiento_MRZ": "750508",
+                "fechaVencimiento_MRZ": "250508"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": true
+}

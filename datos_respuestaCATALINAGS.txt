@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": true,
+        "comparar_nombre_completo": false,
+        "comparar_fecha_nacimiento": false,
+        "comparar_fecha_vencimiento": false,
+        "comparar_numero_documento": false,
+        "comparar_RUN": true
+    },
+    "ocr_data": {
+        "RUN": "20551197",
+        "apellidos": "DIALPORES",
+        "nombres": "CATALINAGS",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "0011OR",
+        "fecha_emision": "",
+        "fecha_vencimiento": "0411AB",
+        "numero_documento": "BOO43hade",
+        "ciudad": "SANTIAGO",
+        "profesion": "Noinformada",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "INCHL5204359497S24",
+                    "0011086F2411082CHL20551197<0<6",
+                    "DIAZ<FLORES<<CATALINA<LISSETE<"
+                ],
+                "textoGeneral_MRZ": "INCHL5204359497S24 0011086F2411082CHL2055119706 DIAZFLORESCATALINALISSETE",
+                "nombres_MRZ": "CATALINA LISSETE",
+                "RUN_MRZ": "205511970",
+                "numeroDocumento_MRZ": "520435949",
+                "apellidos_MRZ": "DIAZ FLORES",
+                "nacionalidad_MRZ": "CHL",
+                "sexo_MRZ": "F",
+                "fechaNacimiento_MRZ": "001108",
+                "fechaVencimiento_MRZ": "241108"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": false
+}

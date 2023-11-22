@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": false,
+        "comparar_nombre_completo": false,
+        "comparar_fecha_nacimiento": false,
+        "comparar_fecha_vencimiento": false,
+        "comparar_numero_documento": false,
+        "comparar_RUN": false
+    },
+    "ocr_data": {
+        "RUN": "eee",
+        "apellidos": "",
+        "nombres": "MAGI",
+        "nacionalidad": "",
+        "sexo": "",
+        "fecha_nacimiento": "",
+        "fecha_emision": "",
+        "fecha_vencimiento": "",
+        "numero_documento": "ra",
+        "ciudad": "PORTALESESTCENTRAL",
+        "profesion": "Moinffocmada",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "FRUHOHL 5123711549521",
+                    "(6509239625092 381CHI ANG RENar cn.",
+                    "me N ewe TONGBRAVO<RODRIGUE? <cmONMICAcmace,"
+                ],
+                "textoGeneral_MRZ": "FRUHOHL5123711549521 6509239625092381CHIANGRENarcn meNeweTONGBRAVORODRIGUEcmONMICAcmace",
+                "nombres_MRZ": "",
+                "RUN_MRZ": "",
+                "numeroDocumento_MRZ": "512371154",
+                "apellidos_MRZ": "meNeweTONGBRAVO RODRIGUE",
+                "nacionalidad_MRZ": "CHI",
+                "sexo_MRZ": "",
+                "fechaNacimiento_MRZ": "(65092",
+                "fechaVencimiento_MRZ": "625092"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": false
+}

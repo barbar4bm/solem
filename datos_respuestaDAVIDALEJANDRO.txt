@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": true,
+        "comparar_nombre_completo": false,
+        "comparar_fecha_nacimiento": true,
+        "comparar_fecha_vencimiento": true,
+        "comparar_numero_documento": true,
+        "comparar_RUN": true
+    },
+    "ocr_data": {
+        "RUN": "154846891",
+        "apellidos": "NMENDEZBARRA",
+        "nombres": "DAVIDALEJANDRO",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "820903",
+        "fecha_emision": "190710",
+        "fecha_vencimiento": "240903",
+        "numero_documento": "519405160",
+        "ciudad": "QUINTANORMAL",
+        "profesion": "Noinformada",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "INCHL5194051605S826",
+                    "8209038M2409032CHL15484689<1<6",
+                    "MENDEZ<BARRA<<DAVID<ALEJANDRO<"
+                ],
+                "textoGeneral_MRZ": "INCHL5194051605S826 8209038M2409032CHL1548468916 MENDEZBARRADAVIDALEJANDRO",
+                "nombres_MRZ": "DAVID ALEJANDRO",
+                "RUN_MRZ": "154846891",
+                "numeroDocumento_MRZ": "519405160",
+                "apellidos_MRZ": "MENDEZ BARRA",
+                "nacionalidad_MRZ": "CHL",
+                "sexo_MRZ": "M",
+                "fechaNacimiento_MRZ": "820903",
+                "fechaVencimiento_MRZ": "240903"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": true
+}

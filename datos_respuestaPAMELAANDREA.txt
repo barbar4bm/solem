@@ -1,0 +1,40 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": false,
+        "comparar_nombre_completo": false,
+        "comparar_fecha_nacimiento": false,
+        "comparar_fecha_vencimiento": false,
+        "comparar_numero_documento": false,
+        "comparar_RUN": false
+    },
+    "ocr_data": {
+        "RUN": "",
+        "apellidos": "",
+        "nombres": "PAMELAANDREA",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "680503",
+        "fecha_emision": "",
+        "fecha_vencimiento": "2805IR",
+        "numero_documento": "514357448",
+        "ciudad": "MONEDASANTIAGO",
+        "profesion": "Noinformada",
+        "mrz": {
+            "tieneMRZ": false,
+            "datosMRZ": {
+                "mrz_raw": [],
+                "textoGeneral_MRZ": "",
+                "nombres_MRZ": "",
+                "RUN_MRZ": "",
+                "numeroDocumento_MRZ": "",
+                "apellidos_MRZ": "",
+                "nacionalidad_MRZ": "",
+                "sexo_MRZ": "",
+                "fechaNacimiento_MRZ": "",
+                "fechaVencimiento_MRZ": ""
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": true
+}

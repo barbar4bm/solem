@@ -1,0 +1,44 @@
+{
+    "dic_validaciones": {
+        "comparar_nacionalidad": true,
+        "comparar_nombre_completo": true,
+        "comparar_fecha_nacimiento": true,
+        "comparar_fecha_vencimiento": true,
+        "comparar_numero_documento": true,
+        "comparar_RUN": true
+    },
+    "ocr_data": {
+        "RUN": "172233112",
+        "apellidos": "MORALESASENCIO",
+        "nombres": "VALESCAISABEL",
+        "nacionalidad": "CHL",
+        "sexo": "",
+        "fecha_nacimiento": "890914",
+        "fecha_emision": "",
+        "fecha_vencimiento": "290914",
+        "numero_documento": "520053840",
+        "ciudad": "PDTERIOSTALCAHUANO",
+        "profesion": "Noinformada",
+        "mrz": {
+            "tieneMRZ": true,
+            "datosMRZ": {
+                "mrz_raw": [
+                    "INCHL5200538407J63",
+                    "8909143F2909141CHL17223311<2<2",
+                    "MORALES<ASENCIO<<VALESCA<ISABE"
+                ],
+                "textoGeneral_MRZ": "INCHL5200538407J63 8909143F2909141CHL1722331122 MORALESASENCIOVALESCAISABE",
+                "nombres_MRZ": "VALESCA ISABE",
+                "RUN_MRZ": "172233112",
+                "numeroDocumento_MRZ": "520053840",
+                "apellidos_MRZ": "MORALES ASENCIO",
+                "nacionalidad_MRZ": "CHL",
+                "sexo_MRZ": "F",
+                "fechaNacimiento_MRZ": "890914",
+                "fechaVencimiento_MRZ": "290914"
+            }
+        }
+    },
+    "reconoce_Anverso": true,
+    "reconoce_Reverso": true
+}

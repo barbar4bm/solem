@@ -10,6 +10,7 @@ def procesar_validaciones(carnet, porcentaje_de_aprobar=0.8):
 
     #generar codigo para obtner una respeusta de validacion
     #se agrega al Json 
+    #con 5 true el carnet es valido, cualwuier otro caso entrega la respuesta de validacion final
 
     return {
         'comparar_nacionalidad': nacionalidad,
@@ -19,6 +20,7 @@ def procesar_validaciones(carnet, porcentaje_de_aprobar=0.8):
         'comparar_numero_documento': numero_documento,
         'comparar_RUN':run
     }
+
 
 
 def comparar_nacionalidad(carnet, porcentaje_de_aprobar=0.8):

@@ -30,8 +30,6 @@ class Cedula:
                 "fechaVencimiento_MRZ": "",
             }
         }
-        self.qr = "",
-        self.datos_qr=None
 
         # Si se proporciona un diccionario, actualiza los atributos con los valores correspondientes
         if isinstance(datos_iniciales, dict):
@@ -68,11 +66,13 @@ class Cedula:
             self.mrz['datosMRZ']['fechaNacimiento_MRZ']=lineas_raw[1][:6]
             self.mrz['datosMRZ']['fechaVencimiento_MRZ']=lineas_raw[1][8:14]
             apellido_nombre_mrz=self.procesar_linea_MRZ(lineas_raw[2])
+
             print(apellido_nombre_mrz,' ',len(apellido_nombre_mrz))
             self.mrz['datosMRZ']['apellidos_MRZ'] = apellido_nombre_mrz[0]+' '+apellido_nombre_mrz[1]
 
             #si los nombres al leer los datos son menos a 4, realizar correcciones
-            self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
+            if (len(apellido_nombre_mrz)>3):
+                self.mrz['datosMRZ']['nombres_MRZ'] = apellido_nombre_mrz[2]+' '+apellido_nombre_mrz[3]
             self.mrz['datosMRZ']['nacionalidad_MRZ'] = self.extraer_abreviatura_pais(lineas_raw[1])
             self.set_obtener_sexo_mrz()
             
