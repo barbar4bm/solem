@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify,json
+from flask import Blueprint, Response, render_template, request, jsonify,json
 from services import Ocr,tools
 from services import Sift as sift
 from services import cropper
@@ -7,6 +7,12 @@ from services import validacion as validar
 from services import cedula_chile
 
 pruebas = Blueprint('pruebas', __name__)
+subir=Blueprint('subir',__name__)
+
+@pruebas.route('/subir', methods=['GET'])
+def show_subir():
+    # Solo mostrar la página
+    return render_template('subir.html')
 
 @pruebas.route('/pruebas', methods=['GET'])
 def show_pruebas():
@@ -67,4 +73,70 @@ def procesar_ocr():
 
     # Devolver el texto obtenido
     return textoCap
+
+@pruebas.route('/leerqr', methods=['POST'])
+def enviarContenidoQr():
+    # Comprobar que la solicitud contiene un archivo
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image file provided'}), 400
+
+    file = request.files['image']
+
+    # Comprobar que el archivo no está vacío y que es una imagen
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if not file or not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+        return jsonify({'error': 'Invalid image format'}), 400
+
+    # Leer el archivo en bytes
+    image_data = file.read()
+
+    # Convertir la imagen en una matriz
+    imagenp = tools.imagen_a_matriz(image_data)
+
+    # Leer QR desde la matriz
+    textoleido = tools.leerQR(imagenp)
+
+    # Retornar el contenido leído
+    return jsonify({'contenido_qr': textoleido})
+
+@pruebas.route('/subirImagen', methods=['POST'])
+def recibirImagenes():
+    
+    # Si el request contiene un archivo
+    if 'file' in request.files:
+        file = request.files['file']
+        
+        # Asegurarse de que el archivo no está vacío
+        if file.filename == '':
+            return jsonify({"error": "No se seleccionó ningún archivo"}), 400
+        
+        # Leer el contenido del archivo
+        content = file.read().decode('utf-8')  # Asumimos que el contenido del archivo txt es una cadena base64
+
+        # Aquí puedes añadir cualquier validación adicional que necesites, por ejemplo, verificar que el contenido es una cadena base64 válida.
+        
+        image_base64 = content
+        
+    # Si el request es un JSON
+    elif request.is_json:
+        data = request.get_json()
+        image_base64 = data.get('imagen')  # Suponemos que la clave en el JSON es 'imagen'
+        if not image_base64:
+            return jsonify({"error": "El JSON no contiene la clave 'imagen'"}), 400
+
+    else:
+        return jsonify({"error": "El request debe ser un archivo o un JSON"}), 400
+
+    # Convertir de base64 a matriz numpy
+    image_np = tools.b64_openCV(image_base64)
+    
+    # Convertir matriz numpy a imagen PNG
+    png_bytes = tools.numpy_to_png(image_np)
+
+    # Enviar imagen PNG al cliente
+    return Response(png_bytes, content_type='image/png')
+
+
 

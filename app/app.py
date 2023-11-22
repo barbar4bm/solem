@@ -6,6 +6,7 @@ from services import cedula_chile
 app = Flask(__name__)
 
 app.register_blueprint(pruebas.pruebas)
+app.register_blueprint(pruebas.subir)
 
 
 if __name__ == "__main__":
