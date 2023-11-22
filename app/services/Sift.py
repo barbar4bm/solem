@@ -316,6 +316,7 @@ def abrir_Imagen(lado):
             imagen_numpy=preparacionInicial(cv2.imread(IMAGE_PATH))
         except Exception as e:
             print(f"Error al abrir imagen: {e}")
+    print(imagen_numpy)
 
     return imagen_numpy
 
@@ -342,13 +343,13 @@ def encuadre(imagen,lado):
         kp_carnet, des_carnet = keypoints_descriptores(imagen)
         good=findMatches(des_carnet,descriptores_lado)
         imagen_ref=abrir_Imagen(lado)
+        print(imagen_ref)
         keypoints_ref=cargarKeypoints(lado)
         dst, M, matchesMask=calcHomografia(good,MIN_MATCH_COUNT,imagen_ref,kp_carnet,keypoints_ref,imagen)
         h,w=imagen_ref.shape
         pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
         warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
         cv2.imwrite(f'warped_img{lado}.jpg', warped_img)
-
 
         return warped_img,True
 

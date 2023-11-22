@@ -29,8 +29,8 @@ def procesar_imgenes_cedula(data):
     anverso=tools.b64_openCV(data['anverso'])
     reverso=tools.b64_openCV(data['reverso'])
 
-    anverso_filtr=sift.preparacionInicial(anverso,'anverso',None)
-    reverso_filtr=sift.preparacionInicial(reverso,'reverso',None)
+    anverso_filtr=sift.preparacionInicial(anverso,'anverso')
+    reverso_filtr=sift.preparacionInicial(reverso,'reverso')
     
 
     resp_Anverso=sift.identificador_lado(anverso_filtr,'anverso')
@@ -50,11 +50,9 @@ def procesar_imgenes_cedula(data):
     resp_Anverso=str(resp_Anverso)
     resp_reverso=str(resp_reverso)
 
-    resp_anv=None
-    resp_rev=None
-
-    
-
+    img_hom,resp_bool=sift.encuadre(anverso_filtr,'anverso')
+    if resp_bool:
+        print('anverso necesita homografia')
 
 
 
