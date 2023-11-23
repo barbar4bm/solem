@@ -32,7 +32,6 @@ def procesar_imgenes_cedula(data):
     anverso_filtr=sift.preparacionInicial(anverso,'anverso')
     reverso_filtr=sift.preparacionInicial(reverso,'reverso')
     
-
     resp_Anverso=sift.identificador_lado(anverso_filtr,'anverso')
     resp_reverso=sift.identificador_lado(reverso_filtr,'reverso')
     _=None
@@ -50,14 +49,11 @@ def procesar_imgenes_cedula(data):
     resp_Anverso=str(resp_Anverso)
     resp_reverso=str(resp_reverso)
 
-    img_hom,resp_bool=sift.encuadre(anverso_filtr,'anverso')
-    if resp_bool:
-        print('anverso necesita homografia')
+    anv_img_hom,resp_anv_bool=sift.encuadre(anverso_filtr,'anverso')
+    rev_img_hom,resp_anv_bool=sift.encuadre(reverso_filtr,'reverso')
 
 
-
-
-    #SEPAR LOS RECORTES, EN CROPER LA FUNCION RECORTES SE DIVIDE EN DOS
+    #SEPAR LOS RECORTES, EN CROPpER LA FUNCION RECORTES SE DIVIDE EN DOS
     #unir los diccioanrios para inserten al objeto 
     diccionario_anverso=cropper.recortes_anverso(anverso)
     diccionario_reverso=cropper.recortes_reverso(reverso)
@@ -66,7 +62,6 @@ def procesar_imgenes_cedula(data):
     diccionario_anverso=sift.preparacionInicial(diccionario_anverso,'anverso',clave_omitida,'bin')
     diccionario_reverso=sift.preparacionInicial(diccionario_reverso,'reverso',clave_omitida,'bin_OTSU')
     
-
 
     diccionario_img={**diccionario_anverso,**diccionario_reverso}
     tools.guardar_recortes(diccionario_anverso,'anverso')

@@ -313,10 +313,9 @@ def abrir_Imagen(lado):
         if image is None:
             raise ValueError(f"La imagen {IMAGE_PATH} no se cargó correctamente.")
         try:
-            imagen_numpy=preparacionInicial(cv2.imread(IMAGE_PATH))
+            imagen_numpy=preparacionInicial(cv2.imread(IMAGE_PATH),None,lado)
         except Exception as e:
             print(f"Error al abrir imagen: {e}")
-    print(imagen_numpy)
 
     return imagen_numpy
 
@@ -334,41 +333,42 @@ def guardar_keypoints(keypoints, name):
 def encuadre(imagen,lado):
     descriptores_lado= cargarDescriptores(lado)
     MIN_MATCH_COUNT=20
-    porc_calc_homografia=necesita_homografia(imagen,descriptores_lado,lado)
+    porc_calc_homografia=necesita_homografia1(imagen,descriptores_lado,lado)
 
     if not porc_calc_homografia:
+        print("No se necesita homografía."+str(porc_calc_homografia))
+        cv2.imwrite(f'warped_img_{lado}.jpg', warped_img)
         return imagen,False
     else:
+        print("Si se necesita homografía."+str(porc_calc_homografia))
     
         kp_carnet, des_carnet = keypoints_descriptores(imagen)
         good=findMatches(des_carnet,descriptores_lado)
         imagen_ref=abrir_Imagen(lado)
-        print(imagen_ref)
+
         keypoints_ref=cargarKeypoints(lado)
         dst, M, matchesMask=calcHomografia(good,MIN_MATCH_COUNT,imagen_ref,kp_carnet,keypoints_ref,imagen)
         h,w=imagen_ref.shape
         pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
         warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
-        cv2.imwrite(f'warped_img{lado}.jpg', warped_img)
+
+        cv2.imwrite(f'warped_img_{lado}.jpg', warped_img)
+
 
         return warped_img,True
 
-def necesita_homografia(imagen, descriptores_lado,lado,umbral_anverso=0.3,umbral_reverso=0.1):
+def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.4,umbral_reverso=0.3):
     kp_imagen, descriptores = keypoints_descriptores(imagen)
     
     # Aquí podrías usar la función findMatches o cualquier otra lógica para comparar los keypoints
     good_matches = findMatches(descriptores, descriptores_lado)
     
-    # Si el porcentaje de buenos matches es menor que el umbral, se calcula la homografía
-    print(f'Buenos Matches: {len(good_matches)} entre descriptores')
-    print(f'{lado}, datos Img Objetivo: len(kps)={len(kp_imagen)}, len(descriptores)={len(descriptores)})')
-    print(f'Numero de descriptores Base: {len(descriptores_lado)}')
-    print(f'calculo: {len(good_matches)} / {len(descriptores_lado)}= {len(good_matches)/len(descriptores_lado)}')
-    print('')
+
     if(lado=='anverso'):
-        
+        print('anverso: ',len(good_matches)/len(descriptores_lado))
         return len(good_matches)/len(descriptores_lado)< umbral_anverso
     else:
+        print('reverso: ',len(good_matches)/len(descriptores_lado))
         return len(good_matches)/len(descriptores_lado)< umbral_reverso
 
 
