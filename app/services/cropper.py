@@ -12,10 +12,10 @@ def recortes_anverso(rut_bin):
     RUN = rut_bin[453:496 , 98:273]
     nacionalidad = rut_bin[220:265, 285:425]
     sexo = rut_bin[222:263, 450:600]
-    fecha_nacimiento = rut_bin[276:311 , 270:470]
+    fecha_nacimiento = rut_bin[276:311 , 250:480]
     numero_documento = rut_bin[275:310, 472:663]
     fecha_emision = rut_bin[328:363 , 270:470]
-    fecha_vencimiento = rut_bin[328:363 , 472:663]
+    fecha_vencimiento = rut_bin[328:370 , 472:663]
 
     estado_final = locals().copy()
     resultado_recortes = {k: estado_final[k] for k in estado_final if k not in estado_inicial and k not in ['estado_inicial', 'estado_final']}
@@ -28,7 +28,6 @@ def recortes_reverso(rut_bin2):
     estado_inicial = locals().copy()
 
     ciudad = rut_bin2[211:247 , 182:600]
-    fechaNacimiento_MRZ =rut_bin2[276:311 , 250:480]
     profesion = rut_bin2[242:274,182:403]
     profesion=rut_bin2[242:274 , 182:403]
 

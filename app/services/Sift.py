@@ -337,7 +337,7 @@ def encuadre(imagen,lado):
 
     if not porc_calc_homografia:
         print("No se necesita homografía."+str(porc_calc_homografia))
-        cv2.imwrite(f'warped_img_{lado}.jpg', warped_img)
+        cv2.imwrite(f'warped_img_{lado}.jpg', imagen)
         return imagen,False
     else:
         print("Si se necesita homografía."+str(porc_calc_homografia))
