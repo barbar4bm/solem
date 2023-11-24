@@ -34,23 +34,20 @@ def procesar_imgenes_cedula(data):
     
     resp_Anverso=sift.identificador_lado(anverso_filtr,'anverso')
     resp_reverso=sift.identificador_lado(reverso_filtr,'reverso')
-    _=None
 
     #atratapar cuando alguno es falso y generar jSON respuesta
     #aqui se llama a alguna funcion de codeJSON
 
-    if resp_Anverso and not resp_reverso:
-        return {'ocr_data': 'Solo se reconoce Anverso'}
-    elif not resp_Anverso and resp_reverso:
-        return {'ocr_data': 'Solo se reconoce Reverso'}
-    elif not resp_Anverso and not resp_reverso:
-        return {'ocr_data': 'No se reconoce como Cedula'}
+    """    
+    if not resp_Anverso:
+        return {'ocr_data': 'No se reconoce como cédula chilena'}"""
             
     resp_Anverso=str(resp_Anverso)
     resp_reverso=str(resp_reverso)
 
+    """
     anv_img_hom,resp_anv_bool=sift.encuadre(anverso_filtr,'anverso')
-    rev_img_hom,resp_anv_bool=sift.encuadre(reverso_filtr,'reverso')
+    rev_img_hom,resp_anv_bool=sift.encuadre(reverso_filtr,'reverso')"""
 
 
     #SEPAR LOS RECORTES, EN CROPpER LA FUNCION RECORTES SE DIVIDE EN DOS
@@ -59,7 +56,7 @@ def procesar_imgenes_cedula(data):
     diccionario_reverso=cropper.recortes_reverso(reverso)
     
     clave_omitida=('textoGeneral_MRZ','mrz_raw')
-    diccionario_anverso=sift.preparacionInicial(diccionario_anverso,'anverso',clave_omitida,'bin')
+    diccionario_anverso=sift.preparacionInicial(diccionario_anverso,'anverso',clave_omitida,'procesar_imagen')
     diccionario_reverso=sift.preparacionInicial(diccionario_reverso,'reverso',clave_omitida,'bin_OTSU')
     
 

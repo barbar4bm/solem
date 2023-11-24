@@ -58,6 +58,7 @@ def almacenar_descriptores():
 
 def preparacionInicial(imagenInicial,lado,claves_omitidas=None, tipo_procesamiento='procesar_imagen'):
     if isinstance(imagenInicial, dict):
+        print(tipo_procesamiento)
         # Si claves_omitidas está vacío, se procesan todas las imágenes sin comprobar
         if not claves_omitidas:
             for clave, imagen in imagenInicial.items():
@@ -77,7 +78,11 @@ def preparacionInicial(imagenInicial,lado,claves_omitidas=None, tipo_procesamien
 def procesar_tipo(imagen,lado, tipo_procesamiento):
     if tipo_procesamiento == 'procesar_imagen':
         #return bin_INV_OTSU(imagen)
+        
         return procesar_imagen(imagen,lado)
+    elif tipo_procesamiento == 'procesar_imagen_auto':
+        print('auto')
+        return procesar_imagen_auto(imagen,lado)
     elif tipo_procesamiento == 'bin_INV_OTSU':
         return bin_INV_OTSU(imagen)
     elif tipo_procesamiento == 'bin_OTSU':
@@ -85,6 +90,7 @@ def procesar_tipo(imagen,lado, tipo_procesamiento):
     elif tipo_procesamiento == 'bin':
         return binarizacion(imagen, 0)[1]
     else:
+        
         return imagen  
 
 def procesar_imagen(imagen,tipo=''):
@@ -381,6 +387,7 @@ def encuadre(imagen,lado):
 
 
         return warped_img,True
+    
 
 def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.4,umbral_reverso=0.3):
     kp_imagen, descriptores = keypoints_descriptores(imagen)
