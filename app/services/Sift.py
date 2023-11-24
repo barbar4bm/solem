@@ -102,6 +102,31 @@ def procesar_imagen(imagen,tipo=''):
     eq = clahe.apply(gray)
     return eq
 
+def procesar_imagen_auto(imagen, tipo=''):
+    # Convertir imagen a escala de grises
+    gray = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+    
+    # Calcular el histograma de la imagen en escala de grises
+    hist = cv2.calcHist([gray],[0],None,[256],[0,256])
+    
+    # Calcular la desviación estándar del histograma
+    std_hist = np.std(hist)
+    
+    # Ajustar el clipLimit basado en la desviación estándar del histograma
+    # El factor de ajuste puede variar según las necesidades específicas de tus imágenes
+    factor_ajuste_anverso= 30
+    factor_ajuste_reverso= 30
+    if(tipo=='anverso'):
+        clipLimit = std_hist / factor_ajuste_anverso
+    elif(tipo=='reverso'):
+        clipLimit = std_hist / factor_ajuste_reverso    
+    
+    # Aplicar CLAHE usando el clipLimit calculado
+    clahe = cv2.createCLAHE(clipLimit=clipLimit, tileGridSize=(8,8))
+    eq = clahe.apply(gray)
+    
+    return eq
+
 def bin_INV_OTSU(imagen):
     if len(imagen.shape) > 2 and imagen.shape[2] == 3:  # imagen en color
         if not (np.array_equal(imagen[:,:,0], imagen[:,:,1]) and np.array_equal(imagen[:,:,1], imagen[:,:,2])): # canales de color no son iguales
