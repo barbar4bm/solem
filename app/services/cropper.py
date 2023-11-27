@@ -1,5 +1,6 @@
 import cv2 as cv2
 import numpy as np
+from services import tools,Ocr
 
 def recortes_anverso(rut_bin):
     # 530x840
@@ -12,14 +13,15 @@ def recortes_anverso(rut_bin):
     RUN = rut_bin[453:496 , 98:273]
     nacionalidad = rut_bin[220:265, 285:425]
     sexo = rut_bin[222:263, 450:600]
-    fecha_nacimiento = rut_bin[276:311 , 250:480]
+    fecha_nacimiento = rut_bin[279:311 , 255:483]
     numero_documento = rut_bin[275:310, 472:663]
     fecha_emision = rut_bin[328:363 , 270:470]
     fecha_vencimiento = rut_bin[328:370 , 472:663]
-
+  
     estado_final = locals().copy()
     resultado_recortes = {k: estado_final[k] for k in estado_final if k not in estado_inicial and k not in ['estado_inicial', 'estado_final']}
     return resultado_recortes
+    
 
 def recortes_reverso(rut_bin2):
     rut_bin2=escalar_imagen(rut_bin2,530,840)

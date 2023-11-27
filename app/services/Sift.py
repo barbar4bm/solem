@@ -88,7 +88,7 @@ def procesar_tipo(imagen,lado, tipo_procesamiento):
     elif tipo_procesamiento == 'bin_OTSU':
         return binarizacion(procesar_imagen(imagen,lado), 1)[1]
     elif tipo_procesamiento == 'bin':
-        return binarizacion(imagen, 0)[1]
+        return binarizacion(procesar_imagen(imagen,lado), 0)[1]
     else:
         
         return imagen  
@@ -161,7 +161,7 @@ def binarizacion(imagen, otsu=0):
 
     if otsu == 1:
        
-       return cv2.threshold(imagen, 127,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+       return cv2.threshold(imagen, 105,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
        
     else:
        return cv2.threshold(imagen,95,255,cv2.THRESH_BINARY)

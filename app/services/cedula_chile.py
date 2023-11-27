@@ -56,7 +56,7 @@ def procesar_imgenes_cedula(data):
     diccionario_reverso=cropper.recortes_reverso(reverso)
     
     clave_omitida=('textoGeneral_MRZ','mrz_raw')
-    diccionario_anverso=sift.preparacionInicial(diccionario_anverso,'anverso',clave_omitida,'procesar_imagen')
+    diccionario_anverso=sift.preparacionInicial(diccionario_anverso,'anverso',clave_omitida,'bin')
     diccionario_reverso=sift.preparacionInicial(diccionario_reverso,'reverso',clave_omitida,'bin_OTSU')
     
 
