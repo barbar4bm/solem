@@ -7,8 +7,8 @@ import pytesseract
 import time
 
 inicio = time.time()
-image= cv2.imread('app/image/a2.jpg')#imagen frontal
-image2= cv2.imread('app/image/24.2.jpg')#imagen reverso
+image= cv2.imread('app/image/9.1.jpg')#imagen frontal
+image2= cv2.imread('app/image/9.2.jpg')#imagen reverso
 
 #si se usa windows , esto es necesario
 pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
@@ -59,7 +59,8 @@ fecha_emision = rut_bin[328:370 , 292:463] #fecha emision check
 fechaV_texto = rut_bin[328:370 , 465:670] #fecha vencimiento check 
 
 #rut_chico=rut_otsu[282:308,686:808] #rut en foto pequeña falta mejorar su visibilidad
-
+plt.imshow(nombre_texto)
+plt.show()
 #lectura trasera
 nacio_en = rut_bin2[211:247 , 182:600] 
 profesion = rut_bin2[242:274 , 182:403]
@@ -72,7 +73,7 @@ nombre_full_mrz = rut_otsu2[432:482 , 37:800]
 
 
 def limpiar_datos(ocr_result):
-    cleaned_data = str(ocr_result).replace('§', '').replace('“', '').replace('&', '').replace('+', '').replace('_', '').replace(':', '').replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
+    cleaned_data = str(ocr_result).replace('e', '').replace('¢', '').replace('§', '').replace('“', '').replace('&', '').replace('+', '').replace('_', '').replace(':', '').replace('|', '').replace('\n', '').replace('\n', '').replace(' ', '').replace('<', '').replace('>', '').replace('.', '').replace('-', '').replace(',', '').replace(')', '').replace('(', '').split()
     return cleaned_data
 
 paises_abreviados = {
