@@ -164,7 +164,7 @@ def binarizacion(imagen, otsu=0):
        return cv2.threshold(imagen, 105,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
        
     else:
-       return cv2.threshold(imagen,95,255,cv2.THRESH_BINARY)
+       return cv2.threshold(imagen,101,255,cv2.THRESH_BINARY)
 
 def findMatches(descriptoresObjeto,descriptoresBase):
   """Idealmente tener una base de datos de entrenamiento de los descripores base,
