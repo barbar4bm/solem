@@ -96,7 +96,7 @@ def procesar_tipo(imagen,lado, tipo_procesamiento):
 def procesar_imagen(imagen,tipo=''):
     clipLimit=2.0
     if(tipo=='anverso'):
-        clipLimit=0.8
+        clipLimit=0.9
     elif(tipo=='reverso'):
         clipLimit=1.5
     # de BGR a RGB
@@ -164,7 +164,7 @@ def binarizacion(imagen, otsu=0):
        return cv2.threshold(imagen, 105,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
        
     else:
-       return cv2.threshold(imagen,101,255,cv2.THRESH_BINARY)
+       return cv2.threshold(imagen,103,255,cv2.THRESH_BINARY)
 
 def findMatches(descriptoresObjeto,descriptoresBase):
   """Idealmente tener una base de datos de entrenamiento de los descripores base,
