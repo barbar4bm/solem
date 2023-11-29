@@ -1,9 +1,5 @@
 from flask import Blueprint, Response, render_template, request, jsonify,json
 from services import Ocr,tools
-from services import Sift as sift
-from services import cropper
-from services.carnet import Cedula
-from services import validacion as validar
 from services import cedula_chile
 
 pruebas = Blueprint('pruebas', __name__)
