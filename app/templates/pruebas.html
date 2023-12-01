@@ -2,33 +2,22 @@
 <html lang="es">
 
 <head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subir JSON y OCR</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
 
-    pre {
-      background-color: #f4f4f4;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-
-    .upload-container {
-      border: 2px dashed #ccc;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-    }
-  </style>
 </head>
 
 <body>
+
+  <nav>
+    <ul>
+      <a href="/subir">Tools</a>
+    </ul>
+  </nav>
 
   <h1>Subir JSON Con Estructura</h1>
 
@@ -45,21 +34,21 @@
 
     <div class="upload-container">
       Arrastra y suelta un archivo JSON aquí o haz clic para seleccionarlo
-      <input type="file" id="jsonFile" style="display: none;" accept=".json">
+      <input type="file" id="jsonFile" accept=".json">
     </div>
 
     <br><br>
     <button id="submitJson">Enviar al servidor</button>
 
     <h3>Previsualización del Anverso</h3>
-    <img id="anversoImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen del Anverso">
+    <img id="anversoImage" alt="Imagen del Anverso">
 
     <h3>Previsualización del Reverso</h3>
-    <img id="reversoImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen del Reverso">
+    <img id="reversoImage" alt="Imagen del Reverso">
 
     <!-- Elemento para mostrar la respuesta JSON del servidor -->
     <h3>Resultado General JSON respuesta</h3>
-    <pre id="serverResponse" style="display: none;"></pre>
+    <pre id="serverResponse"></pre>
 
     <h3>Resultados:</h3>
     <p>Es Foto de Anverso? <span id="resultAnverso"></span></p>
@@ -72,18 +61,18 @@
     <!-- Sección para subir imagen -->
     <div class="upload-container">
       Arrastra y suelta una imagen aquí o haz clic para seleccionarla
-      <input type="file" id="ocrImage" style="display: none;" accept="image/*">
+      <input type="file" id="ocrImage" accept="image/*">
     </div>
     <br>
 
     <!-- Visualizar la imagen subida -->
-    <img id="uploadedImage" style="display: none; width: 100%; max-width: 500px;" alt="Imagen subida">
+    <img id="uploadedImage" alt="Imagen subida">
 
     <!-- Botón para iniciar OCR -->
     <button id="startOcr">Capturar texto con OCR</button>
 
     <!-- Visualizar el texto obtenido -->
-    <pre id="ocrResult" style="display: none;"></pre>
+    <pre id="ocrResult"></pre>
   </section>
 
   <script src="{{ url_for('static', filename='pruebas.js') }}"></script>

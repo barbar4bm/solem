@@ -75,7 +75,6 @@ class Cedula:
             self.set_obtener_sexo_mrz()
             
             #OBTENER EL RUT DE LINEA
-            print(lineas_raw[1])
             self.mrz['datosMRZ']['RUN_MRZ'] = self.extraer_run_mrz(lineas_raw[1])
         # Si se proporciona keys_to_update, solo se actualizan esas claves.
         if keys_to_update is not None:

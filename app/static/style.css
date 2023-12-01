@@ -1,0 +1,69 @@
+.drag-area,
+        .image-preview {
+            width: 300px;
+            height: 150px;
+            border: 2px dashed #ccc;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-right: 20px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    pre {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .upload-container {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+.inline-style { margin-top: 10px; }
+.inline-style { display: none; }
+.inline-style { display: none; width: 100%; max-width: 500px; }
+
+nav ul a {
+  /* Estilos de botón */
+  text-decoration: none;
+  display: inline-block; /* Convertir en bloque para aplicar estilos de botón */
+  padding: 10px 20px; /* Ajustar el relleno según sea necesario */
+  border: 1px solid #333; /* Añadir un borde sólido */
+  border-radius: 5px; /* Agregar esquinas redondeadas */
+  color: #333;
+  font-weight: bold;
+}
+
+#anversoImage,#reversoImage{
+    width: 70%;
+    height: 70%;
+}
+
+#ocrResult{
+  height: auto;
+  width: 100%;
+  overflow-x: auto; 
+}
+
+#uploadedImage{
+  width: 840px;
+  height: 530px;
+}
+

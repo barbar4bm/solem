@@ -58,7 +58,6 @@ def almacenar_descriptores():
 
 def preparacionInicial(imagenInicial,lado,claves_omitidas=None, tipo_procesamiento='procesar_imagen'):
     if isinstance(imagenInicial, dict):
-        print(tipo_procesamiento)
         # Si claves_omitidas está vacío, se procesan todas las imágenes sin comprobar
         if not claves_omitidas:
             for clave, imagen in imagenInicial.items():
@@ -81,7 +80,6 @@ def procesar_tipo(imagen,lado, tipo_procesamiento):
         
         return procesar_imagen(imagen,lado)
     elif tipo_procesamiento == 'procesar_imagen_auto':
-        print('auto')
         return procesar_imagen_auto(imagen,lado)
     elif tipo_procesamiento == 'bin_INV_OTSU':
         return bin_INV_OTSU(imagen)
@@ -210,7 +208,6 @@ def calcHomografia(good,MIN_MATCH_COUNT,img_ref,kp_obj,kp_ref,imgEq):
 
         return dst, M, matchesMask
     else:
-        print( "No se encuentran suficientes coincidencias- {}/{}".format(len(good), MIN_MATCH_COUNT) )
         matchesMask = None
 
         return None
@@ -296,7 +293,6 @@ def identificador_lado(img_side,tipo=''):
         coincidencias = len(good)
 
         if (coincidencias > min_matches):
-            print(f'Número de coincidencia de descriptores {tipo}: {coincidencias} > {min_matches}')
             return True
         else:
             return False
@@ -336,7 +332,6 @@ def abrir_Imagen(lado):
     for name in image_names:
         found_images = glob.glob(os.path.join(BASE_DIR, 'data', f'{name}.*'))
         if not found_images:
-            print(f"Imagen {name} no encontrada.")
             continue
 
         IMAGE_PATH = found_images[0]
@@ -367,11 +362,9 @@ def encuadre(imagen,lado):
     porc_calc_homografia=necesita_homografia1(imagen,descriptores_lado,lado)
 
     if not porc_calc_homografia:
-        print("No se necesita homografía."+str(porc_calc_homografia))
         cv2.imwrite(f'warped_img_{lado}.jpg', imagen)
         return imagen,False
     else:
-        print("Si se necesita homografía."+str(porc_calc_homografia))
     
         kp_carnet, des_carnet = keypoints_descriptores(imagen)
         good=findMatches(des_carnet,descriptores_lado)
@@ -397,10 +390,8 @@ def necesita_homografia1(imagen, descriptores_lado,lado,umbral_anverso=0.4,umbra
     
 
     if(lado=='anverso'):
-        print('anverso: ',len(good_matches)/len(descriptores_lado))
         return len(good_matches)/len(descriptores_lado)< umbral_anverso
     else:
-        print('reverso: ',len(good_matches)/len(descriptores_lado))
         return len(good_matches)/len(descriptores_lado)< umbral_reverso
 
 
