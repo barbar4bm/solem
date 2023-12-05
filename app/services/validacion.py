@@ -10,37 +10,10 @@ def procesar_validaciones(carnet, porcentaje_de_aprobar=0.8):
     numero_documento = comparar_num_documento(carnet, porcentaje_de_aprobar)
     run=comparar_RUN(carnet, porcentaje_de_aprobar)
     
-    if(nacionalidad==True):
-        cantidad_de_aprobados= cantidad_de_aprobados + 1
-    else:
-        cantidad_de_aprobados= cantidad_de_aprobados 
-    
-    if(nombre_completo==True):
-        cantidad_de_aprobados= cantidad_de_aprobados + 1
-    else:
-        cantidad_de_aprobados= cantidad_de_aprobados 
-    
-    if(fecha_nacimiento==True):
-        cantidad_de_aprobados= cantidad_de_aprobados + 1
-    else:
-        cantidad_de_aprobados= cantidad_de_aprobados 
+    validaciones = [nacionalidad, nombre_completo, fecha_nacimiento, fecha_vencimiento, numero_documento, run]
 
-    if(fecha_vencimiento==True):
-        cantidad_de_aprobados= cantidad_de_aprobados + 1
-    else:
-        cantidad_de_aprobados= cantidad_de_aprobados 
-
-    if(numero_documento==True):
-        cantidad_de_aprobados= cantidad_de_aprobados + 1
-    else:
-        cantidad_de_aprobados= cantidad_de_aprobados 
-    
-    if(run==True):
-        cantidad_de_aprobados= cantidad_de_aprobados + 1
-    else:
-        cantidad_de_aprobados= cantidad_de_aprobados 
-
-    respuesta=funcion_de_aprobacion(cantidad_de_aprobados)
+    cantidad_de_aprobados = sum(1 for validacion in validaciones if validacion)
+    respuesta = funcion_de_aprobacion(cantidad_de_aprobados)
 
     return {
         'comparar_nacionalidad': nacionalidad,
