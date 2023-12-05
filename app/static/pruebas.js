@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", (event) => {
-  const uploadContainer = document.querySelector(".upload-container");
   const jsonFileInput = document.getElementById("jsonFile");
   const submitJsonButton = document.getElementById("submitJson");
   const anversoImage = document.getElementById("anversoImage");
@@ -12,9 +11,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
   const startOcrButton = document.getElementById("startOcr");
   const ocrResult = document.getElementById("ocrResult");
 
-  uploadContainer.addEventListener("click", function () {
-    jsonFileInput.click();
-  });
 
   jsonFileInput.addEventListener("change", function () {
     const file = jsonFileInput.files[0];
