@@ -1,27 +1,8 @@
-import os
-import platform
-import pytesseract
 from services import cropper
 from services import Ocr,tools
 from services import Sift as sift
 from services.carnet import Cedula
 from services import validacion as validar
-
-
-def esWin():
-    # Rutas posibles del ejecutable de Tesseract OCR en Windows
-    tesseract_paths = [
-        r'C:\Program Files\Tesseract-OCR\tesseract.exe',  # Ubicación común en Windows 64 bits
-        r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'  # Ubicación común en Windows 32 bits
-    ]
-
-    # Verificar si el sistema operativo es Windows
-    if platform.system() == 'Windows':
-        # Buscar el ejecutable en las rutas posibles
-        for path in tesseract_paths:
-            if os.path.exists(path):
-                pytesseract.pytesseract.tesseract_cmd = path
-                break
 
 
 def procesar_imgenes_cedula(data):
@@ -61,8 +42,6 @@ def procesar_imgenes_cedula(data):
     
 
     diccionario_img={**diccionario_anverso,**diccionario_reverso}
-    tools.guardar_recortes(diccionario_anverso,'anverso')
-    tools.guardar_recortes(diccionario_reverso,'reverso')
 
     clave_omitida=('textoGeneral_MRZ','mrz_raw','linea1','linea2','linea3')
     #se retornan tupla, [0]: textos reconocidos, [1]: claves de texto no reconocidass

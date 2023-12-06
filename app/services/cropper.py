@@ -1,6 +1,5 @@
 import cv2 as cv2
 import numpy as np
-from services import tools,Ocr
 
 def recortes_anverso(rut_bin):
     # 530x840

@@ -1,11 +1,9 @@
 import pickle as pkl
 import copyreg
 import cv2 as cv2
-from matplotlib import pyplot as plt
 import numpy as np
 import os
 import glob
-from services import tools
 
 
 def _pickle_keypoints(point):
@@ -362,7 +360,6 @@ def encuadre(imagen,lado):
     porc_calc_homografia=necesita_homografia1(imagen,descriptores_lado,lado)
 
     if not porc_calc_homografia:
-        #cv2.imwrite(f'warped_img_{lado}.jpg', imagen)
         return imagen,False
     else:
     
@@ -375,8 +372,6 @@ def encuadre(imagen,lado):
         h,w=imagen_ref.shape
         pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
         warped_img = cv2.warpPerspective(imagen, np.linalg.inv(M), (w, h))
-
-        #cv2.imwrite(f'warped_img_{lado}.jpg', warped_img)
 
 
         return warped_img,True

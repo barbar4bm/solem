@@ -3,7 +3,6 @@ import difflib
 import pytesseract
 import numpy as np
 from . import tools as tool
-from services import Sift
 import re
 
 def encontrar_coincidencia_aproximada(texto_ocr):

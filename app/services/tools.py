@@ -56,26 +56,6 @@ def escalar_imagen(img, altura, anchura):
     
     return cv2.resize(img, (anchura, altura))
 
-def guardar_recortes(diccionario, categoria):
-    """
-    Toma un diccionario donde cada clave-valor corresponde a un nombre y una imagen, respectivamente.
-    Guarda cada imagen en una carpeta llamada "recortes" con un nombre correspondiente a su clave en formato PNG,
-    omitiendo claves con valores vacíos o nulos.
-
-    Parámetros:
-    - diccionario (dict): Diccionario de imágenes.
-    """
-
-    # Crear la carpeta "recortes" si no existe
-    ruta_carpeta = os.path.join(categoria, 'recortes')
-    if not os.path.exists(ruta_carpeta):
-        os.makedirs(ruta_carpeta)
-
-    for clave, imagen in diccionario.items():
-        # Verificar si el valor (imagen) no está vacío
-        if imagen is not None and imagen.size != 0:
-            ruta = os.path.join(ruta_carpeta, f'{clave}.png')
-            cv2.imwrite(ruta, imagen)
 
 def b64_imagen(imagen):
     # Decodificar la cadena base64 a bytes
