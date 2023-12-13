@@ -94,7 +94,7 @@ def procesar_imagen(imagen,tipo=''):
     if(tipo=='anverso'):
         clipLimit=0.9
     elif(tipo=='reverso'):
-        clipLimit=1.5
+        clipLimit=1.6
     # de BGR a RGB
     imagenRGB = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
     # Cambio de espacio de color BGR a GRAY

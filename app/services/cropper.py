@@ -13,8 +13,8 @@ def recortes_anverso(rut_bin):
     nacionalidad = rut_bin[220:265, 285:425]
     sexo = rut_bin[222:263, 450:600]
     fecha_nacimiento = rut_bin[279:311 , 270:475]
-    numero_documento = rut_bin[277:315, 470:663]
-    fecha_emision = rut_bin[330:366, 270:470]
+    numero_documento = rut_bin[277:317, 465:663]
+    fecha_emision = rut_bin[329:367, 269:475]
     fecha_vencimiento = rut_bin[328:370 , 472:663]
   
     estado_final = locals().copy()
