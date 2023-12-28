@@ -5,8 +5,6 @@ import numpy as np
 from . import tools as tool
 import re
 
-pytesseract.pytesseract.tesseract_cmd =r'c:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
-
 def encontrar_coincidencia_aproximada(texto_ocr):
     diccionario = tool.cargar_trat_nacionalidades()
     # Usar get_close_matches para encontrar la coincidencia más cercana
