@@ -19,9 +19,9 @@ def procesar_imgenes_cedula(data):
     #atratapar cuando alguno es falso y generar jSON respuesta
     #aqui se llama a alguna funcion de codeJSON
 
-    """    
+        
     if not resp_Anverso:
-        return {'ocr_data': 'No se reconoce como cédula chilena'}"""
+        return {'ocr_data': 'No se reconoce como cédula chilena'}
             
     resp_Anverso=str(resp_Anverso)
     resp_reverso=str(resp_reverso)
