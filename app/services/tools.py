@@ -6,10 +6,28 @@ import os
 import json
 
 def b64_openCV(imgenb64):
-  im_bytes = b64.b64decode(imgenb64)
-  im_arr = np.frombuffer(im_bytes, dtype=np.uint8) 
-  img = cv2.imdecode(im_arr, flags=cv2.IMREAD_COLOR) 
-  return img 
+    try:
+        # Decodificar el string base64 y convertirlo en una matriz numpy
+        im_bytes = b64.b64decode(imgenb64)
+        im_arr = np.frombuffer(im_bytes, dtype=np.uint8)
+        img = cv2.imdecode(im_arr, flags=cv2.IMREAD_COLOR)
+
+        # Verificar la validez de la imagen
+        if imagen_valida(img):
+            return img
+        else:
+            print("La imagen decodificada es inválida.")
+            return None
+
+    except b64.binascii.Error as e:
+        print(f"Error de decodificación base64: {e}")
+        return None
+    except cv2.error as e:
+        print(f"Error de OpenCV: {e}")
+        return None
+    except Exception as e:
+        print(f"Error durante la decodificación de la imagen: {e}")
+        return None
 
 def openCV_b64(imagenOpenCV):
     # Codificar la imagen en formato JPEG
@@ -29,6 +47,17 @@ def imagen_a_matriz(imagen_data):
     
     imagen = cv2.imdecode(imagen_bytes, cv2.IMREAD_COLOR)
     return imagen
+
+def imagen_valida(image): 
+    try:
+        # Intentar realizar operaciones básicas en la imagen
+        # para verificar su integridad
+        # Puedes personalizar esta verificación según tus necesidades específicas
+        # Por ejemplo, verificar la forma de la matriz, el tipo de datos, etc.
+        return image is not None and image.shape[0] > 0 and image.shape[1] > 0
+    except Exception as e:
+        # Si hay algún error durante el proceso, considerar la imagen como no válida
+        return False
 
 def leerQR(image):
 

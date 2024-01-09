@@ -10,6 +10,13 @@ def procesar_imgenes_cedula(data):
     anverso=tools.b64_openCV(data['anverso'])
     reverso=tools.b64_openCV(data['reverso'])
 
+    if(not tools.imagen_valida(anverso)):
+        return {'ocr_data':'Imagen anverso corrompida'}
+    elif(not tools.imagen_valida(reverso)):
+        return {'ocr_data':'Imagen reverso corrompida'}
+
+
+
     anverso_filtr=sift.preparacionInicial(anverso,'anverso')
     reverso_filtr=sift.preparacionInicial(reverso,'reverso')
     
