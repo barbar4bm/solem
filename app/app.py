@@ -12,4 +12,4 @@ app.register_blueprint(upload.upload)
 
 if __name__ == "__main__":
     sift.almacenar_descriptores()
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug=False)
