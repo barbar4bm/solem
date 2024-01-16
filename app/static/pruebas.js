@@ -72,11 +72,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
   });
 
-  document
-    .querySelectorAll(".upload-container")[1]
-    .addEventListener("click", function () {
-      ocrImageInput.click();
-    });
 
   ocrImageInput.addEventListener("change", function (event) {
     const file = event.target.files[0];
